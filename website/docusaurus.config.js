@@ -2,11 +2,11 @@ module.exports = {
   title: 'Azure Machine Learning (AML)',
   tagline: 'this website is under development',
   url: 'https://github.com/Azure/',
-  baseUrl: '/azureml-examples/',
+  baseUrl: '/azureml-web/',
   onBrokenLinks: 'ignore',
   favicon: 'img/logo.svg',
   organizationName: 'Azure', // Usually your GitHub org/user name.
-  projectName: 'azureml-examples', // Usually your repo name.
+  projectName: 'azureml-web', // Usually your repo name.
   themeConfig: {
     navbar: {
       title: 'Azure Machine Learning',
@@ -35,7 +35,7 @@ module.exports = {
         // },
         {
           href: 'https://github.com/Azure/azureml-examples',
-          label: 'GitHub',
+          label: 'GitHub Examples',
           position: 'right',
         },
       ],
@@ -53,6 +53,10 @@ module.exports = {
             {
               label: 'GitHub Examples',
               href: 'https://github.com/Azure/azureml-examples',
+            },
+            {
+              label: 'GitHub Website',
+              href: 'https://github.com/Azure/azureml-web',
             },
             {
               label: 'Python SDK Docs',
@@ -103,7 +107,7 @@ module.exports = {
           sidebarPath: require.resolve('./sidebars.js'),
           // Please change this to your repo.
           editUrl:
-            'https://github.com/Azure/azureml-examples/tree/main/website/',
+            'https://github.com/Azure/azureml-web/tree/main/website/',
         },
         cookbook: {
           sidebarPath: require.resolve('./sidebars.js'),
@@ -112,7 +116,7 @@ module.exports = {
           showReadingTime: true,
           // Please change this to your repo.
           editUrl:
-            'https://github.com/Azure/azureml-examples/tree/main/website/blog',
+            'https://github.com/Azure/azureml-web/tree/main/website/blog',
         },
         theme: {
           customCss: require.resolve('./src/css/custom.css'),
