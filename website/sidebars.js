@@ -31,6 +31,14 @@ module.exports = {
       }
     ],
   },
+  templateSidebar: {
+    'Templates': [
+      {
+        type: 'doc',
+        id: 'templates/templates'
+      }
+    ]
+  },
   secondaySidebar: {
     Cookbook: [
       {
