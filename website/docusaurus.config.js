@@ -27,7 +27,7 @@ module.exports = {
         //   position: 'left',
         // },
         {to: 'docs/vs-code-snippets/snippets', label: 'Snippets', position: 'left'},
-        {to: 'docs/templates/templates', label: 'Templates', position: 'left'},
+        {to: 'docs/templates/', label: 'Templates', position: 'left'},
         // {to: 'blog', label: 'Blog', position: 'left'},
         // {
         //   to: 'docs/userguide/',
