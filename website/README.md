@@ -1,6 +1,6 @@
 # Website
 
-![deploy-website](https://github.com/Azure/azureml-examples/workflows/deploy-website/badge.svg)
+![deploy-website](https://github.com/Azure/azureml-web/workflows/deploy-website/badge.svg)
 
 Website is available here: https://azure.github.io/azureml-examples/
 
@@ -11,7 +11,7 @@ This website is built using [Docusaurus 2](https://v2.docusaurus.io/), a modern 
 Make PR's against the `main` branch
 
 ```bash
-git clone git@github.com:Azure/azureml-examples.git
+git clone git@github.com:Azure/azureml-web.git
 cd azureml-examples
 git checkout -b user/contrib
 ```
