@@ -27,3 +27,7 @@ keywords:
 ## Adding a new template
 
 Fork the base template, following the required structure and adapting the template. Make a PR here to add it to the appropriate list.
+
+### Enforced naming
+
+- repo should be named `azureml-template-*`, using hyphens to separate words
