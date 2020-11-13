@@ -62,8 +62,8 @@ GitHub user experience.
 
 #### Foundations
 
-- `Foundation/Data`
-- `Foundation/Compute`
+- `Foundations/Data`
+- `Foundations/Compute`
 - `Foundations/Infrastructure`
 - `Foundations/Admin`
 
