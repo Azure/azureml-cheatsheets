@@ -21,6 +21,10 @@ module.exports = function (context) {
                 instrumentationKey: "cf50e24d-cb96-4b51-b40b-c5ba218e4fd0"
             }});
             `,
+            attributes: {
+              async: true,
+              type: 'text/javascript'
+              }
           }
         ],
       };
