@@ -103,7 +103,7 @@ module.exports = {
       placeholder: 'Search cheat sheet'
     }
   },
-  // plugins: [path.resolve(__dirname, 'plugins', 'appinsights')], // uncomment for appinsights
+  plugins: [path.resolve(__dirname, 'plugins/appinsights')], // uncomment for appinsights
   presets: [
     [
       '@docusaurus/preset-classic',
