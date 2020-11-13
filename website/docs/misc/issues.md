@@ -94,7 +94,7 @@ GitHub user experience.
 
 ### Triage
 
-Initial triage will be performed by the GitHub v-team. On initial triage, assign the correct area label and issue type (bug, question, feature-request).  
+Initial triage will be performed by the GitHub v-team. On initial triage, assign the correct area label and issue type.  
 
 If the issue needs obvious clarification before this can be done, kindly ask the user. If the issue has no path to closing without user response, mark it as `needs-details`.
 
