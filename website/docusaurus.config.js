@@ -1,3 +1,5 @@
+const path = require('path');
+
 module.exports = {
   title: 'Azure Machine Learning (AML)',
   tagline: 'this website is under development',
@@ -95,11 +97,9 @@ module.exports = {
       indexName: 'azure',
       searchParameters: {},
       placeholder: 'Search cheat sheet'
-    },
-    googleAnalytics: {
-      trackingID: 'UA-83747202-1',
     }
   },
+  plugins: [path.resolve(__dirname, 'plugins', 'appinsights')],
   presets: [
     [
       '@docusaurus/preset-classic',
