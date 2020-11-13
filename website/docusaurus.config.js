@@ -75,6 +75,10 @@ module.exports = {
               href: 'https://github.com/Azure/azureml-examples/issues',
             },
             {
+              label: 'GitHub Issue Triage Process',
+              to: 'docs/issues'
+            },
+            {
               label: 'Stack Overflow',
               href: 'https://stackoverflow.microsoft.com/questions/tagged/10888',
             }
