@@ -10,7 +10,7 @@ keywords:
 
 - [ ] Delete this TODO when complete!
 - [ ] Question: where does 20_image_build_log*.txt run? It does not run on customer compute as far as I can tell.
-
+- [ ] Review with AML-DS team
 
 
 ## Azure ML Log Files
