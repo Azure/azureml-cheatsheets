@@ -39,7 +39,7 @@ module.exports = {
               href: 'https://github.com/Azure/azureml-examples',
             },
             {
-              label: 'Website',
+              label: 'Website Source Code',
               href: 'https://github.com/Azure/azureml-web',
             },
             {
