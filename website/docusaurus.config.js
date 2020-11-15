@@ -17,30 +17,11 @@ module.exports = {
         src: 'img/logo.svg',
       },
       items: [
-        {
-          to: 'docs/cheatsheet/',
-          label: 'Cheat Sheet',
-          position: 'left',
-        },
-        // {position: 'left', type: 'docsVersionDropdown'},
-        // {
-        //   to: 'docs/cbdocs/cookbook',
-        //   label: 'Cookbook',
-        //   position: 'left',
-        // },
+        {to: 'docs/cheatsheet/', label: 'Cheat Sheet', position: 'left'},
         {to: 'docs/vs-code-snippets/snippets', label: 'Snippets', position: 'left'},
         {to: 'docs/templates/', label: 'Templates', position: 'left'},
         // {to: 'blog', label: 'Blog', position: 'left'},
-        // {
-        //   to: 'docs/userguide/',
-        //   label: 'User Guide',
-        //   position: 'left',
-        // },
-        {
-          href: 'https://github.com/Azure/azureml-examples',
-          label: 'GitHub Examples',
-          position: 'right',
-        },
+        // {href: 'https://github.com/Azure/azureml-web', label: 'GitHub', position: 'right',
       ],
     },
     footer: {
@@ -58,7 +39,7 @@ module.exports = {
               href: 'https://github.com/Azure/azureml-examples',
             },
             {
-              label: 'GitHub Website',
+              label: 'Website',
               href: 'https://github.com/Azure/azureml-web',
             },
             {
@@ -75,7 +56,7 @@ module.exports = {
               href: 'https://github.com/Azure/azureml-examples/issues',
             },
             {
-              label: 'GitHub Issue Triage Process',
+              label: 'Issue Triage Process',
               to: 'docs/issues'
             },
             {

@@ -27,13 +27,22 @@ const features = [
       </>
     ),
   },
+  // {
+  //   title: 'Command Line Tools',
+  //   imageUrl: 'img/undraw_docusaurus_react.svg',
+  //   description: (
+  //     <>
+  //       Make it easy to start a new project with scaffolding set up for you. No
+  //       more wasting time with boilerplate!
+  //     </>
+  //   ),
+  // },
   {
-    title: 'Command Line Tools',
+    title: 'GitHub Templates',
     imageUrl: 'img/undraw_docusaurus_react.svg',
     description: (
       <>
-        Make it easy to start a new project with scaffolding set up for you. No
-        more wasting time with boilerplate!
+        GitHub templates to automate the ML lifecycle. 
       </>
     ),
   },
