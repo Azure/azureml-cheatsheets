@@ -97,8 +97,8 @@ module.exports = {
       copyright: `Copyright © ${new Date().getFullYear()} Microsoft`,
     },
     algolia: {
-      apiKey: 'b12ff2d7b13980e0983244167d1c2450',
-      indexName: 'azure',
+      apiKey: '8cdd3d909edd00501899b929541d6ce7',
+      indexName: 'azureml-web',
       searchParameters: {},
       placeholder: 'Search cheat sheet'
     }
