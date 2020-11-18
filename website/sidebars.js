@@ -19,15 +19,9 @@ module.exports = {
       },
       {
         type: 'category',
-        label: 'Submitting Code',
+        label: 'Guides',
         collapsed: false,
-        items: ['cheatsheet/script-run-config', 'cheatsheet/logging'],
-      },
-      {
-        type: 'category',
-        label: 'Advanced Guides',
-        collapsed: false,
-        items: ['cheatsheet/distributed-training', 'cheatsheet/docker-build']
+        items: ['cheatsheet/script-run-config', 'cheatsheet/logging', 'cheatsheet/distributed-training', 'cheatsheet/docker-build', 'cheatsheet/debugging']
       }
     ],
   },
