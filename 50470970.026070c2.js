@@ -1,0 +1,1 @@
+(window.webpackJsonp=window.webpackJsonp||[]).push([[16],{72:function(n){n.exports=JSON.parse('{"run":{"allTagsPath":"/azureml-web/blog/tags","slug":"run","name":"run","count":2,"permalink":"/azureml-web/blog/tags/run"}}')}}]);
