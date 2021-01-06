@@ -2,7 +2,7 @@
 name: Request AzureML Snippet
 about: Issue to request a new snippet for AzureML Snippets
 title: "[Snippet]"
-labels: ''
+labels: snippets-request
 assignees: ''
 
 ---
