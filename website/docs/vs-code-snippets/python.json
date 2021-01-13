@@ -142,7 +142,7 @@
             ")",
             "$0"
         ],
-        "description": "Get Azure ML Compute Target"
+        "description": "Get Azure ML Compute Target with SSH"
     },
 
     "Get Environment": {
@@ -152,7 +152,7 @@
             "${2:env} = Environment('${1:<env-name>}')",
             "$0"
         ],
-        "description": "Get Azure ML Compute Target"
+        "description": "Get Azure ML Environment"
     },
 
     "Get Environment From Pip": {
