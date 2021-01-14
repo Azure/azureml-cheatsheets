@@ -78,6 +78,7 @@ module.exports = {
       copyright: `Copyright © ${new Date().getFullYear()} Microsoft`,
     },
     algolia: {
+      // search only api key: https://docsearch.algolia.com/docs/faq/#can-i-share-the-apikey-in-my-repo
       apiKey: '8cdd3d909edd00501899b929541d6ce7',
       indexName: 'azureml-web',
       searchParameters: {},
