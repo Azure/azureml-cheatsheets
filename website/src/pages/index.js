@@ -9,6 +9,7 @@ import styles from './styles.module.css';
 const features = [
   {
     title: 'Cheat Sheet',
+    pageUrl: 'https://azure.github.io/azureml-web/docs/cheatsheet/',
     imageUrl: 'img/undraw_docusaurus_mountain.svg',
     description: (
       <>
@@ -19,6 +20,7 @@ const features = [
   },
   {
     title: 'VS Code Integration',
+    pageUrl: 'https://azure.github.io/azureml-web/docs/vs-code-snippets/snippets',
     imageUrl: 'img/undraw_docusaurus_tree.svg',
     description: (
       <>
@@ -39,6 +41,7 @@ const features = [
   // },
   {
     title: 'GitHub Templates',
+    pageUrl: 'https://azure.github.io/azureml-web/docs/templates/',
     imageUrl: 'img/undraw_docusaurus_react.svg',
     description: (
       <>
@@ -48,7 +51,7 @@ const features = [
   },
 ];
 
-function Feature({imageUrl, title, description}) {
+function Feature({imageUrl, title, description, pageUrl}) {
   const imgUrl = useBaseUrl(imageUrl);
   return (
     <div className={clsx('col col--4', styles.feature)}>
@@ -57,7 +60,7 @@ function Feature({imageUrl, title, description}) {
           <img className={styles.featureImage} src={imgUrl} alt={title} />
         </div>
       )}
-      <h3>{title}</h3>
+      <h3><a href={pageUrl}>{title}</a></h3>
       <p>{description}</p>
     </div>
   );
