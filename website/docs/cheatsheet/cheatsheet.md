@@ -10,48 +10,78 @@ keywords:
   - overview
 ---
 
-### Basic setup
+## Basic setup
 
-**Connect to workspace.**
+### Connect to workspace.
 
 ```python
 from azureml.core import Workspace
 ws = Workspace.from_config()
 ```
 
+The workspace object is the fundamental handle on your Azure ML assets and is used
+throughout (often simply referred to by `ws`).
+
 For more details: [Workspaces](workspace)
 
-**Connect to compute target.**
+### Connect to compute target.
 
 ```python
-from azureml.core import ComputeTarget
-target = ComputeTarget(ws, '<compute-target-name>')
+compute_target = ws.compute_targets['<compute-target-name>']
+```
+
+**Sample usage.**
+
+```python
+compute_target = ws.compute_targets['powerful-gpu']
+
+config = ScriptRunConfig(
+    compute_target=compute_target,  # compute target used to run train.py script
+    source_directory='.',
+    script='train.py',
+)
 ```
 
 For more details: [Compute Target](compute-targets)
 
-**Prepare Python environment.**  
-You can use a `requirements.txt` file to define a Python environment on your compute.
+### Prepare Python environment
+
+You can use a pip `requirements.txt` file or a Conda `env.yml` file to define a Python environment on your compute.
 
 ```python
 from azureml.core import Environment
-env = Environment.from_pip_requirements('<environment-name>', '<path/to/requirements.txt>')
+# Option 1. From pip
+environment = Environment.from_pip_requirements('<env-name>', '<path/to/requirements.txt>')
+# Option 2. From Conda
+environment = Environment.from_conda_specifications('<env-name>', '<path/to/env.yml>')
 ```
 
-You can also use conda environments and docker images to prepare your environments.  
+You can also use docker images to prepare your environments.
+
+**Sample usage.**
+
+```python
+environment = Environment.from_pip_requirements('<env-name>', '<path/to/requirements.txt>')
+
+config = ScriptRunConfig(
+    environment=environment,  # set the python environment
+    source_directory='.',
+    script='train.py',
+)
+```
 
 For more details: [Environment](environment)
 
 
-### Submit code
+## Submit code
 
-To run code in AML you need to:
+To run code in Azure ML you need to:
 
 1. **Configure**: Configuration includes specifying the code to run, the compute
 target to run on and the Python environment to run in.
-2. **Submit**: Create or reuse an AML Experiment and submit the run.
+2. **Submit**: Create or reuse an Azure ML Experiment and submit the run.
 
-#### ScriptRunConfig (Configure)
+### ScriptRunConfig
 
 A typical directory may have the following structure:
 
@@ -62,8 +92,9 @@ source_directory/
     ...
 ```
 
-To run `$ (env) python <path/to/code>/script.py [arguments]` on a remote compute cluster `target: ComputeTarget` with an
-environment `env: Environment` we use the `ScriptRunConfig` class.
+To run `$ (env) python <path/to/code>/script.py [arguments]` on a remote compute
+cluster `target: ComputeTarget` with an environment `env: Environment` we can use
+the `ScriptRunConfig` class.
 
 ```python
 from azureml.core import ScriptRunConfig
@@ -71,8 +102,8 @@ from azureml.core import ScriptRunConfig
 config = ScriptRunConfig(
     source_directory='<path/to/code>',  # relative paths okay
     script='script.py',
-    compute_target=target,
-    environment=env,
+    compute_target=compute_target,
+    environment=environment,
     arguments=arguments,
 )
 ```
@@ -80,14 +111,30 @@ config = ScriptRunConfig(
 For more details on specifying arguments: [Command line arguments](script-run-config#command-line-arguments)
 
 :::info
-- `compute_target`: If not provided the script will run on your local machine **TODO: does this require docker?**
-- `environment`: If not provided, uses a default Python environment managed by Azure ML (azureml.core.runconfig.DEFAULT_CPU_IMAGE) **TODO: provide details on this image**.
+- `compute_target`: If not provided the script will run on your local machine.
+- `environment`: If not provided, uses a default Python environment managed by Azure ML. See [Environment](environment) for more details.
 :::
 
-#### Experiment (Submit)
+#### Commands
+
+It is possible to provide the explicit command to run.
+
+```python
+command = 'echo cool && python script.py'.split()
+
+config = ScriptRunConfig(
+    source_directory='<path/to/code>',  # relative paths okay
+    command=command,
+    compute_target=compute_target,
+    environment=environment,
+    arguments=arguments,
+)
+```
+
+### Experiment
 
 To submit this code, create an `Experiment`: a light-weight container that helps to
-oraganize our submissions and keep track of code (See [Run History](run-history)).
+organize our submissions and keep track of code (See [Run History](run-history)).
 
 ```python
 exp = Experiment(ws, '<experiment-name>')
@@ -99,7 +146,36 @@ This link will take you to the Azure ML Studio where you can monitor your run.
 
 For more details: [ScriptRunConfig](script-run-config)
 
-### Connect to data
+### Sample usage
+
+Here is a fairly typical example using a Conda environment to run a training
+script `train.py` on our local machine from the command line.
+
+```bash
+$ conda env create -f env.yml  # create environment called pytorch
+$ conda activate pytorch
+(pytorch) $ cd <path/to/code>
+(pytorch) $ python train.py --learning_rate 0.001 --momentum 0.9
+```
+
+Suppose you want to run this on a GPU in Azure.
+
+```python
+ws = Workspace.from_config()
+compute_target = ws.compute_targets['powerful-gpu']
+environment = Environment.from_conda_specifications('pytorch', 'env.yml')
+
+config = ScriptRunConfig(
+    source_directory='<path/to/code>',
+    script='train.py',
+    environment=environment,
+    arguments=['--learning_rate', 0.001, '--momentum', 0.9],
+)
+
+run = Experiment(ws, 'PyTorch model training').submit(config)
+```
+
+## Connect to data
 
 To work with data in your training scripts using your workspace `ws` and its default datastore:
 
