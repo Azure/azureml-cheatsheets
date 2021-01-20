@@ -108,7 +108,7 @@ config = ScriptRunConfig(
 )
 ```
 
-For more details on specifying arguments: [Command line arguments](script-run-config#command-line-arguments)
+For more details on arguments: [Command line arguments](script-run-config#command-line-arguments)
 
 :::info
 - `compute_target`: If not provided the script will run on your local machine.
@@ -130,6 +130,8 @@ config = ScriptRunConfig(
     arguments=arguments,
 )
 ```
+
+For more details: [Commands](script-run-config#commands)
 
 ### Experiment
 
