@@ -78,10 +78,10 @@ as well as streaming logs to your terminal.
 ## Command Line Arguments
 
 To pass command line arguments to your script use the `arguments` parameter in `ScriptRunConfig`.
-Arguments are passed as a list
+Arguments are specified as a list:
 
 ```python
-arguments=[first, second, third, ...]
+arguments = [first, second, third, ...]
 ```
 
 which are then passed to the script as command-line arguments as follows:
@@ -93,7 +93,7 @@ $ python script.py first second third ...
 This also supports using named arguments:
 
 ```python
-arguments=['--first_arg', first_val, '--second_arg', second_val, ...]
+arguments = ['--first_arg', first_val, '--second_arg', second_val, ...]
 ```
 
 Arguments can be of type `int`, `float` `str` and can also be used to reference data.
@@ -165,6 +165,43 @@ args = parser.parse_args()
 learning_rate = args.learning_rate      # gets 0.001
 momentum = args.momentum                # gets 0.9
 ```
+
+## Commands
+
+It is possible to provide the explicit command to run.
+
+```python
+command = 'python script.py'.split()
+
+config = ScriptRunConfig(
+    source_directory='<path/to/code>',
+    command=command,
+    compute_target=compute_target,
+    environment=environment,
+)
+```
+
+This example is equivalent to setting the argument `script='script.py'` in place of
+the `command` argument.
+
+This option provides a lot of flexibility. For example:
+
+
+- **Set environment variables**: Some useful examples:
+
+    ```python
+    command = 'export PYTHONPATH=$PWD && python script.py'.split()
+    ```
+
+    ```python
+    command = f'export RANK={rank} && python script.py'.split()
+    ```
+
+- **Run setup script**: Run a setup script e.g. to download data, set environment variables.
+
+    ```python
+    command = 'python setup.py && python script.py'.split()
+    ```
 
 ## Using Datasets
 
