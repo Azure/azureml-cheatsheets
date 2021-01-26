@@ -495,7 +495,6 @@ else:
     os.environ["MASTER_ADDR"] = os.environ["AZ_BATCHAI_MPI_MASTER_NODE"]
     os.environ["MASTER_PORT"] = "54965"
 
-os.environ["NCCL_SOCKET_IFNAME"] = "^docker0,lo"
 os.environ["NODE_RANK"] = os.environ["OMPI_COMM_WORLD_RANK"] 
 ```
 
@@ -507,6 +506,9 @@ trainer: Trainer = pl.Trainer.from_argparse_args(
 
 trainer.fit(model, train_loader, val_loader)
 ```
+
+**Example.** Here is an example of mutlti-node distributed training using PyTorch Lightning
+from the [azureml-examples repo](https://github.com/Azure/azureml-examples/blob/main/tutorials/using-pytorch-lightning/4.train-multi-node-ddp.ipynb).
 
 ## TensorFlow
 
