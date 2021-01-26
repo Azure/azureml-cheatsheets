@@ -130,12 +130,7 @@ def set_environment_variables_for_nccl_backend(master_port=6105, verbose=True):
     else:
         os.environ["MASTER_ADDR"] = os.environ["AZ_BATCHAI_MPI_MASTER_NODE"]
         os.environ["MASTER_PORT"] = "54965"
-    print(
-        "NCCL_SOCKET_IFNAME original value = {}".format(
-            os.environ["NCCL_SOCKET_IFNAME"]
-        )
-    )
-    os.environ["NCCL_SOCKET_IFNAME"] = "^docker0,lo"
+
     if verbose:
         print("RANK = {}".format(os.environ["RANK"]))
         print("WORLD_SIZE = {}".format(os.environ["WORLD_SIZE"]))
