@@ -136,9 +136,6 @@ def set_environment_variables_for_nccl_backend(master_port=6105, verbose=True):
         print("WORLD_SIZE = {}".format(os.environ["WORLD_SIZE"]))
         print("MASTER_ADDR = {}".format(os.environ["MASTER_ADDR"]))
         print("MASTER_PORT = {}".format(os.environ["MASTER_PORT"]))
-        print(
-            "NCCL_SOCKET_IFNAME new value = {}".format(os.environ["NCCL_SOCKET_IFNAME"])
-        )
 
 def get_rank():
     return int(os.environ["OMPI_COMM_WORLD_RANK"])
