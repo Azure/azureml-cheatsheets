@@ -1,8 +1,8 @@
 const path = require('path');
 
 module.exports = {
-  title: 'Azure Machine Learning (AML)',
-  tagline: 'this website is under development',
+  title: 'Azure Machine Learning',
+  tagline: '',
   url: 'https://github.com/Azure/',
   baseUrl: '/azureml-web/',
   onBrokenLinks: 'ignore',
@@ -35,15 +35,7 @@ module.exports = {
               href: 'https://docs.microsoft.com/azure/machine-learning',
             },
             {
-              label: 'GitHub Examples',
-              href: 'https://github.com/Azure/azureml-examples',
-            },
-            {
-              label: 'Website Source Code',
-              href: 'https://github.com/Azure/azureml-web',
-            },
-            {
-              label: 'Python SDK Docs',
+              label: 'API Documentation',
               href: 'https://docs.microsoft.com/python/api/overview/azure/ml/?view=azure-ml-py'
             }
           ],
@@ -52,12 +44,8 @@ module.exports = {
           title: 'Community',
           items: [
             {
-              label: 'GitHub (Issues)',
+              label: 'GitHub',
               href: 'https://github.com/Azure/azureml-examples/issues',
-            },
-            {
-              label: 'Issue Triage Process',
-              to: 'docs/issues'
             },
             {
               label: 'Stack Overflow',
@@ -66,12 +54,16 @@ module.exports = {
           ],
         },
         {
-          title: 'Coming soon...',
+          title: 'Code',
           items: [
             {
-              label: 'Blog',
-              to: 'blog',
-            }
+              label: 'Website Repo',
+              href: 'https://github.com/Azure/azureml-web',
+            },
+            {
+              label: 'Azure ML Examples Repo',
+              href: 'https://github.com/Azure/azureml-examples',
+            },
           ],
         },
       ],
