@@ -2,7 +2,7 @@ const path = require('path');
 
 module.exports = {
   title: 'Azure Machine Learning',
-  tagline: '',
+  tagline: 'Open source documentation for Azure ML',
   url: 'https://github.com/Azure/',
   baseUrl: '/azureml-web/',
   onBrokenLinks: 'ignore',
