@@ -19,7 +19,7 @@ module.exports = {
       items: [
         {to: 'docs/cheatsheet/', label: 'Cheat Sheet', position: 'left'},
         {to: 'docs/vs-code-snippets/snippets', label: 'Snippets', position: 'left'},
-        {to: 'docs/templates/', label: 'Templates', position: 'left'},
+        // {to: 'docs/templates/', label: 'Templates', position: 'left'},
         // {to: 'blog', label: 'Blog', position: 'left'},
         // {href: 'https://github.com/Azure/azureml-web', label: 'GitHub', position: 'right',
       ],
