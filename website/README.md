@@ -10,7 +10,7 @@ Layout:
     - `cheatsheet/`
     - `vs-code-snippets/`
     - `tempaltes/`
-- `docusaurus.config.json`: Configuration file for the webpage generation. Controls the nav bar and some
+- `docusaurus.config.js`: Configuration file for the webpage generation. Controls the nav bar and some
 other global information (e.g. AppInsights logging is configured here)
 - `sidebar.js`: Modify the sidebars in the webpages
 
