@@ -9,7 +9,7 @@ import styles from './styles.module.css';
 const features = [
   {
     title: 'Cheat Sheet',
-    pageUrl: 'https://azure.github.io/azureml-web/docs/cheatsheet/',
+    pageUrl: 'docs/cheatsheet',
     imageUrl: 'img/undraw_docusaurus_mountain.svg',
     description: (
       <>
@@ -19,33 +19,23 @@ const features = [
     ),
   },
   {
-    title: 'VS Code Integration',
-    pageUrl: 'https://azure.github.io/azureml-web/docs/vs-code-snippets/snippets',
-    imageUrl: 'img/undraw_docusaurus_tree.svg',
-    description: (
-      <>
-        These VS Code snippets will make you 100x more productive with AML,
-        or your money back.
-      </>
-    ),
-  },
-  // {
-  //   title: 'Command Line Tools',
-  //   imageUrl: 'img/undraw_docusaurus_react.svg',
-  //   description: (
-  //     <>
-  //       Make it easy to start a new project with scaffolding set up for you. No
-  //       more wasting time with boilerplate!
-  //     </>
-  //   ),
-  // },
-  {
-    title: 'GitHub Templates',
-    pageUrl: 'https://azure.github.io/azureml-web/docs/templates/',
+    title: 'Distributed GPU Training',
+    pageUrl: 'docs/cheatsheet/distributed-training',
     imageUrl: 'img/undraw_docusaurus_react.svg',
     description: (
       <>
-        GitHub templates to automate the ML lifecycle. 
+        Guide to getting your distributed training code running in Azure ML.
+      </>
+    ),
+  },
+  {
+    title: 'Environments',
+    pageUrl: 'docs/cheatsheet/environment',
+    imageUrl: 'img/undraw_docusaurus_tree.svg',
+    description: (
+      <>
+        Set up and manage your Python environments and docker images
+        in Azure ML.
       </>
     ),
   },

@@ -13,7 +13,7 @@ module.exports = {
       },
       {
         type: 'category',
-        label: 'Basic Assets',
+        label: 'Azure ML Resources',
         collapsed: false,
         items: ['cheatsheet/workspace', 'cheatsheet/compute-targets', 'cheatsheet/environment', 'cheatsheet/data'],
       },
