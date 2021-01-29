@@ -21,7 +21,7 @@ module.exports = {
         type: 'category',
         label: 'Guides',
         collapsed: false,
-        items: ['cheatsheet/script-run-config', 'cheatsheet/logging', 'cheatsheet/distributed-training', 'cheatsheet/docker-build', 'cheatsheet/debugging']
+        items: ['cheatsheet/script-run-config', 'cheatsheet/logging', 'cheatsheet/distributed-training', 'cheatsheet/docker-build', 'cheatsheet/debugging', 'cheatsheet/ci-dev']
       }
     ],
   },
