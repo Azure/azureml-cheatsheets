@@ -7,7 +7,7 @@ keywords:
   - compute
 ---
 
-This guide gives some pointers on developing your code on Azure ML. A typical
+This guide gives some pointers for developing your code on Azure ML. A typical
 scenario might be testing your distributed training code, or some other aspect
 of your code that isn't well represented on your local devbox.
 
@@ -122,9 +122,10 @@ setup:
 ```bash
 src/
     .azureml/
-        config.json  # workspace connection config
-    train.py  # python script we are developing
-    azureml_run.py  # submit job to azure
+        config.json     # workspace connection config
+    train.py            # python script we are developing
+    setup.sh            # to run on compute before train.py
+    azureml_run.py      # submit job to azure
 ```
 
 ```bash title="setup.sh"
@@ -169,7 +170,9 @@ add commands to `setup.sh`:
 ```bash title="setup.sh"
 echo "Running setup script"
 pip install numpy
-pip install pandas
+pip install pandas                  # add additional libraries
+export CUDA_VISIBLE_DEVICES="0,1"   # set environment variables
+nvidia-smi                          # run helpful command-line tools
 ```
 
 without having to rebuild any Docker images.
