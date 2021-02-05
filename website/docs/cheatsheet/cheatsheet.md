@@ -196,11 +196,11 @@ environment.docker.base_image = 'mcr.microsoft.com/azureml/openmpi3.1.2-cuda10.1
 mpiconfig = MpiConfiguration(process_count_per_node=4, node_count=2)
 
 config = ScriptRunConfig(
-    source_directory='<path/to/code>',
+    source_directory='<path/to/code>',  # directory containing train.py
     script='train.py',
     environment=environment,
     arguments=['--learning_rate', 0.001, '--momentum', 0.9],
-    distributed_job_config=mpiconfig,   ## add the distributed configuration
+    distributed_job_config=mpiconfig,   # add the distributed configuration
 )
 
 run = Experiment(ws, 'PyTorch model training').submit(config)
