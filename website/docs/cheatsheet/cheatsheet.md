@@ -177,6 +177,44 @@ config = ScriptRunConfig(
 run = Experiment(ws, 'PyTorch model training').submit(config)
 ```
 
+## Distributed GPU Training
+
+Adapt your `ScriptRunConfig` to enable distributed GPU training.
+
+```python {3,8-9,12,19}
+from azureml.core import Workspace, Experiment, ScriptRunConfig
+from azureml.core import Environment
+from azureml.core.runconfig import MpiConfiguration
+
+ws = Workspace.from_config()
+compute_target = ws.compute_targets['powerful-gpu']
+environment = Environment.from_conda_specifications('pytorch', 'env.yml')
+environment.docker.enabled = True
+environment.docker.base_image = 'mcr.microsoft.com/azureml/openmpi3.1.2-cuda10.1-cudnn7-ubuntu18.04'
+
+# train on 2 nodes each with 4 GPUs
+mpiconfig = MpiConfiguration(process_count_per_node=4, node_count=2)
+
+config = ScriptRunConfig(
+    source_directory='<path/to/code>',  # directory containing train.py
+    script='train.py',
+    environment=environment,
+    arguments=['--learning_rate', 0.001, '--momentum', 0.9],
+    distributed_job_config=mpiconfig,   # add the distributed configuration
+)
+
+run = Experiment(ws, 'PyTorch model training').submit(config)
+```
+
+:::info
+- `mcr.microsoft.com/azureml/openmpi3.1.2-cuda10.1-cudnn7-ubuntu18.04` is a docker image
+    with OpenMPI. This is required for distributed training on Azure ML.
+- `MpiConfiguration` is where you specify the number of nodes and GPUs (per node) you
+    want to train on.
+:::
+
+For more details: [Distributed GPU Training](distributed-training)
+
 ## Connect to data
 
 To work with data in your training scripts using your workspace `ws` and its default datastore:
