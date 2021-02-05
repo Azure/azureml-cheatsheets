@@ -146,10 +146,10 @@ for name, env in envs.items():
 This list contains custom environments that have been registered to the workspace as well as a
 collection of _curated environments_ maintained by the Azure ML team.
 
-List the conda dependencies for a given environment, for example in 'Azure ML-Chainer-5.1.0-GPU':
+List the conda dependencies for a given environment, for example in 'AzureML-PyTorch-1.6-GPU':
 
 ```python
-env = ws.environments['Azure ML-PyTorch-1.1-GPU']
+env = ws.environments['AzureML-PyTorch-1.6-GPU']
 print(env.python.conda_dependencies.serialize_to_string())
 ```
 
@@ -161,18 +161,19 @@ channels:
 dependencies:
 - python=3.6.2
 - pip:
-  - azureml-core==1.15.0
-  - azureml-defaults==1.15.0
-  - azureml-telemetry==1.15.0
-  - azureml-train-restclients-hyperdrive==1.15.0
-  - azureml-train-core==1.15.0
-  - torch==1.1
-  - torchvision==0.2.1
+  - azureml-core==1.18.0.post1
+  - azureml-defaults==1.18.0
+  - azureml-telemetry==1.18.0
+  - azureml-train-restclients-hyperdrive==1.18.0
+  - azureml-train-core==1.18.0
+  - cmake==3.18.2
+  - torch==1.6.0
+  - torchvision==0.5.0
   - mkl==2018.0.3
-  - horovod==0.16.1
+  - horovod==0.20.0
   - tensorboard==1.14.0
   - future==0.17.1
-name: azureml_eb61e39e20e87ad998ae2c88df1dd0af
+name: azureml_9d2a515d5c77954f2d0562cc5eb8a1fc
 ```
 
 ## Save / Load Environments
