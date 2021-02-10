@@ -6,6 +6,9 @@ keywords:
   - distributed training
   - mpi
   - process group
+  - pytorch
+  - horovod
+  - tensorflow
 ---
 
 ## Basic Concepts
@@ -13,11 +16,107 @@ keywords:
 We assume readers already understand the basic concept of distributed GPU training such as _data parallelism, distributed data parallelism, and model parallelism_. This guide aims at helping readers running existing distributed training code on AzureML. 
 
 :::info 
-Most of this guide is based on __PyTorch__ and packages on top of it. For __TensorFlow__, see [TensorFlow](#tensorflow).
-
 If you don't know which type of parallelism to use, for >90% of the time you should use __Distributed Data Parallelism__.
 :::
 
+## MPI
+
+Azure ML offers an MPI job to launch a given number of processes in each node. Users can adopt this approach to run distributed training using either per-process-launcher or per-node-launcher, depending on whether `process_count_per_node` is set to 1 (the default) for per-node-launcher, or equal to the number of devices/GPUs for per-process-launcher. Azure ML handles constructing the full MPI launch command (`mpirun`) behind the scenes.
+
+:::note
+Azure ML currently does not allow users to provide the full head-node-launcher command like `mpirun` or the DeepSpeed launcher. This functionality may be added in a future release.
+:::
+
+:::caution
+To use the Azure ML MPI job, the base Docker image used by the job needs to have an MPI library installed. [Open MPI](https://www.open-mpi.org/) is included in all the [AzureML GPU base images](https://github.com/Azure/AzureML-Containers). If you are using a custom Docker image, you are responsible for making sure the image includes an MPI library. Open MPI is recommended, but you can also use a different MPI implementation such as Intel MPI. Azure ML also provides [curated environments](https://docs.microsoft.com/en-us/azure/machine-learning/resource-curated-environments) for popular frameworks. 
+:::
+
+To run distributed training using MPI, follow these steps:
+1. Use an Azure ML environment with the preferred deep learning framework and MPI. AzureML provides [curated environment](https://docs.microsoft.com/en-us/azure/machine-learning/resource-curated-environments) for popular frameworks.
+2. Define `MpiConfiguration` with the desired `process_count_per_node` and `node_count`. `process_count_per_node` should be equal to the number of GPUs per node for per-process-launch, or set to 1 (the default) for per-node-launch if the user script will be responsible for launching the processes per node.
+3. Pass the `MpiConfiguration` object to the `distributed_job_config` parameter of `ScriptRunConfig`.
+
+```python
+from azureml.core import Workspace, ScriptRunConfig, Environment, Experiment
+from azureml.core.runconfig import MpiConfiguration
+
+curated_env_name = 'AzureML-PyTorch-1.6-GPU'
+pytorch_env = Environment.get(workspace=ws, name=curated_env_name)
+distr_config = MpiConfiguration(process_count_per_node=4, node_count=2)
+
+run_config = ScriptRunConfig(source_directory= './src',
+                             script='train.py',
+                             compute_target=compute_target,
+                             environment=pytorch_env,
+                             distributed_job_config=distr_config)
+
+# submit the run configuration to start the job
+run = Experiment(ws, "experiment_name").submit(run_config)
+```
+
+### Horovod
+
+If you are using [Horovod](https://horovod.readthedocs.io/en/stable/index.html) for distributed training with the deep learning framework of your choice, you can run distributed training on Azure ML using the MPI job configuration.
+
+Simply ensure that you have taken care of the following:
+* The training code is instrumented correctly with Horovod
+* The Azure ML environment contains Horovod and MPI. The PyTorch and TensorFlow curated GPU environments come pre-configured with Horovod and its dependencies.
+
+### Environment variables from Open MPI
+
+When running MPI jobs with Open MPI images, the following environment variables for each process launched:
+1. OMPI_COMM_WORLD_RANK - the rank of the process
+2. OMPI_COMM_WORLD_SIZE - the world size
+3. AZ_BATCH_MASTER_NODE - master address with port, MASTER_ADDR:MASTER_PORT
+4. OMPI_COMM_WORLD_LOCAL_RANK - the local rank of the process on the node
+5. OMPI_COMM_WORLD_LOCAL_SIZE - number of processes on the node
+
+:::caution
+Despite the name, environment variable OMPI_COMM_WORLD_NODE_RANK does not corresponds to the NODE_RANK. To use per-node-launcher, simply set `process_count_per_node=1` and use `OMPI_COMM_WORLD_RANK` as the NODE_RANK. 
+:::
+
+## PyTorch
+
+## TensorFlow
+
+If you are using [native distributed TensorFlow](https://www.tensorflow.org/guide/distributed_training) in your training code, such as TensorFlow 2.x's `tf.distribute.Strategy` API, you can launch the distributed job via Azure ML using the `TensorflowConfiguration`.
+
+To do so, specify a `TensorflowConfiguration` object to the `distributed_job_config` parameter of the `ScriptRunConfig` constructor. If you are using `tf.distribute.experimental.MultiWorkerMirroredStrategy`, specify the `worker_count` in the `TensorflowConfiguration` corresponding to the number of nodes for your training job.
+
+When a `TensorflowConfiguration` is set to be the distributed_job_config parameter of the ScriptRunConfig constructor, AzureML sets up environment variable `TF_CONFIG` in all nodes for [native distributed TensorFlow](https://www.tensorflow.org/guide/distributed_training) API `tf.distribute.Strategy`. 
+
+```python
+from azureml.core import ScriptRunConfig, Environment, Experiment
+from azureml.core.runconfig import TensorflowConfiguration
+
+curated_env_name = 'AzureML-TensorFlow-2.3-GPU'
+tf_env = Environment.get(workspace=ws, name=curated_env_name)
+distr_config = TensorflowConfiguration(worker_count=2, parameter_server_count=0)
+
+run_config = ScriptRunConfig(source_directory='./src',
+                             script='train.py',
+                             compute_target=compute_target,
+                             environment=tf_env,
+                             distributed_job_config=distr_config)
+
+# submit the run configuration to start the job
+run = Experiment(ws, "experiment_name").submit(run_config)
+```
+
+In TensorFlow, the `TF_CONFIG` environment variable is required for training on multiple machines. For TensorFlow jobs, Azure ML will configure and set the `TF_CONFIG` variable appropriately for each worker before executing your training script. You can access `TF_CONFIG` from your training script if you need to via `os.environ['TF_CONFIG']`.
+
+Example `TF_CONFIG` set on a chief worker node:
+```json
+TF_CONFIG='{
+    "cluster": {
+        "worker": ["host0:2222", "host1:2222"]
+    },
+    "task": {"type": "worker", "index": 0},
+    "environment": "cloud"
+}'
+```
+
+If your training script uses the parameter server strategy for distributed training, i.e. for legacy TensorFlow 1.x, you will also need to specify the number of parameter servers to use in the job, e.g. `tf_config = TensorflowConfiguration(worker_count=2, parameter_server_count=1)`.
 
 ### Process Group and Communication Backend
 The backbone of any distributed training is based on a group of processes that knows each other and 
@@ -54,6 +153,7 @@ Users rarely launch all distributed processes manually and often rely on a utili
 This three categories of launchers are named with respect to user experience. Per-process-launcher means user does not need to do extra launching effort, per-node-launcher means user need to be able to run launcher script on every node, and head-node-launcher requires user to get on a headnode with cluster information usually in a hostfile. There are no fundamental differences between the three types of launchers and eventually what matters is the process group getting initiated with the proper backend. Behind the scene a head-node-launcher is often used on behalf of the user by the system so user are exposed to a per-process-launcher experience. Head-node-launcher is often implemented as a wrapper of per-node-launcher. 
 
 
+# Archived
 ## AzureML Distributed Learning Utilities
 
 ### AzureML MPIRUN 
@@ -160,12 +260,6 @@ import os
 print(os.environ)
 ```
 :::
-
-## Accelerating GPU training with InfiniBand
-
-Certain Azure VM series, specifically the NC, ND, and H-series, now have RDMA-capable VMs with SR-IOV and Infiniband support. These VMs communicate over the low latency and high bandwidth InfiniBand network, which is much more performant than Ethernet-based connectivity. SR-IOV for InfiniBand enables near bare-metal performance for any MPI library (MPI is leveraged by many distributed training frameworks and tooling, including NVIDIA's NCCL software.) These SKUs are intended to meet the needs of computationally-intensive, GPU-acclerated machine learning workloads. For more information, see [Accelerating Distributed Training in Azure Machine Learning with SR-IOV](https://techcommunity.microsoft.com/t5/azure-ai/accelerating-distributed-training-in-azure-machine-learning/ba-p/1059050).
-
-If you create an `AmlCompute` cluster of one of these RDMA-capable, InfiniBand-enabled sizes, such as `Standard_ND40rs_v2`, the OS image will come with the Mellanox OFED driver required to enable InfiniBand preinstalled and preconfigured.
 
 ## Examples
 
@@ -510,20 +604,8 @@ trainer.fit(model, train_loader, val_loader)
 **Example.** Here is an example of mutlti-node distributed training using PyTorch Lightning
 from the [azureml-examples repo](https://github.com/Azure/azureml-examples/blob/main/tutorials/using-pytorch-lightning/4.train-multi-node-ddp.ipynb).
 
-## TensorFlow
+## Accelerating GPU training with InfiniBand
 
-When a `TensorflowConfiguration` is set to be the distributed_job_config parameter of the ScriptRunConfig constructor, AzureML sets up environment variable `TF_CONFIG` in all nodes for [native distributed TensorFlow](https://www.tensorflow.org/guide/distributed_training) API `tf.distribute.Strategy`. If you are using `tf.distribute.experimental.MultiWorkerMirroredStrategy`, specify the worker_count in the `TensorflowConfiguration` corresponding to the number of nodes for your training job.
+Certain Azure VM series, specifically the NC, ND, and H-series, now have RDMA-capable VMs with SR-IOV and Infiniband support. These VMs communicate over the low latency and high bandwidth InfiniBand network, which is much more performant than Ethernet-based connectivity. SR-IOV for InfiniBand enables near bare-metal performance for any MPI library (MPI is leveraged by many distributed training frameworks and tooling, including NVIDIA's NCCL software.) These SKUs are intended to meet the needs of computationally-intensive, GPU-acclerated machine learning workloads. For more information, see [Accelerating Distributed Training in Azure Machine Learning with SR-IOV](https://techcommunity.microsoft.com/t5/azure-ai/accelerating-distributed-training-in-azure-machine-learning/ba-p/1059050).
 
-```python
-from azureml.core import ScriptRunConfig
-from azureml.core.runconfig import TensorflowConfiguration
-
-distr_config = TensorflowConfiguration(worker_count=2, parameter_server_count=0)
-
-src = ScriptRunConfig(source_directory=source_dir,
-                      script='train.py',
-                      arguments= ... ,
-                      compute_target= ... ,
-                      environment= ... ,
-                      distributed_job_config=distr_config)
-```
+If you create an `AmlCompute` cluster of one of these RDMA-capable, InfiniBand-enabled sizes, such as `Standard_ND40rs_v2`, the OS image will come with the Mellanox OFED driver required to enable InfiniBand preinstalled and preconfigured.
