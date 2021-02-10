@@ -80,7 +80,7 @@ Despite the name, environment variable OMPI_COMM_WORLD_NODE_RANK does not corres
 
 ## PyTorch
 
-Azure ML also supports running distributed jobs using PyTorch's native distributed training capabilities (**torch.distributed**).
+Azure ML also supports running distributed jobs using PyTorch's native distributed training capabilities (`torch.distributed`).
 
 :::tip torch.nn.parallel.DistributedDataParallel vs torch.nn.DataParallel and torch.multiprocessing
 For data parallelism, the [official PyTorch guidance](https://pytorch.org/tutorials/intermediate/ddp_tutorial.html#comparison-between-dataparallel-and-distributeddataparallel) is to use DistributedDataParallel (DDP) over DataParallel for both single-node and multi-node distributed training. PyTorch also [recommends using DistributedDataParallel over the multiprocessing package](https://pytorch.org/docs/stable/notes/cuda.html#use-nn-parallel-distributeddataparallel-instead-of-multiprocessing-or-nn-dataparallel). Azure ML documentation and examples will therefore focus on DistributedDataParallel training.
@@ -98,16 +98,18 @@ The most common communication backends used are __mpi__, __nccl__ and __gloo__. 
 
 `init_method` specifies how each process can discover each other and initialize as well as verify the process group using the communication backend. By default if `init_method` is not specified PyTorch will use the environment variable initialization method (`env://`). This is also the recommended the initialization method to use in your training code to run distributed PyTorch on Azure ML. For environment variable initialization, PyTorch will look for the following environment variables:
 
-- MASTER_ADDR - IP address of the machine that will host the process with rank 0.
-- MASTER_PORT - A free port on the machine that will host the process with rank 0. By default Azure ML sets `MASTER_PORT=6105`.
-- WORLD_SIZE - The total number of processes. This should be equal to the total number of devices (GPU) used for distributed training.
-- RANK - The (global) rank of the current process. The possible values are 0 to (world size - 1).
+- **MASTER_ADDR** - IP address of the machine that will host the process with rank 0.
+- **MASTER_PORT** - A free port on the machine that will host the process with rank 0. By default Azure ML sets `MASTER_PORT=6105`.
+- **WORLD_SIZE** - The total number of processes. This should be equal to the total number of devices (GPU) used for distributed training.
+- **RANK** - The (global) rank of the current process. The possible values are 0 to (world size - 1).
 
 For more information on process group initialization, see the [PyTorch documentation](https://pytorch.org/docs/stable/distributed.html#torch.distributed.init_process_group).
 
 Beyond these, many applications will also need the following environment variables:
-- LOCAL_RANK - The local (relative) rank of the process within the node. The possible values are 0 to (# of processes on the node - 1). This information is useful because many operations such as data preparation only should be performed once per node --- usually on local_rank = 0.
-- NODE_RANK - The rank of the node for multi-node training. The possible values are 0 to (total # of nodes - 1).
+- **LOCAL_RANK** - The local (relative) rank of the process within the node. The possible values are 0 to (# of processes on the node - 1). This information is useful because many operations such as data preparation only should be performed once per node --- usually on local_rank = 0.
+- **NODE_RANK** - The rank of the node for multi-node training. The possible values are 0 to (total # of nodes - 1).
+
+### Launch
 
 The Azure ML PyTorch job supports two types of options for launching distributed training:
 
@@ -118,13 +120,86 @@ There are no fundamental differences between these launch options; it is largely
 
 The following sections go into more detail on how to configure Azure ML PyTorch jobs for each of the launch options.
 
-### Per-process launch
+### DistributedDataParallel (per-process-launch)
+
+Azure ML supports launching each process for the user without the user needing to use a launcher utility like `torch.distributed.launch`.
+
+To run a distributed PyTorch job, you will just need to do the following:
+1. Specify the training script and arguments
+2. Create a `PyTorchConfiguration` and specify the `process_count` as well as the `node_count`. The `process_count` corresponds to the total number of processes you want to run for your job. This should typically equal `# GPUs per node x # nodes`. If `process_count` is not specified, Azure ML will by default launch one process per node.
+
+Azure ML will set the MASTER_ADDR, MASTER_PORT, WORLD_SIZE, and NODE_RANK environment variables on each machine and in addition set the process-level RANK and LOCAL_RANK environment variables.
 
 :::caution
-Azure ML Python SDK >= 1.22.0
+In order to use this option for multi-process-per-node training, you will need to use Azure ML Python SDK >= 1.22.0, as `process_count` was introduced in 1.22.0.
 :::
 
-### Per-node launch
+```python
+from azureml.core import ScriptRunConfig, Environment, Experiment
+from azureml.core.runconfig import PyTorchConfiguration
+
+curated_env_name = 'AzureML-PyTorch-1.6-GPU'
+pytorch_env = Environment.get(workspace=ws, name=curated_env_name)
+distr_config = PyTorchConfiguration(process_count=4, node_count=2)
+
+run_config = ScriptRunConfig(source_directory='./src',
+                             script='train.py',
+                             arguments=['--epochs', 50],
+                             compute_target=compute_target,
+                             environment=pytorch_env,
+                             distributed_job_config=distr_config)
+
+run = Experiment(ws, 'experiment_name').submit(run_config)
+```
+
+:::tip
+If your training script passes information like local rank or rank as script arguments, you can reference the environment variable(s) in the arguments: `arguments=['--epochs', 50, '--local_rank', $LOCAL_RANK]`. 
+:::
+
+
+### Using torch.distributed.launch (per-node-launch)
+
+PyTorch provides a launch utility in [torch.distributed.launch](https://pytorch.org/docs/stable/distributed.html#launch-utility) that users can use to launch multiple processes per node. The `torch.distributed.launch` module will spawn multiple training processes on each of the nodes.
+
+
+To configure a PyTorch job with a per-node-launcher, do the following:
+1. Provide the `torch.distributed.launch` command to the `command` parameter of the `ScriptRunConfig` constructor. Azure ML will run this command on each node of your training cluster. `--nproc_per_node` should be less than or equal to the number of GPUs available on each node. MASTER_ADDR, MASTER_PORT, and NODE_RANK are all set by Azure ML, so you can just reference the environment variables in the command.
+    ```shell
+    python -m torch.distributed.launch --nproc_per_node <num processes per node> --nnodes <num nodes> \
+      --node_rank $NODE_RANK --master_addr $MASTER_ADDR --master_port $MASTER_PORT --use_env \
+      <your training script> <your script arguments>
+    ```
+2. Create a `PyTorchConfiguration` and specify the `node_count`.
+
+```python
+from azureml.core import ScriptRunConfig, Environment, Experiment
+from azureml.core.runconfig import PyTorchConfiguration
+
+curated_env_name = 'AzureML-PyTorch-1.6-GPU'
+pytorch_env = Environment.get(workspace=ws, name=curated_env_name)
+distr_config = PyTorchConfiguration(node_count=2)
+
+run_config = ScriptRunConfig(source_directory='./src',
+                             command=['python -m torch.distributed.launch --nproc_per_node 2 --nnodes 2 \
+                                      --node_rank $NODE_RANK --master_addr $MASTER_ADDR --master_port $MASTER_PORT \
+                                      --use_env train.py --epochs 50'],
+                             compute_target=compute_target,
+                             environment=pytorch_env,
+                             distributed_job_config=distr_config)
+
+run = Experiment(ws, 'experiment_name').submit(run_config)
+```
+
+:::Single-node multi-GPU training
+If you are using the launch utility to run single-node multi-GPU PyTorch training, you do not need to specify the `distributed_job_config` parameter of ScriptRunConfig.
+
+```python
+run_config = ScriptRunConfig(source_directory='./src',
+                             command=['python -m torch.distributed.launch --nproc_per_node 2 --use_env train.py --epochs 50'],
+                             compute_target=compute_target,
+                             environment=pytorch_env)
+```
+:::
 
 ### PyTorch Lightning
 
@@ -132,11 +207,9 @@ Azure ML Python SDK >= 1.22.0
 
 ## TensorFlow
 
-If you are using [native distributed TensorFlow](https://www.tensorflow.org/guide/distributed_training) in your training code, such as TensorFlow 2.x's **tf.distribute.Strategy** API, you can launch the distributed job via Azure ML using the `TensorflowConfiguration`.
+If you are using [native distributed TensorFlow](https://www.tensorflow.org/guide/distributed_training) in your training code, such as TensorFlow 2.x's `tf.distribute.Strategy` API, you can launch the distributed job via Azure ML using the `TensorflowConfiguration`.
 
-To do so, specify a `TensorflowConfiguration` object to the `distributed_job_config` parameter of the `ScriptRunConfig` constructor. If you are using **tf.distribute.experimental.MultiWorkerMirroredStrategy**, specify the `worker_count` in the `TensorflowConfiguration` corresponding to the number of nodes for your training job.
-
-When a `TensorflowConfiguration` is set to be the `distributed_job_config` parameter of the `ScriptRunConfig` constructor, AzureML sets up environment variable `TF_CONFIG` in all nodes for [native distributed TensorFlow](https://www.tensorflow.org/guide/distributed_training) API **tf.distribute.Strategy**. 
+To do so, specify a `TensorflowConfiguration` object to the `distributed_job_config` parameter of the `ScriptRunConfig` constructor. If you are using `tf.distribute.experimental.MultiWorkerMirroredStrategy`, specify the `worker_count` in the `TensorflowConfiguration` corresponding to the number of nodes for your training job.
 
 ```python
 from azureml.core import ScriptRunConfig, Environment, Experiment
@@ -156,7 +229,13 @@ run_config = ScriptRunConfig(source_directory='./src',
 run = Experiment(ws, "experiment_name").submit(run_config)
 ```
 
-In TensorFlow, the `TF_CONFIG` environment variable is required for training on multiple machines. For TensorFlow jobs, Azure ML will configure and set the `TF_CONFIG` variable appropriately for each worker before executing your training script. You can access `TF_CONFIG` from your training script if you need to via `os.environ['TF_CONFIG']`.
+If your training script uses the parameter server strategy for distributed training, i.e. for legacy TensorFlow 1.x, you will also need to specify the number of parameter servers to use in the job, e.g. `tf_config = TensorflowConfiguration(worker_count=2, parameter_server_count=1)`.
+
+### TF_CONFIG
+
+In TensorFlow, the **TF_CONFIG** environment variable is required for training on multiple machines. For TensorFlow jobs, Azure ML will configure and set the TF_CONFIG variable appropriately for each worker before executing your training script.
+
+You can access TF_CONFIG from your training script if you need to: `os.environ['TF_CONFIG']`.
 
 Example `TF_CONFIG` set on a chief worker node:
 ```json
@@ -168,8 +247,6 @@ TF_CONFIG='{
     "environment": "cloud"
 }'
 ```
-
-If your training script uses the parameter server strategy for distributed training, i.e. for legacy TensorFlow 1.x, you will also need to specify the number of parameter servers to use in the job, e.g. `tf_config = TensorflowConfiguration(worker_count=2, parameter_server_count=1)`.
 
 ## Archived
 ### Process Group and Communication Backend
