@@ -131,7 +131,7 @@ To run a distributed PyTorch job, you will just need to do the following:
 Azure ML will set the MASTER_ADDR, MASTER_PORT, WORLD_SIZE, and NODE_RANK environment variables on each machine and in addition set the process-level RANK and LOCAL_RANK environment variables.
 
 :::caution
-In order to use this option for multi-process-per-node training, you will need to use Azure ML Python SDK >= 1.22.0, as `process_count` was introduced in 1.22.0.
+In order to use this option for multi-process-per-node training, you will need to use Azure ML Python SDK `>= 1.22.0`, as process_count was introduced in 1.22.0.
 :::
 
 ```python
@@ -153,7 +153,8 @@ run = Experiment(ws, 'experiment_name').submit(run_config)
 ```
 
 :::tip
-If your training script passes information like local rank or rank as script arguments, you can reference the environment variable(s) in the arguments: `arguments=['--epochs', 50, '--local_rank', $LOCAL_RANK]`. 
+If your training script passes information like local rank or rank as script arguments, you can reference the environment variable(s) in the arguments:
+`arguments=['--epochs', 50, '--local_rank', $LOCAL_RANK]`. 
 :::
 
 
@@ -178,11 +179,12 @@ from azureml.core.runconfig import PyTorchConfiguration
 curated_env_name = 'AzureML-PyTorch-1.6-GPU'
 pytorch_env = Environment.get(workspace=ws, name=curated_env_name)
 distr_config = PyTorchConfiguration(node_count=2)
+launch_cmd = ['python -m torch.distributed.launch --nproc_per_node 2 --nnodes 2 \
+               --node_rank $NODE_RANK --master_addr $MASTER_ADDR --master_port $MASTER_PORT \
+               --use_env train.py --epochs 50']
 
 run_config = ScriptRunConfig(source_directory='./src',
-                             command=['python -m torch.distributed.launch --nproc_per_node 2 --nnodes 2 \
-                                      --node_rank $NODE_RANK --master_addr $MASTER_ADDR --master_port $MASTER_PORT \
-                                      --use_env train.py --epochs 50'],
+                             command=launch_cmd,
                              compute_target=compute_target,
                              environment=pytorch_env,
                              distributed_job_config=distr_config)
@@ -190,12 +192,14 @@ run_config = ScriptRunConfig(source_directory='./src',
 run = Experiment(ws, 'experiment_name').submit(run_config)
 ```
 
-:::Single-node multi-GPU training
+:::tip Single-node multi-GPU training
 If you are using the launch utility to run single-node multi-GPU PyTorch training, you do not need to specify the `distributed_job_config` parameter of ScriptRunConfig.
 
 ```python
+launch_cmd = ['python -m torch.distributed.launch --nproc_per_node 2 --use_env train.py --epochs 50']
+
 run_config = ScriptRunConfig(source_directory='./src',
-                             command=['python -m torch.distributed.launch --nproc_per_node 2 --use_env train.py --epochs 50'],
+                             command=launch_cmd,
                              compute_target=compute_target,
                              environment=pytorch_env)
 ```
