@@ -128,7 +128,7 @@ To run a distributed PyTorch job, you will just need to do the following:
 1. Specify the training script and arguments
 2. Create a `PyTorchConfiguration` and specify the `process_count` as well as the `node_count`. The `process_count` corresponds to the total number of processes you want to run for your job. This should typically equal `# GPUs per node x # nodes`. If `process_count` is not specified, Azure ML will by default launch one process per node.
 
-Azure ML will set the MASTER_ADDR, MASTER_PORT, WORLD_SIZE, and NODE_RANK environment variables on each machine and in addition set the process-level RANK and LOCAL_RANK environment variables.
+Azure ML will set the MASTER_ADDR, MASTER_PORT, WORLD_SIZE, and NODE_RANK environment variables on each node, in addition to setting the process-level RANK and LOCAL_RANK environment variables.
 
 :::caution
 In order to use this option for multi-process-per-node training, you will need to use Azure ML Python SDK `>= 1.22.0`, as process_count was introduced in 1.22.0.
@@ -140,7 +140,7 @@ from azureml.core.runconfig import PyTorchConfiguration
 
 curated_env_name = 'AzureML-PyTorch-1.6-GPU'
 pytorch_env = Environment.get(workspace=ws, name=curated_env_name)
-distr_config = PyTorchConfiguration(process_count=4, node_count=2)
+distr_config = PyTorchConfiguration(process_count=8, node_count=2)
 
 run_config = ScriptRunConfig(source_directory='./src',
                              script='train.py',
@@ -157,6 +157,7 @@ If your training script passes information like local rank or rank as script arg
 `arguments=['--epochs', 50, '--local_rank', $LOCAL_RANK]`. 
 :::
 
+#### Example
 
 ### Using torch.distributed.launch (per-node-launch)
 
@@ -166,8 +167,9 @@ PyTorch provides a launch utility in [torch.distributed.launch](https://pytorch.
 To configure a PyTorch job with a per-node-launcher, do the following:
 1. Provide the `torch.distributed.launch` command to the `command` parameter of the `ScriptRunConfig` constructor. Azure ML will run this command on each node of your training cluster. `--nproc_per_node` should be less than or equal to the number of GPUs available on each node. MASTER_ADDR, MASTER_PORT, and NODE_RANK are all set by Azure ML, so you can just reference the environment variables in the command.
     ```shell
-    python -m torch.distributed.launch --nproc_per_node <num processes per node> --nnodes <num nodes> \
-      --node_rank $NODE_RANK --master_addr $MASTER_ADDR --master_port $MASTER_PORT --use_env \
+    python -m torch.distributed.launch --nproc_per_node <num processes per node>\
+      --nnodes <num nodes> --node_rank $NODE_RANK --master_addr $MASTER_ADDR \
+      --master_port $MASTER_PORT --use_env \
       <your training script> <your script arguments>
     ```
 2. Create a `PyTorchConfiguration` and specify the `node_count`.
@@ -179,7 +181,7 @@ from azureml.core.runconfig import PyTorchConfiguration
 curated_env_name = 'AzureML-PyTorch-1.6-GPU'
 pytorch_env = Environment.get(workspace=ws, name=curated_env_name)
 distr_config = PyTorchConfiguration(node_count=2)
-launch_cmd = ['python -m torch.distributed.launch --nproc_per_node 2 --nnodes 2 \
+launch_cmd = ['python -m torch.distributed.launch --nproc_per_node 4 --nnodes 2 \
                --node_rank $NODE_RANK --master_addr $MASTER_ADDR --master_port $MASTER_PORT \
                --use_env train.py --epochs 50']
 
@@ -196,7 +198,8 @@ run = Experiment(ws, 'experiment_name').submit(run_config)
 If you are using the launch utility to run single-node multi-GPU PyTorch training, you do not need to specify the `distributed_job_config` parameter of ScriptRunConfig.
 
 ```python
-launch_cmd = ['python -m torch.distributed.launch --nproc_per_node 2 --use_env train.py --epochs 50']
+launch_cmd = ['python -m torch.distributed.launch --nproc_per_node 4 \
+              --use_env train.py --epochs 50']
 
 run_config = ScriptRunConfig(source_directory='./src',
                              command=launch_cmd,
@@ -204,6 +207,8 @@ run_config = ScriptRunConfig(source_directory='./src',
                              environment=pytorch_env)
 ```
 :::
+
+#### Example
 
 ### PyTorch Lightning
 
