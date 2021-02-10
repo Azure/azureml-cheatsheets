@@ -13,7 +13,7 @@ keywords:
 
 ## Basic Concepts
 
-We assume readers already understand the basic concept of distributed GPU training such as _data parallelism, distributed data parallelism, and model parallelism_. This guide aims at helping readers running existing distributed training code on AzureML. 
+We assume readers already understand the basic concept of distributed GPU training such as _data parallelism, distributed data parallelism, and model parallelism_. This guide aims at helping readers running existing distributed training code on Azure ML. 
 
 :::info 
 If you don't know which type of parallelism to use, for >90% of the time you should use __Distributed Data Parallelism__.
@@ -75,18 +75,68 @@ When running MPI jobs with Open MPI images, the following environment variables 
 5. OMPI_COMM_WORLD_LOCAL_SIZE - number of processes on the node
 
 :::caution
-Despite the name, environment variable OMPI_COMM_WORLD_NODE_RANK does not corresponds to the NODE_RANK. To use per-node-launcher, simply set `process_count_per_node=1` and use `OMPI_COMM_WORLD_RANK` as the NODE_RANK. 
+Despite the name, environment variable OMPI_COMM_WORLD_NODE_RANK does not corresponds to the NODE_RANK. To use per-node-launcher, simply set `process_count_per_node=1` and use OMPI_COMM_WORLD_RANK as the NODE_RANK. 
 :::
 
 ## PyTorch
 
+Azure ML also supports running distributed jobs using PyTorch's native distributed training capabilities (**torch.distributed**).
+
+:::tip torch.nn.parallel.DistributedDataParallel vs torch.nn.DataParallel and torch.multiprocessing
+For data parallelism, the [official PyTorch guidance](https://pytorch.org/tutorials/intermediate/ddp_tutorial.html#comparison-between-dataparallel-and-distributeddataparallel) is to use DistributedDataParallel (DDP) over DataParallel for both single-node and multi-node distributed training. PyTorch also [recommends using DistributedDataParallel over the multiprocessing package](https://pytorch.org/docs/stable/notes/cuda.html#use-nn-parallel-distributeddataparallel-instead-of-multiprocessing-or-nn-dataparallel). Azure ML documentation and examples will therefore focus on DistributedDataParallel training.
+:::
+
+### Process group initialization
+
+The backbone of any distributed training is based on a group of processes that know each other and can communicate with each other using a backend. For PyTorch, the process group is created by calling [torch.distributed.init_process_group](https://pytorch.org/docs/stable/distributed.html#torch.distributed.init_process_group) in __all distributed processes__ to collectively form a process group.
+
+```
+torch.distributed.init_process_group(backend='nccl', init_method='env://', ...)
+```
+
+The most common communication backends used are __mpi__, __nccl__ and __gloo__. For GPU-based training __nccl__ is strongly recommended for best performance and should be used whenever possible. 
+
+`init_method` specifies how each process can discover each other and initialize as well as verify the process group using the communication backend. By default if `init_method` is not specified PyTorch will use the environment variable initialization method (`env://`). This is also the recommended the initialization method to use in your training code to run distributed PyTorch on Azure ML. For environment variable initialization, PyTorch will look for the following environment variables:
+
+- MASTER_ADDR - IP address of the machine that will host the process with rank 0.
+- MASTER_PORT - A free port on the machine that will host the process with rank 0. By default Azure ML sets `MASTER_PORT=6105`.
+- WORLD_SIZE - The total number of processes. This should be equal to the total number of devices (GPU) used for distributed training.
+- RANK - The (global) rank of the current process. The possible values are 0 to (world size - 1).
+
+For more information on process group initialization, see the [PyTorch documentation](https://pytorch.org/docs/stable/distributed.html#torch.distributed.init_process_group).
+
+Beyond these, many applications will also need the following environment variables:
+- LOCAL_RANK - The local (relative) rank of the process within the node. The possible values are 0 to (# of processes on the node - 1). This information is useful because many operations such as data preparation only should be performed once per node --- usually on local_rank = 0.
+- NODE_RANK - The rank of the node for multi-node training. The possible values are 0 to (total # of nodes - 1).
+
+The Azure ML PyTorch job supports two types of options for launching distributed training:
+
+1. __Per-process-launcher__: The system will launch all distributed processes for the user, with all the relevant information (e.g. environment variables) to set up the process group.
+2. __Per-node-launcher__: The user provides Azure ML with the utility launcher that will get run on each node. The utility launcher will handle launching each of the processes on a given node. Locally within each node, RANK and LOCAL_RANK is set up by the launcher. The **torch.distributed.launch** utility and PyTorch Lightning both belong in this category.
+
+There are no fundamental differences between these launch options; it is largely up to the user's preference or the conventions of the frameworks/libraries built on top of vanilla PyTorch (such as Lightning or Hugging Face).
+
+The following sections go into more detail on how to configure Azure ML PyTorch jobs for each of the launch options.
+
+### Per-process launch
+
+:::caution
+Azure ML Python SDK >= 1.22.0
+:::
+
+### Per-node launch
+
+### PyTorch Lightning
+
+### Hugging Face Transformers
+
 ## TensorFlow
 
-If you are using [native distributed TensorFlow](https://www.tensorflow.org/guide/distributed_training) in your training code, such as TensorFlow 2.x's `tf.distribute.Strategy` API, you can launch the distributed job via Azure ML using the `TensorflowConfiguration`.
+If you are using [native distributed TensorFlow](https://www.tensorflow.org/guide/distributed_training) in your training code, such as TensorFlow 2.x's **tf.distribute.Strategy** API, you can launch the distributed job via Azure ML using the `TensorflowConfiguration`.
 
-To do so, specify a `TensorflowConfiguration` object to the `distributed_job_config` parameter of the `ScriptRunConfig` constructor. If you are using `tf.distribute.experimental.MultiWorkerMirroredStrategy`, specify the `worker_count` in the `TensorflowConfiguration` corresponding to the number of nodes for your training job.
+To do so, specify a `TensorflowConfiguration` object to the `distributed_job_config` parameter of the `ScriptRunConfig` constructor. If you are using **tf.distribute.experimental.MultiWorkerMirroredStrategy**, specify the `worker_count` in the `TensorflowConfiguration` corresponding to the number of nodes for your training job.
 
-When a `TensorflowConfiguration` is set to be the `distributed_job_config` parameter of the `ScriptRunConfig` constructor, AzureML sets up environment variable `TF_CONFIG` in all nodes for [native distributed TensorFlow](https://www.tensorflow.org/guide/distributed_training) API `tf.distribute.Strategy`. 
+When a `TensorflowConfiguration` is set to be the `distributed_job_config` parameter of the `ScriptRunConfig` constructor, AzureML sets up environment variable `TF_CONFIG` in all nodes for [native distributed TensorFlow](https://www.tensorflow.org/guide/distributed_training) API **tf.distribute.Strategy**. 
 
 ```python
 from azureml.core import ScriptRunConfig, Environment, Experiment
@@ -121,6 +171,7 @@ TF_CONFIG='{
 
 If your training script uses the parameter server strategy for distributed training, i.e. for legacy TensorFlow 1.x, you will also need to specify the number of parameter servers to use in the job, e.g. `tf_config = TensorflowConfiguration(worker_count=2, parameter_server_count=1)`.
 
+## Archived
 ### Process Group and Communication Backend
 The backbone of any distributed training is based on a group of processes that knows each other and 
 can communicate with each other using a backend. For PyTorch, the process group is created by calling `torch.distributed.init_process_group` in __all distributed processes__ to collectively form a process group. 
@@ -146,7 +197,6 @@ LOCAL_RANK and RANK are both process level environment variables which are not s
 :::
 
 
-
 ### Launch Distributed Training
 Users rarely launch all distributed processes manually and often rely on a utility launcher. There are 3 types of utility launchers. 
 1. __Per-process-launcher__: the system will launch all distributed processes for users, with all the relevant information (e.g. environment variables) to set up process groups. 
@@ -156,7 +206,6 @@ Users rarely launch all distributed processes manually and often rely on a utili
 This three categories of launchers are named with respect to user experience. Per-process-launcher means user does not need to do extra launching effort, per-node-launcher means user need to be able to run launcher script on every node, and head-node-launcher requires user to get on a headnode with cluster information usually in a hostfile. There are no fundamental differences between the three types of launchers and eventually what matters is the process group getting initiated with the proper backend. Behind the scene a head-node-launcher is often used on behalf of the user by the system so user are exposed to a per-process-launcher experience. Head-node-launcher is often implemented as a wrapper of per-node-launcher. 
 
 
-# Archived
 ## AzureML Distributed Learning Utilities
 
 ### AzureML MPIRUN 
