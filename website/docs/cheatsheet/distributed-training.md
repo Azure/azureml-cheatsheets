@@ -62,6 +62,9 @@ Simply ensure that you have taken care of the following:
 * The training code is instrumented correctly with Horovod
 * The Azure ML environment contains Horovod and MPI. The PyTorch and TensorFlow curated GPU environments come pre-configured with Horovod and its dependencies.
 
+**Examples**
+* [TensorFlow distributed training using Horovod](https://github.com/Azure/azureml-examples/tree/main/workflows/train/tensorflow/mnist-distributed-horovod) in the Azure/azure-examples repo.
+
 ### Environment variables from Open MPI
 
 When running MPI jobs with Open MPI images, the following environment variables for each process launched:
@@ -83,7 +86,7 @@ If you are using [native distributed TensorFlow](https://www.tensorflow.org/guid
 
 To do so, specify a `TensorflowConfiguration` object to the `distributed_job_config` parameter of the `ScriptRunConfig` constructor. If you are using `tf.distribute.experimental.MultiWorkerMirroredStrategy`, specify the `worker_count` in the `TensorflowConfiguration` corresponding to the number of nodes for your training job.
 
-When a `TensorflowConfiguration` is set to be the distributed_job_config parameter of the ScriptRunConfig constructor, AzureML sets up environment variable `TF_CONFIG` in all nodes for [native distributed TensorFlow](https://www.tensorflow.org/guide/distributed_training) API `tf.distribute.Strategy`. 
+When a `TensorflowConfiguration` is set to be the `distributed_job_config` parameter of the `ScriptRunConfig` constructor, AzureML sets up environment variable `TF_CONFIG` in all nodes for [native distributed TensorFlow](https://www.tensorflow.org/guide/distributed_training) API `tf.distribute.Strategy`. 
 
 ```python
 from azureml.core import ScriptRunConfig, Environment, Experiment
