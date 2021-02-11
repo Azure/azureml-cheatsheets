@@ -59,11 +59,23 @@ run = Experiment(ws, "experiment_name").submit(run_config)
 If you are using [Horovod](https://horovod.readthedocs.io/en/stable/index.html) for distributed training with the deep learning framework of your choice, you can run distributed training on Azure ML using the MPI job configuration.
 
 Simply ensure that you have taken care of the following:
-* The training code is instrumented correctly with Horovod
+* The training code is instrumented correctly with Horovod.
 * The Azure ML environment contains Horovod and MPI. The PyTorch and TensorFlow curated GPU environments come pre-configured with Horovod and its dependencies.
+* Create an `MpiConfiguration` with your desired distribution.
 
-**Examples**
-* [TensorFlow distributed training using Horovod](https://github.com/Azure/azureml-examples/tree/main/workflows/train/tensorflow/mnist-distributed-horovod) in the Azure/azure-examples repo.
+#### Example
+* [azureml-examples: TensorFlow distributed training using Horovod](https://github.com/Azure/azureml-examples/tree/main/workflows/train/tensorflow/mnist-distributed-horovod)
+
+### DeepSpeed
+
+To run distributed training with the [DeepSpeed](https://www.deepspeed.ai/) library on Azure ML, do not use DeepSpeed's custom launcher. Instead, configure an MPI job to launch the training job [with MPI](https://www.deepspeed.ai/getting-started/#mpi-and-azureml-compatibility).
+
+Take care of the following:
+* The Azure ML environment contains DeepSpeed and its dependencies, Open MPI, and mpi4py.
+* Create an `MpiConfiguration` with your desired distribution.
+
+#### Example
+* [azureml-examples: Distributed training with DeepSpeed on CIFAR-10](https://github.com/Azure/azureml-examples/tree/main/workflows/train/deepspeed/cifar)
 
 ### Environment variables from Open MPI
 
@@ -159,7 +171,7 @@ If your training script passes information like local rank or rank as script arg
 
 #### Example
 
-### Using torch.distributed.launch (per-node-launch)
+### Using `torch.distributed.launch` (per-node-launch)
 
 PyTorch provides a launch utility in [torch.distributed.launch](https://pytorch.org/docs/stable/distributed.html#launch-utility) that users can use to launch multiple processes per node. The `torch.distributed.launch` module will spawn multiple training processes on each of the nodes.
 
@@ -209,10 +221,36 @@ run_config = ScriptRunConfig(source_directory='./src',
 :::
 
 #### Example
+- TO DO: link distributed PyTorch example
 
 ### PyTorch Lightning
 
 ### Hugging Face Transformers
+
+Hugging Face provides many [examples](https://github.com/huggingface/transformers/tree/master/examples) for using its Transformers library with `torch.distributed.launch` to run distributed training. To run these examples and your own custom training scripts using the Transformers Trainer API, follow the [Using `torch.distributed.launch`](#using-torchdistributedlaunch-per-node-launch) section.
+
+Sample job configuration code to fine-tune the BERT large model on the text classification MNLI task using the `run_glue.py` script on one node with 8 GPUs:
+```python
+from azureml.core import ScriptRunConfig
+from azureml.core.runconfig import PyTorchConfiguration
+
+distr_config = PyTorchConfiguration() # node_count defaults to 1
+launch_cmd = ['python -m torch.distributed.launch --nproc_per_node 8 \
+               text-classification/run_glue.py \
+               --model_name_or_path bert-large-uncased-whole-word-masking \
+               --task_name mnli --do_train --do_eval \
+               --max_seq_length 128 --per_device_train_batch_size 8 \
+               --learning_rate 2e-5 --num_train_epochs 3.0 \
+               --output_dir /tmp/mnli_output]
+
+run_config = ScriptRunConfig(source_directory='./src',
+                             command=launch_cmd,
+                             compute_target=compute_target,
+                             environment=pytorch_env,
+                             distributed_job_config=distr_config)
+```
+
+You can also use the [per-process-launch](#distributeddataparallel-per-process-launch) option to run distributed training without using `torch.distributed.launch`. One thing to keep in mind if using this method is that the transformers [TrainingArguments](https://huggingface.co/transformers/main_classes/trainer.html?highlight=launch#trainingarguments) expects the local rank to be passed in as an argument (`--local_rank`). `torch.distributed.launch` takes care of this when `--use_env=False`, but if you are using per-process-launch you will need to explicitly pass this in as an argument to the training script `--local_rank=$LOCAL_RANK` as Azure ML only sets the LOCAL_RANK environment variable.
 
 ## TensorFlow
 
@@ -256,6 +294,9 @@ TF_CONFIG='{
     "environment": "cloud"
 }'
 ```
+
+#### Example
+- [azureml-examples: Distributed TensorFlow training with MultiWorkerMirroredStrategy](https://github.com/Azure/azureml-examples/tree/main/workflows/train/tensorflow/mnist-distributed)
 
 ## Archived
 ### Process Group and Communication Backend
