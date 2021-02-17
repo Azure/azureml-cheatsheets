@@ -293,5 +293,42 @@
             "$0"
         ],
         "description": "Set up ScriptRunConfig including compute target, environment and experiment"
+    },
+
+    "Script Run Config with Command": {
+        "prefix": ["script-run-config-command", "command-src"],
+        "body": [
+            "from azureml.core import Workspace, Experiment, ScriptRunConfig",
+            "",
+            "# get workspace",
+            "ws = Workspace.from_config()",
+            "",
+            "# get compute target",
+            "target = ws.compute_targets['${1:target-name}']",
+            "",
+            "# get registered environment",
+            "env = ws.environments['${2:env-name}']",
+            "",
+            "# get/create experiment",
+            "exp = Experiment(ws, '${3:experiment_name}')",
+            "",
+            "# create command",
+            "command = 'python ${4:script.py} ${5:--argument value}'.split()",
+            "",
+            "# set up script run configuration",
+            "config = ScriptRunConfig(",
+            "    source_directory='${6:.}',",
+			"    command=command,",
+			"    compute_target=target,",
+			"    environment=env,",
+            ")",
+            "",
+            "# submit script to AML",
+            "run = exp.submit(config)",
+            "print(run.get_portal_url()) # link to ml.azure.com",
+            "run.wait_for_completion(show_output=True)",
+            "$0"
+        ],
+        "description": "Set up ScriptRunConfig including compute target, environment and experiment"
     }
 }
