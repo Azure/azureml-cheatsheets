@@ -133,7 +133,7 @@ target = ComputeTarget(${2:ws}, '${1:<compute_target_name>}')
 ```
 ### Get Compute with SSH
 
-Description: Get Azure ML Compute Target
+Description: Get Azure ML Compute Target with SSH
 
 Prefix: `get-compute-ssh`
 
@@ -160,7 +160,7 @@ cluster = ComputeTarget.create(
 ```
 ### Get Environment
 
-Description: Get Azure ML Compute Target
+Description: Get Azure ML Environment
 
 Prefix: `get-environment`
 
@@ -277,7 +277,7 @@ model = ws.models['${1:model-name}']
 
 Description: Set up ScriptRunConfig including compute target, environment and experiment
 
-Prefix: `script-run-config`
+Prefixes: `script-run-config`, `src`
 
 ```python
 from azureml.core import Workspace, Experiment, ScriptRunConfig
@@ -301,6 +301,43 @@ config = ScriptRunConfig(
     compute_target=target,
     environment=env,
     arguments=[${6:'--meaning', 42}],
+)
+
+# submit script to AML
+run = exp.submit(config)
+print(run.get_portal_url()) # link to ml.azure.com
+run.wait_for_completion(show_output=True)
+```
+### Script Run Config with Command
+
+Description: Set up ScriptRunConfig using command argument
+
+Prefixes: `script-run-config-command`, `command-src`, `src-command`
+
+```python
+from azureml.core import Workspace, Experiment, ScriptRunConfig
+
+# get workspace
+ws = Workspace.from_config()
+
+# get compute target
+target = ws.compute_targets['${1:target-name}']
+
+# get registered environment
+env = ws.environments['${2:env-name}']
+
+# get/create experiment
+exp = Experiment(ws, '${3:experiment_name}')
+
+# create command
+command = 'python ${4:script.py} ${5:--argument value}'.split()
+
+# set up script run configuration
+config = ScriptRunConfig(
+    source_directory='${6:.}',
+    command=command,
+    compute_target=target,
+    environment=env,
 )
 
 # submit script to AML
