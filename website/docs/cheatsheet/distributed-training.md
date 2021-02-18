@@ -244,7 +244,7 @@ from azureml.core import ScriptRunConfig, Experiment
 from azureml.core.runconfig import PyTorchConfiguration
 
 nnodes = 2
-args = ['--max_epochs', 50, '--gpus', 2, '--accelerator', 'ddp', --num_nodes', nnodes]
+args = ['--max_epochs', 50, '--gpus', 2, '--accelerator', 'ddp', '--num_nodes', nnodes]
 distr_config = PyTorchConfiguration(node_count=nnodes)
 
 run_config = ScriptRunConfig(source_directory='./src',
