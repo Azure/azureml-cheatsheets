@@ -111,7 +111,7 @@ The most common communication backends used are __mpi__, __nccl__ and __gloo__. 
 `init_method` specifies how each process can discover each other and initialize as well as verify the process group using the communication backend. By default if `init_method` is not specified PyTorch will use the environment variable initialization method (`env://`). This is also the recommended the initialization method to use in your training code to run distributed PyTorch on Azure ML. For environment variable initialization, PyTorch will look for the following environment variables:
 
 - **MASTER_ADDR** - IP address of the machine that will host the process with rank 0.
-- **MASTER_PORT** - A free port on the machine that will host the process with rank 0. By default Azure ML sets `MASTER_PORT=6105`.
+- **MASTER_PORT** - A free port on the machine that will host the process with rank 0.
 - **WORLD_SIZE** - The total number of processes. This should be equal to the total number of devices (GPU) used for distributed training.
 - **RANK** - The (global) rank of the current process. The possible values are 0 to (world size - 1).
 
@@ -121,7 +121,7 @@ Beyond these, many applications will also need the following environment variabl
 - **LOCAL_RANK** - The local (relative) rank of the process within the node. The possible values are 0 to (# of processes on the node - 1). This information is useful because many operations such as data preparation only should be performed once per node --- usually on local_rank = 0.
 - **NODE_RANK** - The rank of the node for multi-node training. The possible values are 0 to (total # of nodes - 1).
 
-### Launch
+### Launch options
 
 The Azure ML PyTorch job supports two types of options for launching distributed training:
 
@@ -177,9 +177,9 @@ PyTorch provides a launch utility in [torch.distributed.launch](https://pytorch.
 
 
 To configure a PyTorch job with a per-node-launcher, do the following:
-1. Provide the `torch.distributed.launch` command to the `command` parameter of the `ScriptRunConfig` constructor. Azure ML will run this command on each node of your training cluster. `--nproc_per_node` should be less than or equal to the number of GPUs available on each node. MASTER_ADDR, MASTER_PORT, and NODE_RANK are all set by Azure ML, so you can just reference the environment variables in the command.
+1. Provide the `torch.distributed.launch` command to the `command` parameter of the `ScriptRunConfig` constructor. Azure ML will run this command on each node of your training cluster. `--nproc_per_node` should be less than or equal to the number of GPUs available on each node. MASTER_ADDR, MASTER_PORT, and NODE_RANK are all set by Azure ML, so you can just reference the environment variables in the command. Azure ML sets MASTER_PORT to `6105`, but you can pass a different value to the `--master_port` argument of torch.distributed.launch command if you wish. (The launch utility will reset the environment variables.)
     ```shell
-    python -m torch.distributed.launch --nproc_per_node <num processes per node>\
+    python -m torch.distributed.launch --nproc_per_node <num processes per node> \
       --nnodes <num nodes> --node_rank $NODE_RANK --master_addr $MASTER_ADDR \
       --master_port $MASTER_PORT --use_env \
       <your training script> <your script arguments>
@@ -193,9 +193,9 @@ from azureml.core.runconfig import PyTorchConfiguration
 curated_env_name = 'AzureML-PyTorch-1.6-GPU'
 pytorch_env = Environment.get(workspace=ws, name=curated_env_name)
 distr_config = PyTorchConfiguration(node_count=2)
-launch_cmd = ['python -m torch.distributed.launch --nproc_per_node 4 --nnodes 2 \
-               --node_rank $NODE_RANK --master_addr $MASTER_ADDR --master_port $MASTER_PORT \
-               --use_env train.py --epochs 50']
+launch_cmd = ['python -m torch.distributed.launch --nproc_per_node 4 --nnodes 2 ' \
+               '--node_rank $NODE_RANK --master_addr $MASTER_ADDR --master_port $MASTER_PORT ' \
+               '--use_env train.py --epochs 50']
 
 run_config = ScriptRunConfig(source_directory='./src',
                              command=launch_cmd,
@@ -210,8 +210,8 @@ run = Experiment(ws, 'experiment_name').submit(run_config)
 If you are using the launch utility to run single-node multi-GPU PyTorch training, you do not need to specify the `distributed_job_config` parameter of ScriptRunConfig.
 
 ```python
-launch_cmd = ['python -m torch.distributed.launch --nproc_per_node 4 \
-              --use_env train.py --epochs 50']
+launch_cmd = ['python -m torch.distributed.launch --nproc_per_node 4 ' \
+              '--use_env train.py --epochs 50']
 
 run_config = ScriptRunConfig(source_directory='./src',
                              command=launch_cmd,
@@ -221,7 +221,7 @@ run_config = ScriptRunConfig(source_directory='./src',
 :::
 
 #### Example
-- TO DO: link distributed PyTorch example
+- [azureml-examples: Distributed training with PyTorch on CIFAR-10](https://github.com/Azure/azureml-examples/tree/main/workflows/train/pytorch/cifar-distributed)
 
 ### PyTorch Lightning
 
@@ -244,11 +244,12 @@ from azureml.core import ScriptRunConfig, Experiment
 from azureml.core.runconfig import PyTorchConfiguration
 
 nnodes = 2
+args = ['--max_epochs', 50, '--gpus', 2, '--accelerator', 'ddp', --num_nodes', nnodes]
 distr_config = PyTorchConfiguration(node_count=nnodes)
 
 run_config = ScriptRunConfig(source_directory='./src',
                              script='train.py',
-                             arguments=['--max_epochs', 50, '--gpus', 2, '--accelerator', 'ddp', --num_nodes', nnodes],
+                             arguments=args,
                              compute_target=compute_target,
                              environment=pytorch_env,
                              distributed_job_config=distr_config)
@@ -269,13 +270,13 @@ from azureml.core import ScriptRunConfig
 from azureml.core.runconfig import PyTorchConfiguration
 
 distr_config = PyTorchConfiguration() # node_count defaults to 1
-launch_cmd = ['python -m torch.distributed.launch --nproc_per_node 8 \
-               text-classification/run_glue.py \
-               --model_name_or_path bert-large-uncased-whole-word-masking \
-               --task_name mnli --do_train --do_eval \
-               --max_seq_length 128 --per_device_train_batch_size 8 \
-               --learning_rate 2e-5 --num_train_epochs 3.0 \
-               --output_dir /tmp/mnli_output]
+launch_cmd = ['python -m torch.distributed.launch --nproc_per_node 8 ' \
+               'text-classification/run_glue.py ' \
+               '--model_name_or_path bert-large-uncased-whole-word-masking ' \
+               '--task_name mnli --do_train --do_eval ' \
+               '--max_seq_length 128 --per_device_train_batch_size 8 ' \
+               '--learning_rate 2e-5 --num_train_epochs 3.0 ' \
+               '--output_dir /tmp/mnli_output']
 
 run_config = ScriptRunConfig(source_directory='./src',
                              command=launch_cmd,
