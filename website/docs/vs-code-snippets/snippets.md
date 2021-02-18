@@ -345,3 +345,43 @@ run = exp.submit(config)
 print(run.get_portal_url()) # link to ml.azure.com
 run.wait_for_completion(show_output=True)
 ```
+### Script Run Config with Distributed Config
+
+Description: Set up ScriptRunConfig for distributed training.
+
+Prefixes: `script-run-config-distributed`, `distributed-src`, `src-distributed`
+
+```python
+from azureml.core import Workspace, ScriptRunConfig, Environment, Experiment
+from azureml.core.runconfig import MpiConfiguration
+
+# get workspace
+ws = Workspace.from_config()
+
+# get compute target
+target = ws.compute_targets['${1:target-name}']
+
+# get curated environment
+curated_env_name = '${2:AzureML-PyTorch-1.6-GPU}'
+env = Environment.get(workspace=ws, name=curated_env_name)
+
+# get/create experiment
+exp = Experiment(ws, '${3:experiment_name}')
+
+# distributed job configuration
+distributed_job_config = MpiConfiguration(process_count_per_node=4, node_count=2)
+
+# set up script run configuration
+config = ScriptRunConfig(
+    source_directory='${4:.}',
+    script='${5:script.py}',
+    compute_target=target,
+    environment=env,
+    distributed_job_config=distributed_job_config,
+)
+
+# submit script to AML
+run = exp.submit(config)
+print(run.get_portal_url()) # link to ml.azure.com
+run.wait_for_completion(show_output=True)
+```
