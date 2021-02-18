@@ -84,7 +84,7 @@ We have compiled a collection of useful templates in the form of
 
 To add these snippets to your VS Code: `ctrl+shift+p` > Type 'Configure user
 snippets' > Select `python.json`. All of these snippets are available here:
-[python.json](https://github.com/Azure/azureml-examples/blob/main/website/docs/vs-code-snippets/python.json)
+[python.json](https://github.com/Azure/azureml-web/blob/main/website/docs/vs-code-snippets/python.json)
 
 """
 
