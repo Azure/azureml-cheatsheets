@@ -329,6 +329,6 @@
             "run.wait_for_completion(show_output=True)",
             "$0"
         ],
-        "description": "Set up ScriptRunConfig including compute target, environment and experiment"
+        "description": "Set up ScriptRunConfig using command argument"
     }
 }
