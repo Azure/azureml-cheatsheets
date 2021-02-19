@@ -10,7 +10,7 @@ We have compiled a collection of useful templates in the form of
 
 To add these snippets to your VS Code: `ctrl+shift+p` > Type 'Configure user
 snippets' > Select `python.json`. All of these snippets are available here:
-[python.json](https://github.com/Azure/azureml-web/blob/main/website/docs/vs-code-snippets/python.json)
+[python.json](https://github.com/Azure/azureml-examples/blob/main/website/docs/vs-code-snippets/python.json)
 
 ### Imports Group: Basic
 
@@ -133,7 +133,7 @@ target = ComputeTarget(${2:ws}, '${1:<compute_target_name>}')
 ```
 ### Get Compute with SSH
 
-Description: Get Azure ML Compute Target
+Description: Get Azure ML Compute Target with SSH
 
 Prefix: `get-compute-ssh`
 
@@ -160,7 +160,7 @@ cluster = ComputeTarget.create(
 ```
 ### Get Environment
 
-Description: Get Azure ML Compute Target
+Description: Get Azure ML Environment
 
 Prefix: `get-environment`
 
@@ -218,6 +218,29 @@ conda.add_pip_package('$4')
 
 # add conda dependencies to environment
 env.python.conda_dependencies = conda
+```
+### Get Environment From Custom image
+
+Description: Create environment using Custom image
+
+Prefixes: `get-environment-custom-image`, `env-image`
+
+```python
+from azureml.core import Environment
+env = Environment('${1:my-env}')
+
+env.docker.enabled = True
+
+# base image for DockerHub
+env.docker.base_image = '${2}'
+
+# if you are using base image from a Dockerfile
+# env.docker.base_image = None
+# env.docker.base_dockerfile = './Dockerfile'
+
+# The user_managed_dependencies flag to True will use your custom image's built-in Python environment. 
+env.python.user_managed_dependencies = True
+
 ```
 ### Workspace Compute Targets
 
@@ -307,4 +330,88 @@ config = ScriptRunConfig(
 run = exp.submit(config)
 print(run.get_portal_url()) # link to ml.azure.com
 run.wait_for_completion(show_output=True)
+```
+### Run Details Widget
+
+Description: Represents a Jupyter notebook widget used to view the progress of model training.
+
+Prefix: `run-details-widget`
+
+```python
+from azureml.core import Workspace,Experiment,Run
+from azureml.widgets import RunDetails
+
+# get workspace
+ws = Workspace.from_config()
+
+# get/create experiment
+exp = Experiment(ws, '${1:experiment_name}')
+
+# get run
+run = Run(exp,'${2:run_id}')
+
+# submit script to AML
+RunDetails(run).show()
+```
+### Consume Dataset
+
+Description: Download Azure ML dataset to current working directory
+
+Prefix: `consume-dataset`
+
+```python
+#azureml-core of version 1.0.72 or higher is required
+from azureml.core import Workspace, Dataset
+
+# get/create experiment
+ws = Workspace.from_config()
+
+# get dataset
+dataset = Dataset.get_by_name(ws, name='${1:dataset_name}')
+dataset.download(target_path='.', overwrite=False)
+```
+### Create Tabular Dataset
+
+Description: Create Azure ML tabular dataset.
+
+Prefix: `create-tabular-dataset`
+
+```python
+from azureml.core import Workspace, Datastore, Dataset
+
+datastore_name = '${1:datastore_name}'
+
+# get workspace
+ws = Workspace.from_config()
+
+# retrieve an existing datastore in the workspace by name
+datastore = Datastore.get(ws, datastore_name)
+
+# create a TabularDataset from 1 file paths in datastore
+datastore_paths = [(datastore, ${2:file_path})]
+
+custom_ds = Dataset.Tabular.from_delimited_files(path=datastore_paths)
+```
+### Create File Dataset
+
+Description: Create Azure ML file dataset.
+
+Prefix: `create-file-dataset`
+
+```python
+# create a FileDataset pointing to files in 'animals' folder and its subfolders recursively
+from azureml.core import Workspace, Datastore, Dataset
+
+datastore_name = '${1:datastore_name}'
+
+# get workspace
+ws = Workspace.from_config()
+
+# retrieve an existing datastore in the workspace by name
+datastore = Datastore.get(ws, datastore_name)
+
+# create a FileDataset pointing to files in your folder and its subfolders recursively, you can also use public web urls paths
+datastore_paths = [(datastore, ${2:file_path})]
+
+custom_ds = Dataset.File.from_files(path=datastore_paths)
 ```
