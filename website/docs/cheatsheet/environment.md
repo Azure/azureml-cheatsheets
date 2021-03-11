@@ -155,7 +155,7 @@ print(env.python.conda_dependencies.serialize_to_string())
 
 Which returns the following.
 
-```yaml title="Azure ML-PyTorch-1.1-GPU Conda Dependencies"
+```yaml title="Azure ML-PyTorch-1.6-GPU Conda Dependencies"
 channels:
 - conda-forge
 dependencies:
