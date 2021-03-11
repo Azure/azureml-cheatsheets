@@ -12,7 +12,7 @@ Make PR's against the `main` branch
 
 ```bash
 git clone git@github.com:Azure/azureml-web.git
-cd azureml-examples
+cd azureml-web
 git checkout -b user/contrib
 ```
 
