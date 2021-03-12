@@ -28,7 +28,7 @@ Create Environment from pip `requirements.txt` file
 
 ```python
 from azureml.core import Environment
-env = Environment.from_pip_requirements('<environment-name>', '<path/to/requirements.txt>')
+env = Environment.from_pip_requirements('<env-name>', '<path/to/requirements.txt>')
 ```
 
 ### From Conda
@@ -37,7 +37,7 @@ Create Environment from Conda `env.yml` file
 
 ```python
 from azureml.core import Environment
-env = Environment.from_conda_specifications('<environment-name>', '<path/to/env.yml>')
+env = Environment.from_conda_specifications('<env-name>', '<path/to/env.yml>')
 ```
 
 ### In Azure ML SDK
@@ -71,10 +71,10 @@ env.python.conda_dependencies = conda
 
 ## Custom docker image
 
-To build an image from a custom dockerfile.
+To create an `Environment` from a custom dockerfile:
 
 ```python title="job.py (Azure ML Submission)"
-env = Environment('example-environment')
+env = Environment('<env-name>')
 env.docker.base_dockerfile = './Dockerfile' # path to your dockerfile
 env.python.user_managed_dependencies = True
 env.python.interpreter_path = '/opt/miniconda/envs/example/bin/python'
@@ -82,21 +82,21 @@ env.python.interpreter_path = '/opt/miniconda/envs/example/bin/python'
 **Remarks.**
 
 - `user_managed_dependencies = True`: You are responsible for installing all necessary Python
-libraries - typically in your docker image.
+libraries, typically in your docker image.
 - `interpreter_path`: Only used when `user_managed_dependencies=True` and sets the Python interpreter
-path (e.g. `which python` or `import sys; sys.executable`)
+path (e.g. `which python`).
 
 
-It is also possible to let Azure ML manage the Python installation on your behalf. For example, using pip:
+It is possible to have Azure ML manage your Python installation when providing a custom base image. For example, using pip `requirements.txt`:
 
 ```python
-env = Environment.from_pip_requirements('<environment-name>', '<path/to/requirements.txt>')
+env = Environment.from_pip_requirements('<env-name>', '<path/to/requirements.txt>')
 env.docker.base_dockerfile = './Dockerfile'
 ```
 
 **Note.** In this case Python libraries installed in `Dockerfile` will **not** be available.
 
-### Constructing custom docker image for Azure ML
+### Build custom docker image for Azure ML
 
 We **strongly** recommend building your docker image from one of the Azure ML base images available
 here: [AzureML-Containers GitHub Repo](https://github.com/Azure/AzureML-Containers) - like this:
@@ -122,7 +122,7 @@ We suggest users to look at the [dockerfiles of Azure ML base images](https://gi
 Azure ML can use a custom image from a private registry as long as login information are provided. 
 
 ```python
-env = Environment('myenv')
+env = Environment('<env-name>')
 env.docker.base_image = "/my/private/img:tag",  # image repository path
 env.docker.base_image_registry.address = "myprivateacr.azurecr.io"  # private registry
 
