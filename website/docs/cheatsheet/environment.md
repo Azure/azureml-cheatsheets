@@ -188,22 +188,26 @@ env.environment_variables['EXAMPLE_ENV_VAR'] = 'EXAMPLE_VALUE'
 
 ## Hints and tips
 
-When the conda dependencies are managed by Azure ML (`user_managed_dependencies=False`, by default), Azure ML will check whether the same environment has already been materialized into a docker image in the Azure Container Registry associated with the Azure ML workspace. If it is a new environment, Azure ML will have a job preparation stage to build
-a new docker image for the new environment. user can see a image build log file in the logs and monitor the image build progress. The job won't start until the image is built and pushed to the container registry. 
+When the conda dependencies are managed by Azure ML (`user_managed_dependencies=False`, by default), Azure ML will check whether the same environment has already been materialized into a docker image in the Azure Container Registry associated with the Azure ML workspace. If it is a new environment, Azure ML will have a job preparation stage to build a new docker image for the new environment. You will see a image build log file in the logs and monitor the image build progress. The job won't start until the image is built and pushed to the container registry. 
 
-This image building process can take some time and delay your job start. To avoid unnecessary image building, consider
+This image building process can take some time and delay your job start. To avoid unnecessary image building, consider:
+
 1. Register an environment that contains most packages you need and reuse when possible.
 2. If you only need a few extra packages on top of an existing environment, 
     1. If the existing environment is a docker image, use a dockerfile from this docker image so you only need to add one layer to install a few extra packagers. 
     2. Install extra python packages in your user script so the package installation happens in the script run as part of your code instead of asking Azure ML to treat them as part of a new environment. Consider using a [setup script](#advanced-shell-initialization-script).
 
-Due to intricacy of the python package dependencies and potential version conflict, we recommend users to understand the [image building process](#how-azure-ml-build-image-from-a-environment) and use custom docker image and dockerfiles (based on Azure ML base images) to manage your own python environment. This practice not only gives users full transparency of the environment, but also saves image building times at agile development stage. 
+Due to intricacy of the python package dependencies and potential version conflict, we recommend use of custom docker image and dockerfiles (based on Azure ML base images) to manage your own python environment. This practice not only gives users full transparency of the environment, but also saves image building times at agile development stage. 
 
 ### Build docker images locally and push to Azure Container Registry
+
 If you have docker installed locally, you can build the docker image from Azure ML environment locally with option to push the image to workspace ACR directly. This is recommended when users are iterating on the dockerfile since local build can utilize cached layers. 
 
 ```python
-build = env.build_local(workspace=ws, useDocker=True, pushImageToWorkspaceAcr=True)
+from azureml.core import Environment
+myenv = Environment(name='<env-name>')
+registered_env = myenv.register(ws)
+registered_env.build_local(ws, useDocker=True, pushImageToWorkspaceAcr=True)
 ```
 
 ### Bootstrap Script
