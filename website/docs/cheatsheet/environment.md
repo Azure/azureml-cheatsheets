@@ -71,9 +71,22 @@ env.python.conda_dependencies = conda
 
 ## Custom docker image
 
-To create an `Environment` from a custom dockerfile:
+To create an `Environment` from a docker image in an Azure Container Registry:
 
-```python title="job.py (Azure ML Submission)"
+```python
+env = Environment('<env-name>')
+env.docker.base_image_registry.address = '<acr-name>.azurecr.io'
+env.docker.base_image_registry.username = '<acr-username>'
+env.docker.base_image_registry.password = os.environ.get(CONTAINER_PASSWORD)
+env.docker.base_image = '<image-name>'
+env.python.interpreter_path = '/opt/miniconda/envs/example/bin/python'
+env.python.user_managed_dependencies = True
+```
+
+
+To create an `Environment` from a dockerfile:
+
+```python
 env = Environment('<env-name>')
 env.docker.base_dockerfile = './Dockerfile' # path to your dockerfile
 env.python.user_managed_dependencies = True
