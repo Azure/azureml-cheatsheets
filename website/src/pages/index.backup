@@ -8,6 +8,37 @@ import styles from './styles.module.css';
 
 const features = [
   {
+    title: 'Cloud compute',
+    //pageUrl: 'docs/cheatsheet',
+    imageUrl: 'img/undraw_docusaurus_mountain.svg',
+    description: (
+      <>
+        Scale up and out on a variety of Azure compute targets,
+        including high-performance GPUs for hardware acceleration.
+      </>
+    ),
+  },
+  {
+    title: 'Central tracking',
+    //pageUrl: 'docs/cheatsheet/distributed-training',
+    imageUrl: 'img/undraw_docusaurus_react.svg',
+    description: (
+      <>
+        Use mlflow in your jobs to log parameters, metrics, code, and artifacts 
+        in the cloud with little to no code changes.
+      </>
+    ),
+  },
+  {
+    title: 'Asset management',
+    //pageUrl: 'docs/cheatsheet/environment',
+    imageUrl: 'img/undraw_docusaurus_tree.svg',
+    description: (
+      <>
+        Manage models, environments, datasets, compute targets,
+        and other assets for reuse and collaboration.
+      </>
+    ),
   },
 ];
 

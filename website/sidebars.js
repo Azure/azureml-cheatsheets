@@ -1,49 +1,34 @@
 module.exports = {
-  mainSidebar: {
-    'Menu': [
+  pythonSidebar: {
+    'Python': [
       {
         type: 'doc',
-        id: 'cheatsheet/cheatsheet'
+        id: 'cheatsheets/python/v1/cheatsheet'
       },
       {
         type: 'category',
         label: 'Getting Started',
         collapsed: false,
-        items: ['cheatsheet/installation'],
+        items: ['cheatsheets/python/v1/installation'],
       },
       {
         type: 'category',
         label: 'Azure ML Resources',
         collapsed: false,
-        items: ['cheatsheet/workspace', 'cheatsheet/compute-targets', 'cheatsheet/environment', 'cheatsheet/data'],
+        items: ['cheatsheets/python/v1/workspace', 'cheatsheets/python/v1/compute-targets', 'cheatsheets/python/v1/environment', 'cheatsheets/python/v1/data'],
       },
       {
         type: 'category',
         label: 'Guides',
         collapsed: false,
-        items: ['cheatsheet/script-run-config', 'cheatsheet/logging', 'cheatsheet/distributed-training', 'cheatsheet/docker-build', 'cheatsheet/debugging', 'cheatsheet/ci-dev']
+        items: ['cheatsheets/python/v1/script-run-config', 'cheatsheets/python/v1/logging', 'cheatsheets/python/v1/distributed-training', 'cheatsheets/python/v1/docker-build', 'cheatsheets/python/v1/debugging', 'cheatsheets/python/v1/ci-dev']
       }
     ],
   },
-  templateSidebar: {
-    'Templates': [
+  cliSidebar: {
+    'CLI (preview)': [
       {
-        type: 'doc',
-        id: 'templates/templates'
-      }
-    ]
-  },
-  secondaySidebar: {
-    Cookbook: [
-      {
-        type: 'doc',
-        id: 'cbdocs/cookbook',
       },
-      {
-        type: 'category',
-        label: 'Setup',
-        items: ['cbdocs/setup-sdk', 'cbdocs/setup-notebook'],
-      }
-    ]
+    ],
   }
 };

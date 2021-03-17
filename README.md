@@ -1,74 +1,27 @@
-# Azure ML Cheat Sheet
+# Azure Machine Learning cheat sheets
 
-![deploy-website](https://github.com/Azure/azureml-web/workflows/deploy-website/badge.svg)
+[![deploy](https://github.com/lostmygithubaccount/azureml-cheatsheets/workflows/deploy/badge.svg)](https://github.com/azure/azureml-cheatsheets/actions?query=workflow%3Adeploy)
 
-Website is available here: https://azure.github.io/azureml-web/
+https://azure.github.io/azureml-cheatsheets
 
 This website is built using [Docusaurus 2](https://v2.docusaurus.io/), a modern static website generator.
 
 ##  Contributions
 
-Make PR's against the `main` branch
+Please see the [contributing guide](https://azure.github.io/azureml-cheatsheets/docs/misc/contributing).
 
-```bash
-git clone git@github.com:Azure/azureml-web.git
-cd azureml-examples
-git checkout -b user/contrib
-```
+### Contributor License Agreement
 
-- When a PR arrives against `main` GitHub actions (deploy-website) will test the build is successful
-- When the PR is merged the change will be automatically deployed to `gh-pages` branch (and the webpage will be updated)
+This project welcomes contributions and suggestions.  Most contributions require you to agree to a
+Contributor License Agreement (CLA) declaring that you have the right to, and actually do, grant us
+the rights to use your contribution. For details, visit https://cla.opensource.microsoft.com.
 
-99% of contributions should only need the following:
+When you submit a pull request, a CLA bot will automatically determine whether you need to provide
+a CLA and decorate the PR appropriately (e.g., status check, comment). Simply follow the instructions
+provided by the bot. You will only need to do this once across all repos using our CLA.
 
-- Add markdown files to the `website/docs` folder
-- Update the `sidebar.js` file to add a page to the sidebar
-- Put any images in `website/docs/img/` and refer to them like this: `![](img/create-compute.png)`
+### Code of Conduct
 
-If you need to do anything more than adding a new page to the sidebar (e.g.
-modify the nav bar) then a) please refer to [Docusaurus 2](https://v2.docusaurus.io/).
-
-### Previewing Changes Locally
-
-- Install npm and yarn: see [docusaurus2 webpage](https://v2.docusaurus.io/docs/installation)
-
-- First time Docusaurus2 installation
-    ```bash
-    cd website
-    npm install
-    ```
-
-- Run local server while developing:
-    ```bash
-    cd website
-    yarn start
-    ```
-
-## Deployment
-
-This repo has GitHub actions in place that automate deployment by watching the `website` branch.
-If you are interested in how deployment works then read on!
-
-### GitHub Actions
-
-We use GitHub actions to automate deployment. Set up was as follows:
-
-- Generated new SSH key
-    - NB. Since there was an existing ssh key tied the repo a new key was generated (in a different location) `/tmp/.ssh/id_rsa`
-- Add public key to repo's [deploy key](https://developer.github.com/v3/guides/managing-deploy-keys/)
-    - NB. Allow write access
-- Add private key as [GitHub secret](https://help.github.com/en/actions/configuring-and-managing-workflows/creating-and-storing-encrypted-secrets)
-    - We use repo-level (not org level) secret
-    - Secret is named `GH_PAGES_DEPLOY`
-    - `xclip -sel clip < /tmp/.ssh/id_rsa`
-
-### Manual
-
-It is possible to make manual deployments without use of the GitHub action above.
-
-```console
-GIT_USER=<Your GitHub username> USE_SSH=true yarn deploy
-```
-
-If you are using GitHub pages for hosting, this command is a convenient way to build the website and push to the `gh-pages` branch.
-
+This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/).
+For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or
+contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.

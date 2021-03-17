@@ -1,7 +1,6 @@
 ---
 title: Issue Triage Process
 id: issues
-slug: /issues/
 description: GitHub issue triage process for Azure Machine Learning.
 keywords:
   - azure machine learning
