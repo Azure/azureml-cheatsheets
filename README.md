@@ -1,6 +1,6 @@
 # Azure Machine Learning cheat sheets
 
-[![deploy](https://github.com/lostmygithubaccount/azureml-cheatsheets/workflows/deploy/badge.svg)](https://github.com/azure/azureml-cheatsheets/actions?query=workflow%3Adeploy)
+[![deploy](https://github.com/Azure/azureml-cheatsheets/workflows/deploy/badge.svg)](https://github.com/azure/azureml-cheatsheets/actions?query=workflow%3Adeploy)
 
 https://azure.github.io/azureml-cheatsheets
 
