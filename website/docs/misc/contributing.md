@@ -21,14 +21,14 @@ git checkout -b user/contrib
 gh pr create
 ```
 
-- When a PR arrives against `main` GitHub actions (deploy-website) will test the build is successful
+- When a PR arrives against `main` GitHub actions (deploy) will test the build is successful
 - When the PR is merged the change will be automatically deployed to `gh-pages` branch (and the webpage will be updated)
 
 99% of contributions should only need the following:
 
-- Add markdown files to the `website/docs` folder
+- Add markdown files to the `website/docs/cheatsheets` folder
 - Update the `sidebar.js` file to add a page to the sidebar
-- Put any images in `website/docs/path-to-directory/img/` and refer to them like this: `![](img/image-name.png)`
+- Put any images in `website/docs/cheatsheets/<path-to-cheat-sheet-directory>/img/` and refer to them like this: `![](img/<image-name>.png)`
 
 If you need to do anything more than adding a new page to the sidebar (e.g.
 modify the nav bar) then please refer to the [Docusaurus 2 documentation](https://v2.docusaurus.io/).
