@@ -1,6 +1,6 @@
 ---
 name: Issue
-about: Report an issue with an existing cheat sheet
+about: Report an issue with a cheat sheet
 title: ''
 labels: bug
 assignees: ''
