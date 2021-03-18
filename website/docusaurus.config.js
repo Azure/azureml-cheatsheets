@@ -17,7 +17,7 @@ module.exports = {
         src: 'img/logo.svg',
       },
       items: [
-        {to: 'docs/cheatsheets/python/v1/cheatsheet', label: 'Python', position: 'left'},
+        {to: '/docs/cheatsheets/python/v1/cheatsheet', label: 'Python', position: 'left'},
       ],
     },
     footer: {
@@ -28,7 +28,7 @@ module.exports = {
           items: [
             {
               label: 'Contributing guide',
-              href: 'docs/misc/contributing',
+              href: '/docs/misc/contributing',
             },
             {
               label: 'Service documentation',
