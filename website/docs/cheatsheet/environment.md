@@ -159,20 +159,13 @@ Register an environment `env: Environment` to your workspace `ws` to reuse/share
 env.register(ws)
 ```
 
-To see the registered Environments already available:
+Registered environments can be obtained directly from the workspace handle `ws`:
 
 ```python
 envs: Dict[str, Environment] = ws.environments
-
-for name, env in envs.items():
-    print(name)
-# Azure ML-Chainer-5.1.0-GPU
-# Azure ML-Scikit-learn-0.20.3
-# Azure ML-PyTorch-1.1-GPU
-# ...
 ```
 
-This list contains custom environments that have been registered to the workspace as well as a
+This dictionary contains custom environments that have been registered to the workspace as well as a
 collection of _curated environments_ maintained by Azure ML.
 
 ### Save / Load Environments
