@@ -104,6 +104,7 @@ libraries, typically in your docker image.
 - `interpreter_path`: Only used when `user_managed_dependencies=True` and sets the Python interpreter
 path (e.g. `which python`).
 
+
 It is possible to have Azure ML manage your Python installation when providing a custom base image. For example, using pip `requirements.txt`:
 
 ```python
