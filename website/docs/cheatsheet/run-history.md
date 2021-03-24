@@ -52,7 +52,7 @@ of your runs, all their outputs and metrics, and the exact code that was used to
 
 An Experiment is a collection of runs. All runs belongs to an Experiment. Usually
 an Experiment is tied to a specific work item, for example, "Finetune Bert-Large",
-and will posses a number of runs as you iterate toward this goal.
+and will possess a number of runs as you iterate toward this goal.
 
 ### Snapshot
 
