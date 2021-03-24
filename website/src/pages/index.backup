@@ -8,36 +8,37 @@ import styles from './styles.module.css';
 
 const features = [
   {
-    title: 'Cheat Sheet',
-    pageUrl: 'docs/cheatsheets/python/v1/cheatsheet',
+    title: 'Cloud compute',
+    //pageUrl: 'docs/cheatsheet',
     imageUrl: 'img/undraw_docusaurus_mountain.svg',
     description: (
       <>
-        A cheat sheet for common use cases with AML.
-        Get 80% of what you need in 20% of the documentation.
+        Scale up and out on a variety of Azure compute targets,
+        including high-performance GPUs for hardware acceleration.
       </>
     ),
   },
   {
-    title: 'Distributed GPU Training',
-    pageUrl: 'docs/cheatsheets/python/v1/distributed-training',
+    title: 'Central tracking',
+    //pageUrl: 'docs/cheatsheet/distributed-training',
     imageUrl: 'img/undraw_docusaurus_react.svg',
     description: (
       <>
-        Guide to getting your distributed training code running in Azure ML.
+        Use mlflow in your jobs to log parameters, metrics, code, and artifacts 
+        in the cloud with little to no code changes.
       </>
     ),
   },
   {
-    title: 'Environments',
-    pageUrl: 'docs/cheatsheets/python/v1/environment',
+    title: 'Asset management',
+    //pageUrl: 'docs/cheatsheet/environment',
     imageUrl: 'img/undraw_docusaurus_tree.svg',
     description: (
       <>
-        Set up and manage your Python environments and docker images
-        in Azure ML.
+        Manage models, environments, datasets, compute targets,
+        and other assets for reuse and collaboration.
       </>
-      ),
+    ),
   },
 ];
 
