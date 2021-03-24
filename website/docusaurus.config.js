@@ -17,7 +17,7 @@ module.exports = {
         src: 'img/logo.svg',
       },
       items: [
-        {to: '/docs/cheatsheets/python/v1/cheatsheet', label: 'Python', position: 'left'},
+        {to: '/docs/cheatsheets/python/v1/cheatsheet', label: 'Python SDK', position: 'left'},
       ],
     },
     footer: {

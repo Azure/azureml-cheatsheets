@@ -5,9 +5,9 @@ description: One-time website deployment setup.
 
 ## Deployment
 
-This article describes the one-time process for deploying this website.
+This article describes the one-time process for deploying the cheat sheeets as a GitHub Pages website.
 
-This repo has GitHub actions in place that automate deployment by watching the `website` branch.
+This repo has GitHub actions in place that automate deployment by watching the `main` branch.
 If you are interested in how deployment works then read on!
 
 ### GitHub Actions

@@ -8,6 +8,36 @@ import styles from './styles.module.css';
 
 const features = [
   {
+    title: 'Cheat Sheet',
+    pageUrl: 'docs/cheatsheets/python/v1/cheatsheet',
+    imageUrl: 'img/undraw_docusaurus_mountain.svg',
+    description: (
+      <>
+        A cheat sheet for common use cases with AML.
+        Get 80% of what you need in 20% of the documentation.
+      </>
+    ),
+  },
+  {
+    title: 'Distributed GPU Training',
+    pageUrl: 'docs/cheatsheets/python/v1/distributed-training',
+    imageUrl: 'img/undraw_docusaurus_react.svg',
+    description: (
+      <>
+        Guide to getting your distributed training code running in Azure ML.
+      </>
+    ),
+  },
+  {
+    title: 'Environments',
+    pageUrl: 'docs/cheatsheets/python/v1/environment',
+    imageUrl: 'img/undraw_docusaurus_tree.svg',
+    description: (
+      <>
+        Set up and manage your Python environments and docker images
+        in Azure ML.
+      </>
+      ),
   },
 ];
 

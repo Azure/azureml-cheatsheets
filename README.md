@@ -1,4 +1,4 @@
-# Azure Machine Learning cheat sheets
+# Azure Machine Learning Cheat Sheets
 
 [![deploy](https://github.com/Azure/azureml-cheatsheets/workflows/deploy/badge.svg)](https://github.com/azure/azureml-cheatsheets/actions?query=workflow%3Adeploy)
 
