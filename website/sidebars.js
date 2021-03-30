@@ -28,6 +28,24 @@ module.exports = {
   cliSidebar: {
     'CLI (preview)': [
       {
+        type: 'doc',
+        id: 'cheatsheets/cli/installation'
+      },
+      {
+        type: 'doc',
+        id: 'cheatsheets/cli/training'
+      },
+       {
+        type: 'doc',
+        id: 'cheatsheets/cli/scoring'
+      },
+       {
+        type: 'doc',
+        id: 'cheatsheets/cli/assets'
+      },
+       {
+        type: 'doc',
+        id: 'cheatsheets/cli/information'
       },
     ],
   }
