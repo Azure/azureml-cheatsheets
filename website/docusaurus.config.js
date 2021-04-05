@@ -71,7 +71,7 @@ module.exports = {
     },
     algolia: {
       // search only api key: https://docsearch.algolia.com/docs/faq/#can-i-share-the-apikey-in-my-repo
-      apiKey: '8cdd3d909edd00501899b929541d6ce7',
+      apiKey: '1e4db0054fd7da8ce9923b63900fa842',
       indexName: 'azureml-cheatsheets',
       searchParameters: {},
       placeholder: 'Search cheat sheets'
