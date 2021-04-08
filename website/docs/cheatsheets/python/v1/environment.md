@@ -37,7 +37,7 @@ Create Environment from Conda `env.yml` file
 
 ```python
 from azureml.core import Environment
-env = Environment.from_conda_specifications('<env-name>', '<path/to/env.yml>')
+env = Environment.from_conda_specification('<env-name>', '<path/to/env.yml>')
 ```
 
 ### In Azure ML SDK

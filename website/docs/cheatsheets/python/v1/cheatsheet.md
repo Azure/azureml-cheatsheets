@@ -52,7 +52,7 @@ from azureml.core import Environment
 # Option 1. From pip
 environment = Environment.from_pip_requirements('<env-name>', '<path/to/requirements.txt>')
 # Option 2. From Conda
-environment = Environment.from_conda_specifications('<env-name>', '<path/to/env.yml>')
+environment = Environment.from_conda_specification('<env-name>', '<path/to/env.yml>')
 ```
 
 You can also use docker images to prepare your environments.
