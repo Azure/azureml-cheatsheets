@@ -164,7 +164,7 @@ Suppose you want to run this on a GPU in Azure.
 ```python
 ws = Workspace.from_config()
 compute_target = ws.compute_targets['powerful-gpu']
-environment = Environment.from_conda_specifications('pytorch', 'env.yml')
+environment = Environment.from_conda_specification('pytorch', 'env.yml')
 
 config = ScriptRunConfig(
     source_directory='<path/to/code>',
@@ -187,7 +187,7 @@ from azureml.core.runconfig import MpiConfiguration
 
 ws = Workspace.from_config()
 compute_target = ws.compute_targets['powerful-gpu']
-environment = Environment.from_conda_specifications('pytorch', 'env.yml')
+environment = Environment.from_conda_specification('pytorch', 'env.yml')
 environment.docker.enabled = True
 environment.docker.base_image = 'mcr.microsoft.com/azureml/openmpi3.1.2-cuda10.1-cudnn7-ubuntu18.04'
 
