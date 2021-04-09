@@ -27,15 +27,11 @@ module.exports = {
           title: 'Resources',
           items: [
             {
-              label: 'Contributing guide',
-              href: '/docs/misc/contributing',
-            },
-            {
-              label: 'Service documentation',
+              label: 'Azure ML - Microsoft Docs',
               href: 'https://docs.microsoft.com/azure/machine-learning',
             },
             {
-              label: 'Python SDK documentation',
+              label: 'Azure ML - Python API',
               href: 'https://docs.microsoft.com/python/api/overview/azure/ml/?view=azure-ml-py'
             }
           ],
@@ -45,7 +41,7 @@ module.exports = {
           items: [
             {
               label: 'GitHub issues',
-              href: 'https://github.com/Azure/azureml-examples/issues',
+              href: 'https://github.com/Azure/azureml-cheatsheets/issues',
             },
             {
               label: 'Stack Overflow',
@@ -61,8 +57,12 @@ module.exports = {
               href: 'https://github.com/Azure/azureml-cheatsheets',
             },
             {
-              label: 'Examples and notebooks',
+              label: 'Azure ML Examples',
               href: 'https://github.com/Azure/azureml-examples',
+            },
+            {
+              label: 'Contribution',
+              href: '/docs/misc/contributing',
             },
           ],
         },
