@@ -21,7 +21,7 @@ ws = Workspace.from_config()
 The workspace object is the fundamental handle on your Azure ML assets and is used
 throughout (often simply referred to by `ws`).
 
-For more details: [Workspaces](./workspace)
+For more details: [Workspaces](./workspace.md)
 
 ### Connect to compute target
 
@@ -41,7 +41,7 @@ config = ScriptRunConfig(
 )
 ```
 
-For more details: [Compute Target](./compute-targets)
+For more details: [Compute Target](./compute-targets.md)
 
 ### Prepare Python environment
 
@@ -69,7 +69,7 @@ config = ScriptRunConfig(
 )
 ```
 
-For more details: [Environment](./environment)
+For more details: [Environment](./environment.md)
 
 
 ## Submit code
@@ -107,11 +107,11 @@ config = ScriptRunConfig(
 )
 ```
 
-For more details on arguments: [Command line arguments](./script-run-config#command-line-arguments)
+For more details on arguments: [Command line arguments](./script-run-config.md#command-line-arguments)
 
 :::info
 - `compute_target`: If not provided the script will run on your local machine.
-- `environment`: If not provided, uses a default Python environment managed by Azure ML. See [Environment](./environment) for more details.
+- `environment`: If not provided, uses a default Python environment managed by Azure ML. See [Environment](./environment.md) for more details.
 :::
 
 #### Commands
@@ -130,12 +130,12 @@ config = ScriptRunConfig(
 )
 ```
 
-For more details: [Commands](./script-run-config#commands)
+For more details: [Commands](./script-run-config.md#commands)
 
 ### Experiment
 
 To submit this code, create an `Experiment`: a light-weight container that helps to
-organize our submissions and keep track of code (See [Run History](./run-history)).
+organize our submissions and keep track of code (See [Run History](./run-history.md)).
 
 ```python
 exp = Experiment(ws, '<experiment-name>')
@@ -145,7 +145,7 @@ print(run.get_portal_url())
 
 This link will take you to the Azure ML Studio where you can monitor your run.
 
-For more details: [ScriptRunConfig](./script-run-config)
+For more details: [ScriptRunConfig](./script-run-config.md)
 
 ### Sample usage
 
@@ -212,7 +212,7 @@ run = Experiment(ws, 'PyTorch model training').submit(config)
     want to train on.
 :::
 
-For more details: [Distributed GPU Training](./distributed-training)
+For more details: [Distributed GPU Training](./distributed-training.md)
 
 ## Connect to data
 
@@ -222,7 +222,7 @@ To work with data in your training scripts using your workspace `ws` and its def
 datastore = ws.get_default_datastore()
 dataset = Dataset.File.from_files(path=(datastore, '<path/on/datastore>'))
 ```
-For more details see: [Data](./data)
+For more details see: [Data](./data.md)
 
 Pass this to your training script as a command line argument.
 
