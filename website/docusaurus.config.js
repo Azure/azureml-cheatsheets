@@ -1,6 +1,10 @@
 const path = require('path');
 
 module.exports = {
+  i18n: {
+    defaultLocale: 'en',
+    locales: ['en', 'zh-CN'],
+  },
   title: 'Azure Machine Learning',
   tagline: 'Open source cheat sheets for Azure ML',
   url: 'https://github.com/Azure/',
@@ -18,6 +22,10 @@ module.exports = {
       },
       items: [
         {to: '/docs/cheatsheets/python/v1/cheatsheet', label: 'Python SDK', position: 'left'},
+        {
+          type: 'localeDropdown',
+          position: 'left',
+        },
       ],
     },
     footer: {
