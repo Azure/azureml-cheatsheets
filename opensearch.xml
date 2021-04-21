@@ -4,8 +4,8 @@
   <ShortName>Azure Machine Learning</ShortName>
   <Description>Search Azure Machine Learning</Description>
   <InputEncoding>UTF-8</InputEncoding>
-  <Image width="16" height="16" type="image/x-icon">https://github.com/Azure/img/logo.svg</Image>
-  <Url type="text/html" method="get" template="https://github.com/Azure//search?q={searchTerms}"/>
-  <Url type="application/opensearchdescription+xml" rel="self" template="https://github.com/Azure//opensearch.xml" />
-  <moz:SearchForm>https://github.com/Azure/</moz:SearchForm>
+  <Image width="16" height="16" type="image/x-icon">https://github.com/Azure/azureml-cheatsheets/img/logo.svg</Image>
+  <Url type="text/html" method="get" template="https://github.com/Azure//azureml-cheatsheets/search?q={searchTerms}"/>
+  <Url type="application/opensearchdescription+xml" rel="self" template="https://github.com/Azure//azureml-cheatsheets/opensearch.xml" />
+  <moz:SearchForm>https://github.com/Azure//azureml-cheatsheets/</moz:SearchForm>
 </OpenSearchDescription>

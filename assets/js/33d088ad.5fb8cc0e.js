@@ -1,0 +1,1 @@
+(window.webpackJsonp=window.webpackJsonp||[]).push([[8],{79:function(e){e.exports=JSON.parse('{"title":"Recent posts","items":[{"title":"What is Run History?","permalink":"/azureml-cheatsheets/blog/run-history"},{"title":"What is a Run Configuration?","permalink":"/azureml-cheatsheets/blog/run-config"}]}')}}]);

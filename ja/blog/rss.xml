@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rss version="2.0">
+    <channel>
+        <title>Azure Machine Learning Blog</title>
+        <link>https://github.com/Azure/blog</link>
+        <description>Azure Machine Learning Blog</description>
+        <lastBuildDate>Fri, 09 Oct 2020 00:00:00 GMT</lastBuildDate>
+        <docs>https://validator.w3.org/feed/docs/rss2.html</docs>
+        <generator>https://github.com/jpmonette/feed</generator>
+        <item>
+            <title><![CDATA[What is Run History?]]></title>
+            <link>https://github.com/Azure/azureml-cheatsheets/ja/blog/run-history</link>
+            <guid>run-history</guid>
+            <pubDate>Fri, 09 Oct 2020 00:00:00 GMT</pubDate>
+            <description><![CDATA[Azure ML can supercharge your ML workloads in (at least!) two ways:]]></description>
+        </item>
+        <item>
+            <title><![CDATA[What is a Run Configuration?]]></title>
+            <link>https://github.com/Azure/azureml-cheatsheets/ja/blog/run-config</link>
+            <guid>run-config</guid>
+            <pubDate>Thu, 08 Oct 2020 00:00:00 GMT</pubDate>
+            <description><![CDATA[What is a RunConfiguration?  In practice you should never have to build one by hand.]]></description>
+        </item>
+    </channel>
+</rss>
