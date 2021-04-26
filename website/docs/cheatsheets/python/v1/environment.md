@@ -176,7 +176,7 @@ env = Environment.from_pip_requirements('my-env', 'requirements.txt')
 env.register(ws)
 
 # use later
-ws.environments['my-env']
+env = ws.environments['my-env']
 
 # get a specific version
 env = Environment.get(ws, 'my-env', version=6)
