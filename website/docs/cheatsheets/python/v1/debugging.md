@@ -52,9 +52,11 @@ SSH needs to be enabled when you create the compute instance / target - see [Com
 
 1. Get **public ip** and **port number** for your compute.
 
-  Visit [ml.azure.com](https://ml.azureml.com) > select "Compute" tab > Locate the desired compute instance / target.
+  Visit [ml.azure.com](https://ml.azure.com/) > select "Compute" tab > Locate the desired compute instance / target.
 
-  The compute needs to be running in order to connect. In the case of compute instance this just requires turning it on. For compute targets there should be something running on the cluster. In this case you can sect the "Nodes" tab of the cluster to get IP / port information.
+  **Note.** The compute needs to be running in order to connect.
+    - In the case of compute instance this just requires turning it on.
+    - For compute targets there should be something running on the cluster. In this case you can select the "Nodes" tab of the cluster ([ml.azure.com](https://ml.azure.com/) > Compute > _your compute target_ > Nodes) to get Public IP & port number for each node.
 
 2. Open your favorite shell and run:
 
