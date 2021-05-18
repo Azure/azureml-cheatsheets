@@ -14,6 +14,9 @@ module.exports = {
   organizationName: 'Azure', // Usually your GitHub org/user name.
   projectName: 'azureml-cheatsheets', // Usually your repo name.
   themeConfig: {
+    agolia: {
+      contextualSearch: true
+    },
     navbar: {
       title: 'Azure Machine Learning',
       logo: {

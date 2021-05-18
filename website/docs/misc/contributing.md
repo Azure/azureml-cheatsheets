@@ -35,17 +35,21 @@ modify the nav bar) then please refer to the [Docusaurus 2 documentation](https:
 
 ## Previewing changes locally
 
-- Install npm and yarn: see [instructions here](https://v2.docusaurus.io/docs/installation)
-- First time Docusaurus2 installation:
+- Install [npm](https://nodejs.org/en/download/) and [yarn](https://classic.yarnpkg.com/en/docs/install#windows-stable).
 
-```bash
-cd website
-npm install
-```
+- Initial Docusaurus installation: (**First time only**)
+
+    ```bash
+    cd website
+    npm install
+    ```
+
 
 - Run local server while developing:
 
-```bash
-cd website
-yarn start
-```
+    ```bash
+    cd website
+    yarn start
+    ```
+
+See Docusaurus instructions [here](https://v2.docusaurus.io/docs/installation) for more details.
