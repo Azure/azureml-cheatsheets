@@ -278,3 +278,56 @@ echo "Bootstrap complete!"
 
 This script will wait for local rank 0 (`$AZ_BATCHAI_TASK_INDEX`) to create its `MARKER` file
 before the other processes continue.
+
+### Use Keyvault to pass secrets
+
+#### Workspace Default Keyvault
+
+Each Azure workspace comes with a keyvault (you can find this in the Azure Portal under the same resource
+group as your Workspace).
+
+```python
+from azureml.core import Workspace
+
+ws = Workspace.from_config()
+kv = ws.get_default_keyvault()
+```
+
+This can be used both to get and set secrets:
+
+```python
+import os
+from azureml.core import Keyvault
+
+# add a secret to keyvault
+kv.set_secret(name="<my-secret>", value=os.environ.get("MY_SECRET"))
+
+# get a secret from the keyvault
+secret = kv.get_secret(name="<my-secret>")
+
+# equivalently
+secret = run.get_secret(name="<my-secret>")
+```
+
+#### Generic Azure Keyvault
+
+Of course you can also make use of other keyvaults you might have in Azure.
+
+```python
+from azure.identity import DefaultAzureCredential
+from azure.keyvault.secrets import SecretClient
+
+credential = DefaultAzureCredential()
+client = SecretClient(vault_url=kv_url, credential=credential)
+my_secret = client.get_secret(secret_name).value
+
+env = Environment('example')
+env.environment_variables['POWERFUL_SECRET'] = my_secret
+```
+
+Be sure to add `azure-identity` and `azure-keyvault` to your projects requirements in
+this case.
+
+```bash
+pip install azure-identity azure-keyvault
+```
