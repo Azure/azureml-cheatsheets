@@ -168,6 +168,20 @@ envs: Dict[str, Environment] = ws.environments
 This dictionary contains custom environments that have been registered to the workspace as well as a
 collection of _curated environments_ maintained by Azure ML.
 
+#### Example.
+
+```python
+# create / update, register environment
+env = Environment.from_pip_requirements('my-env', 'requirements.txt')
+env.register(ws)
+
+# use later
+env = ws.environments['my-env']
+
+# get a specific version
+env = Environment.get(ws, 'my-env', version=6)
+```
+
 ### Save / Load Environments
 
 Save an environment to a local directory:
