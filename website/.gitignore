@@ -19,3 +19,7 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+# ignore lock files
+yarn.lock
+package-lock.json
