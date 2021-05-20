@@ -1,1 +1,0 @@
-(self.webpackChunkaml_cheatsheet=self.webpackChunkaml_cheatsheet||[]).push([[651],{6353:function(e){"use strict";e.exports=JSON.parse('{"title":"Recent posts","items":[{"title":"What is Run History?","permalink":"/azureml-cheatsheets/blog/run-history"},{"title":"What is a Run Configuration?","permalink":"/azureml-cheatsheets/blog/run-config"}]}')}}]);
