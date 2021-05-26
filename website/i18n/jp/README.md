@@ -1,1 +1,0 @@
-This is a placeholder for translation files in Japanese. Please follow instructions: https://docusaurus.io/docs/i18n/tutorial
