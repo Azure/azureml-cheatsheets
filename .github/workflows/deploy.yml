@@ -48,19 +48,19 @@ jobs:
           HostName github.com
           IdentityFile ~/.ssh/id_rsa
           EOT
-#       - name: Release to GitHub Pages
-#         env:
-#           USE_SSH: true
-#           GIT_USER: git
-#         run: |
-#           git config --global user.email "keonabut@microsoft.com"
-#           git config --global user.name "Keita Onabuta"
-#           cd website
-#           if [ -e yarn.lock ]; then
-#           yarn install --frozen-lockfile
-#           elif [ -e package-lock.json ]; then
-#           npm ci
-#           else
-#           npm i
-#           fi
-#           yarn deploy
+      - name: Release to GitHub Pages
+        env:
+          USE_SSH: true
+          GIT_USER: git
+        run: |
+          git config --global user.email "keonabut@microsoft.com"
+          git config --global user.name "Keita Onabuta"
+          cd website
+          if [ -e yarn.lock ]; then
+          yarn install --frozen-lockfile
+          elif [ -e package-lock.json ]; then
+          npm ci
+          else
+          npm i
+          fi
+#          yarn deploy
