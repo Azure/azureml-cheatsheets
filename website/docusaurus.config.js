@@ -1,7 +1,7 @@
 const path = require('path');
 
 module.exports = {
-    i18n: {
+  i18n: {
     defaultLocale: 'en',
     locales: ['en', 'ja'],
   },
@@ -25,6 +25,10 @@ module.exports = {
       },
       items: [
         {to: '/docs/cheatsheets/python/v1/cheatsheet', label: 'Python SDK', position: 'left'},
+        {
+          type: 'localeDropdown',
+          position: 'left',
+        },
       ],
     },
     footer: {
