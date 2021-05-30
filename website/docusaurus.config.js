@@ -1,6 +1,10 @@
 const path = require('path');
 
 module.exports = {
+    i18n: {
+    defaultLocale: 'en',
+    locales: ['en', 'ja'],
+  },
   title: 'Azure Machine Learning',
   tagline: 'Open source cheat sheets for Azure ML',
   url: 'https://github.com/Azure/',
