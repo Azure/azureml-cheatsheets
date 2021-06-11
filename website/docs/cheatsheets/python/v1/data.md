@@ -251,6 +251,22 @@ config.run_config.data_references[data_ref.data_reference_name] = data_ref.to_co
 ## Create Dataset
 
 ### From local data
+_TO DO_
+
+### From a datastore
+The code snippet below shows how to create a Dataset of an entire folder given the relative path `local/test/` on `datastore`. Note that this also applies to creating a Dataset of a single file, which could be done using a relative path like `local/test/data.tsv`.
+```python
+import os
+from azureml.core import Dataset
+
+# get or create input dataset
+dataset_name = os.environ.get('ADL_DATA_SET', 'folder_gen1')
+try:
+    dataset = Dataset.get_by_name(ws, name='folder_gen1')
+except Exception:
+    file_data = Dataset.File.from_files(path=(datastore, os.environ.get('ADL_DATA_RELATIVE_PATH', 'local/test/')))
+    dataset = file_data.register(workspace=ws, name=dataset_name)
+```
 
 #### Upload to datastore
 
