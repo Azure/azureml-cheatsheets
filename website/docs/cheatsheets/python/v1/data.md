@@ -261,11 +261,27 @@ from azureml.core import Dataset
 
 # get or create input dataset
 dataset_name = os.environ.get('ADL_DATA_SET', 'folder_gen1')
-try:
-    dataset = Dataset.get_by_name(ws, name='folder_gen1')
-except Exception:
-    file_data = Dataset.File.from_files(path=(datastore, os.environ.get('ADL_DATA_RELATIVE_PATH', 'local/test/')))
-    dataset = file_data.register(workspace=ws, name=dataset_name)
+file_data = Dataset.File.from_files(path=(datastore, os.environ.get('ADL_DATA_RELATIVE_PATH', 'local/test/')))
+dataset = file_data.register(workspace=ws, name=dataset_name)
+```
+
+### From outputs using `OutputFileDatasetConfig`
+```python
+from azureml.core import ScriptRunConfig
+from azureml.data import OutputFileDatasetConfig
+
+output_data = OutputFileDatasetConfig(
+    destination=(datastore, "test_path/{run-id}"),
+    name="test_name",
+)
+
+config = ScriptRunConfig(
+        source_directory=".",
+        command=["python", "run.py", "--output_dir", output_data.as_mount()],
+)
+
+# register your OutputFileDatasetConfig as a dataset
+output_data_dataset = output_data.register_on_complete(name='dataset_from_outputs', description = 'dataset created using OutputFileDatasetConfig`)
 ```
 
 #### Upload to datastore
