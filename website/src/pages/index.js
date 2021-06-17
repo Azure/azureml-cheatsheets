@@ -9,7 +9,7 @@ import Translate, {translate} from '@docusaurus/Translate';
 
 const features = [
   {
-    title: <Translate id="section0">'Cheat Sheet'</Translate>,
+    title: <Translate id="section0">Cheat Sheet</Translate>,
     pageUrl: 'docs/cheatsheets/python/v1/cheatsheet',
     imageUrl: 'img/undraw_docusaurus_mountain.svg',
     description: (
@@ -22,7 +22,7 @@ const features = [
     ),
   },
   {
-    title: <Translate id="section1">'Distributed GPU Training'</Translate>,
+    title: <Translate id="section1">Distributed GPU Training</Translate>,
     pageUrl: 'docs/cheatsheets/python/v1/distributed-training',
     imageUrl: 'img/undraw_docusaurus_react.svg',
     description: (
@@ -34,7 +34,7 @@ const features = [
     ),
   },
   {
-    title: <Translate id="section2">'Environments'</Translate>,
+    title: <Translate id="section2">Environments</Translate>,
     pageUrl: 'docs/cheatsheets/python/v1/environment',
     imageUrl: 'img/undraw_docusaurus_tree.svg',
     description: (
