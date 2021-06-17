@@ -255,6 +255,8 @@ You could create and register a dataset directly from a folder on your local mac
 
 :warning: Method `upload_directory`: This is an experimental method, and may change at any time. Please see https://aka.ms/azuremlexperimental for more information.
 ```python
+from azureml.core import Dataset
+
 # upload the data to datastore and create a FileDataset from it 
 folder_data = Dataset.File.upload_directory(src_dir="path/to/folder", target=(datastore, "self-defined/path/on/datastore"))
 dataset = folder_data.register(workspace=ws, name="<dataset_name>")
@@ -263,7 +265,6 @@ dataset = folder_data.register(workspace=ws, name="<dataset_name>")
 ### From a datastore
 The code snippet below shows how to create a `Dataset` given a relative path on `datastore`. Note that the path could either point to a folder (e.g. `local/test/`) or a single file (e.g. `local/test/data.tsv`).
 ```python
-import os
 from azureml.core import Dataset
 
 # create input dataset
