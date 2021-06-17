@@ -1,0 +1,26 @@
+{
+  "version.label": {
+    "message": "Next",
+    "description": "The label for version current"
+  },
+  "sidebar.pythonSidebar.category.Python": {
+    "message": "Python",
+    "description": "The label for category Python in sidebar pythonSidebar"
+  },
+  "sidebar.pythonSidebar.category.Getting Started": {
+    "message": "Getting Started",
+    "description": "The label for category Getting Started in sidebar pythonSidebar"
+  },
+  "sidebar.pythonSidebar.category.Azure ML Resources": {
+    "message": "Azure ML Resources",
+    "description": "The label for category Azure ML Resources in sidebar pythonSidebar"
+  },
+  "sidebar.pythonSidebar.category.Guides": {
+    "message": "Guides",
+    "description": "The label for category Guides in sidebar pythonSidebar"
+  },
+  "sidebar.cliSidebar.category.CLI (preview)": {
+    "message": "CLI (preview)",
+    "description": "The label for category CLI (preview) in sidebar cliSidebar"
+  }
+}

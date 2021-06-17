@@ -1,0 +1,10 @@
+{
+  "title": {
+    "message": "Azure Machine Learning",
+    "description": "The title in the navbar"
+  },
+  "item.label.Python SDK": {
+    "message": "Python SDK",
+    "description": "Navbar item with label Python SDK"
+  }
+}
