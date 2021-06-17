@@ -252,23 +252,23 @@ config.run_config.data_references[data_ref.data_reference_name] = data_ref.to_co
 
 ### From local data
 You could create and register a dataset directly from a folder on your local machine. Note that `src_dir` must point to a **folder**, not file.
+
 :warning: Method `upload_directory`: This is an experimental method, and may change at any time. Please see https://aka.ms/azuremlexperimental for more information.
 ```python
 # upload the data to datastore and create a FileDataset from it 
-folder_data = Dataset.File.upload_directory(src_dir="PATH/TO/FOLDER", target=(datastore, "SELF-DEFINED/PATH/ON/DATASTORE"))
-dataset = folder_data.register(workspace=ws, name="test_data")
+folder_data = Dataset.File.upload_directory(src_dir="path/to/folder", target=(datastore, "self-defined/path/on/datastore"))
+dataset = folder_data.register(workspace=ws, name="<dataset_name>")
 ```
 
 ### From a datastore
-The code snippet below shows how to create a Dataset of an entire folder given the relative path `local/test/` on `datastore`. Note that this also applies to creating a Dataset of a single file, which could be done using a relative path like `local/test/data.tsv`.
+The code snippet below shows how to create a `Dataset` given a relative path on `datastore`. Note that the path could either point to a folder (e.g. `local/test/`) or a single file (e.g. `local/test/data.tsv`).
 ```python
 import os
 from azureml.core import Dataset
 
 # create input dataset
-dataset_name = os.environ.get('ADL_DATA_SET', 'folder_data')
-folder_data = Dataset.File.from_files(path=(datastore, os.environ.get('ADL_DATA_RELATIVE_PATH', 'local/test/')))
-dataset = folder_data.register(workspace=ws, name=dataset_name)
+data = Dataset.File.from_files(path=(datastore, "path/on/datastore"))
+dataset = data.register(workspace=ws, name="<dataset_name>")
 ```
 
 ### From outputs using `OutputFileDatasetConfig`
@@ -277,17 +277,18 @@ from azureml.core import ScriptRunConfig
 from azureml.data import OutputFileDatasetConfig
 
 output_data = OutputFileDatasetConfig(
-    destination=(datastore, "test_path/{run-id}"),
-    name="test_name",
+    destination=(datastore, "path/on/datastore"),
+    name="<output_name>",
 )
 
 config = ScriptRunConfig(
         source_directory=".",
-        command=["python", "run.py", "--output_dir", output_data.as_mount()],
+        script="run.py",
+        arguments=["--output_dir", output_data.as_mount()],
 )
 
 # register your OutputFileDatasetConfig as a dataset
-output_data_dataset = output_data.register_on_complete(name='dataset_from_outputs', description = 'dataset created using OutputFileDatasetConfig`)
+output_data_dataset = output_data.register_on_complete(name="<dataset_name>", description = "<dataset_description>")
 ```
 
 #### Upload to datastore
