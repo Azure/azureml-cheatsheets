@@ -5,7 +5,7 @@ on:
     branches: [main]
     paths: [website/**]
   push:
-    branches: [main]
+    branches: [japanese-contrib]
     paths: [website/**]
 jobs:
   checks:
