@@ -252,9 +252,10 @@ config.run_config.data_references[data_ref.data_reference_name] = data_ref.to_co
 
 ### From local data
 You could create and register a dataset directly from a folder on your local machine. Note that `src_dir` must point to a **folder**, not file.
+:warning: Method `upload_directory`: This is an experimental method, and may change at any time. Please see https://aka.ms/azuremlexperimental for more information.
 ```python
 # upload the data to datastore and create a FileDataset from it 
-folder_data = Dataset.File.upload_directory(src_dir="PATH/TO/FOLDER", target=(datastore, data_root))
+folder_data = Dataset.File.upload_directory(src_dir="PATH/TO/FOLDER", target=(datastore, "SELF-DEFINED/PATH/ON/DATASTORE"))
 dataset = folder_data.register(workspace=ws, name="test_data")
 ```
 
