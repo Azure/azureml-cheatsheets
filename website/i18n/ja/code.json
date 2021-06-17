@@ -190,5 +190,29 @@
   "theme.SearchBar.label": {
     "message": "検索",
     "description": "The ARIA label and placeholder for search button"
+  },
+  "index.title": {
+    "message": "Azure Machine Learning 日本語版"
+  },
+  "index.tagline": {
+    "message": "オープンソースの Azure Machine Learning チートシート"
+  },
+  "section1": {
+    "message": "GPU 分散学習"
+  },
+  "section0": {
+    "message": "チートシート"
+  },
+  "section2": {
+    "message": "環境"
+  },
+  "section0.desc": {
+    "message": "Azure ML で頻出するコードに関するチートシートです。"
+  },
+  "section1.desc": {
+    "message": "Azure ML で分散学習をするためのガイドです。"
+  },
+  "section2.desc": {
+    "message": "Azure ML で Python パッケージと Docker イメージを構築・管理します。"
   }
 }
