@@ -9,6 +9,10 @@ keywords:
   - overview
 ---
 
+:::note
+このコンテンツはお使いの言語では利用できません。
+:::
+
 ## Basic setup
 
 ### Connect to workspace

@@ -6,6 +6,10 @@ keywords:
   - log files
 ---
 
+:::note
+このコンテンツはお使いの言語では利用できません。
+:::
+
 ## Azure ML Log Files
 
 Azure ML's log files are an essential resource for debugging your Azure ML workloads.

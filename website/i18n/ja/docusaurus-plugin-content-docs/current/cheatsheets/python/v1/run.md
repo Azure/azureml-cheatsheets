@@ -9,6 +9,10 @@ keywords:
   - ScriptRunConfig
 ---
 
+:::note
+このコンテンツはお使いの言語では利用できません。
+:::
+
 ## Concepts
 
 ### Run

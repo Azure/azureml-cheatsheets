@@ -8,6 +8,10 @@ keywords:
   - troubleshooting
 ---
 
+:::note
+このコンテンツはお使いの言語では利用できません。
+:::
+
 ### Error: az acr login- APIVersion 2020-11-01-preview is not available. 
 **Description**
 NotImplementedError occurred when building image using az acr.

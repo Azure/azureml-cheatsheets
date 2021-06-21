@@ -7,6 +7,10 @@ keywords:
   - compute
 ---
 
+:::note
+このコンテンツはお使いの言語では利用できません。
+:::
+
 This guide gives some pointers for developing your code on Azure ML. A typical
 scenario might be testing your distributed training code, or some other aspect
 of your code that isn't well represented on your local devbox.

@@ -8,6 +8,10 @@ keywords:
   - environment
 ---
 
+:::note
+このコンテンツはお使いの言語では利用できません。
+:::
+
 In this post we explain how Azure ML builds the containers used to run your code.
 
 ## Dockerfile

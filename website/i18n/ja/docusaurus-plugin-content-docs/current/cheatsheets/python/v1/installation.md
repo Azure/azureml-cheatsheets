@@ -10,6 +10,10 @@ keywords:
   - gpu
 ---
 
+:::note
+このコンテンツはお使いの言語では利用できません。
+:::
+
 Install the Azure ML Python SDK:
 
 ```console

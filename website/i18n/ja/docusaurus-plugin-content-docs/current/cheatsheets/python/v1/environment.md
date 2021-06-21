@@ -10,6 +10,10 @@ keywords:
   - environment variables
 ---
 
+:::note
+このコンテンツはお使いの言語では利用できません。
+:::
+
 Azure ML Environments are used to define the containers where your code will run. In the simplest case you can add custom Python libraries using pip, Conda or directly via the Azure ML Python SDK. If more customization is necessary you can use custom docker images.
 
 This page provides examples creating environments:

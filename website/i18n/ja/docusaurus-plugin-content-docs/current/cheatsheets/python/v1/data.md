@@ -7,6 +7,10 @@ keywords:
   - datastore
 ---
 
+:::note
+このコンテンツはお使いの言語では利用できません。
+:::
+
 ## Concepts
 
 AzureML provides two basic assets for working with data:

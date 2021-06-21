@@ -9,6 +9,10 @@ keywords:
   - ScriptRunConfig
 ---
 
+:::note
+このコンテンツはお使いの言語では利用できません。
+:::
+
 ## Experiments and Runs
 
 Azure ML is a machine-learning service that facilitates running your code in

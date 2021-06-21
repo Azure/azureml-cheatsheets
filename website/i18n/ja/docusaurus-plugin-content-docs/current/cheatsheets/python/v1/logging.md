@@ -6,6 +6,10 @@ keywords:
   - logging
 ---
 
+:::note
+このコンテンツはお使いの言語では利用できません。
+:::
+
 ## Logging metrics
 
 Logging a metric to a run causes that metric to be stored in the run record in the experiment.

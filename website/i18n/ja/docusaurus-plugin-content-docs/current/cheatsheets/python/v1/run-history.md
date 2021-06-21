@@ -2,6 +2,11 @@
 title: Run History
 ---
 
+:::note
+このコンテンツはお使いの言語では利用できません。
+:::
+
+
 Azure ML can supercharge your ML workloads in (at least!) two ways:
 
 - AML Compute: Providing powerful compute resoures to train larger models

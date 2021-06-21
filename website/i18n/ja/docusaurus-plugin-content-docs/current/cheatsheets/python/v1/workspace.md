@@ -5,6 +5,10 @@ keywords:
   - workspace
 ---
 
+:::note
+このコンテンツはお使いの言語では利用できません。
+:::
+
 Workspaces are a foundational object used throughout Azure ML and are used in the
 constructors of many other classes. Throughout this documentation we frequently
 omit the workspace object instantiation and simply refer to `ws`.

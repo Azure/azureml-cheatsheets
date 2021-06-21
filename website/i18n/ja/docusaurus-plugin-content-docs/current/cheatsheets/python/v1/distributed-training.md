@@ -11,6 +11,10 @@ keywords:
   - tensorflow
 ---
 
+:::note
+このコンテンツはお使いの言語では利用できません。
+:::
+
 ## Basic Concepts
 
 We assume readers already understand the basic concept of distributed GPU training such as _data parallelism, distributed data parallelism, and model parallelism_. This guide aims at helping readers running existing distributed training code on Azure ML. 
