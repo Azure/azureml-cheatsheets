@@ -2,10 +2,10 @@ name: deploy
 on:
   workflow_dispatch:
   pull_request:
-    branches: [japanese-markdown-internal]
+    branches: [main]
     paths: [website/**]
   push:
-    branches: [japanese-markdown-internal]
+    branches: [main]
     paths: [website/**]
 jobs:
   checks:
