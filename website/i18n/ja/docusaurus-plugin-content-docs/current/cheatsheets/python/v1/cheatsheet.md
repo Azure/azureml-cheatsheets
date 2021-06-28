@@ -1,5 +1,5 @@
 ---
-title: Cheat Sheet
+title: チートシート
 id: cheatsheet
 description: A cheat sheet for Azure ML.
 keywords:
@@ -9,47 +9,43 @@ keywords:
   - overview
 ---
 
-:::note
-このコンテンツはお使いの言語では利用できません。
-:::
 
-## Basic setup
+## 基本セットアップ
 
-### Connect to workspace
+### ワークスペースへの接続
 
 ```python
 from azureml.core import Workspace
 ws = Workspace.from_config()
 ```
 
-The workspace object is the fundamental handle on your Azure ML assets and is used
-throughout (often simply referred to by `ws`).
+このWorkspaceオブジェクトはAzure ML操作における基本的なオブジェクトで、一連のコードを通して共有されます。(`ws`という変数名で参照されることが多いです。)
 
-For more details: [Workspaces](./workspace.md)
+ワークスペースの詳細: [Workspaces](./workspace.md)
 
-### Connect to compute target
+### コンピューティングターゲットへの接続
 
 ```python
 compute_target = ws.compute_targets['<compute-target-name>']
 ```
 
-**Sample usage.**
+**使用例**
 
 ```python
 compute_target = ws.compute_targets['powerful-gpu']
 
 config = ScriptRunConfig(
-    compute_target=compute_target,  # compute target used to run train.py script
+    compute_target=compute_target,  # train.pyスクリプトを実行するために使用されるコンピューティングターゲット
     source_directory='.',
     script='train.py',
 )
 ```
 
-For more details: [Compute Target](./compute-targets.md)
+コンピューティングターゲットの詳細: [Compute Target](./compute-targets.md)
 
-### Prepare Python environment
+### Python環境の準備
 
-You can use a pip `requirements.txt` file or a Conda `env.yml` file to define a Python environment on your compute.
+pipの`requirements.txt`ファイルやCondaの`env.yml`ファイルを使い、コンピューティング環境のPython環境をEnvironmentオブジェクトとして定義することができます。
 
 ```python
 from azureml.core import Environment
@@ -59,51 +55,48 @@ environment = Environment.from_pip_requirements('<env-name>', '<path/to/requirem
 environment = Environment.from_conda_specification('<env-name>', '<path/to/env.yml>')
 ```
 
-You can also use docker images to prepare your environments.
+dockerイメージを使って環境を準備することもできます。
 
-**Sample usage.**
+**使用例**
 
 ```python
 environment = Environment.from_pip_requirements('<env-name>', '<path/to/requirements.txt>')
 
 config = ScriptRunConfig(
-    environment=environment,  # set the python environment
+    environment=environment,  # Python環境を設定する
     source_directory='.',
     script='train.py',
 )
 ```
 
-For more details: [Environment](./environment.md)
+環境の詳細: [Environment](./environment.md)
 
 
-## Submit code
+## コードをサブミットする
 
-To run code in Azure ML you need to:
+Azure ML上でコードを実行するためには:
 
-1. **Configure**: Configuration includes specifying the code to run, the compute
-target to run on and the Python environment to run in.
-2. **Submit**: Create or reuse an Azure ML Experiment and submit the run.
+1. エントリーポイントとなるコードのパス、コードを実行するコンピューティングターゲット、そしてコードを実行するPython環境の**設定情報を作成**します。
+2. Azure MLの実験を新規作成または再利用して**サブミット**します。
 
 ### ScriptRunConfig
 
-A typical directory may have the following structure:
+典型的なディレクトリ構成例:
 
 ```bash
 source_directory/
-    script.py    # entry point to your code
-    module1.py   # modules called by script.py     
+    script.py    # エントリーポイントとなるコード
+    module1.py   # script.pyにより呼ばれるモジュール
     ...
 ```
 
-To run `$ (env) python <path/to/code>/script.py [arguments]` on a remote compute
-cluster `target: ComputeTarget` with an environment `env: Environment` we can use
-the `ScriptRunConfig` class.
+リモートコンピューティングクラスター`target: ComputeTarget`上の、Python環境`env: Environment`で、`$ (env) python <path/to/code>/script.py [arguments]`を実行するには、 `ScriptRunConfig`クラスを使用します。
 
 ```python
 from azureml.core import ScriptRunConfig
 
 config = ScriptRunConfig(
-    source_directory='<path/to/code>',  # relative paths okay
+    source_directory='<path/to/code>',  # 相対パスでもOK
     script='script.py',
     compute_target=compute_target,
     environment=environment,
@@ -111,22 +104,22 @@ config = ScriptRunConfig(
 )
 ```
 
-For more details on arguments: [Command line arguments](./script-run-config.md#command-line-arguments)
+ScriptRunConfigの引数の詳細: [Command line arguments](./script-run-config.md#command-line-arguments)
 
 :::info
-- `compute_target`: If not provided the script will run on your local machine.
-- `environment`: If not provided, uses a default Python environment managed by Azure ML. See [Environment](./environment.md) for more details.
+- `compute_target`: もし引数が与えられなかった場合は、スクリプトはローカルマシン上で実行されます。
+- `environment`: もし引数が与えられなかった場合、Azure MLのデフォルトPython環境が使用されます。環境の詳細: [Environment](./environment.md)
 :::
 
-#### Commands
+#### コマンド
 
-It is possible to provide the explicit command to run.
+もしも明示的なコマンドを与える場合。
 
 ```python
 command = 'echo cool && python script.py'.split()
 
 config = ScriptRunConfig(
-    source_directory='<path/to/code>',  # relative paths okay
+    source_directory='<path/to/code>',  # 相対パスもOK
     command=command,
     compute_target=compute_target,
     environment=environment,
@@ -134,12 +127,12 @@ config = ScriptRunConfig(
 )
 ```
 
-For more details: [Commands](./script-run-config.md#commands)
+コマンドの詳細: [Commands](./script-run-config.md#commands)
 
-### Experiment
+### 実験
 
-To submit this code, create an `Experiment`: a light-weight container that helps to
-organize our submissions and keep track of code (See [Run History](./run-history.md)).
+コードをサブミットするには`実験`を作成します。実験は、サブミットされた一連のコードをグルーピングしてコードの実行履歴を追跡する軽量のコンテナです。 (参照: [Run History](./run-history.md)).
+
 
 ```python
 exp = Experiment(ws, '<experiment-name>')
@@ -147,23 +140,22 @@ run = exp.submit(config)
 print(run.get_portal_url())
 ```
 
-This link will take you to the Azure ML Studio where you can monitor your run.
+上記コードで返されるAzure ML Studioへのリンクにより、実験の実行をモニタリングすることができます。
 
-For more details: [ScriptRunConfig](./script-run-config.md)
+詳細: [ScriptRunConfig](./script-run-config.md)
 
-### Sample usage
+### 使用例
 
-Here is a fairly typical example using a Conda environment to run a training
-script `train.py` on our local machine from the command line.
+以下はコマンドラインからConda環境を使ってトレーニングスクリプト`train.py`をローカルマシン上で実行する典型的な例です。
 
 ```bash
-$ conda env create -f env.yml  # create environment called pytorch
+$ conda env create -f env.yml  # pythorchという名前のconda envを作成
 $ conda activate pytorch
 (pytorch) $ cd <path/to/code>
 (pytorch) $ python train.py --learning_rate 0.001 --momentum 0.9
 ```
 
-Suppose you want to run this on a GPU in Azure.
+このスクリプトをAzure上のGPUを使って実行したいと仮定します。
 
 ```python
 ws = Workspace.from_config()
@@ -180,9 +172,9 @@ config = ScriptRunConfig(
 run = Experiment(ws, 'PyTorch model training').submit(config)
 ```
 
-## Distributed GPU Training
+## 分散GPU学習
 
-Adapt your `ScriptRunConfig` to enable distributed GPU training.
+分散GPU学習を有効にするために`ScriptRunConfig`を変更します。
 
 ```python {3,8-9,12,19}
 from azureml.core import Workspace, Experiment, ScriptRunConfig
@@ -195,40 +187,38 @@ environment = Environment.from_conda_specification('pytorch', 'env.yml')
 environment.docker.enabled = True
 environment.docker.base_image = 'mcr.microsoft.com/azureml/openmpi3.1.2-cuda10.1-cudnn7-ubuntu18.04'
 
-# train on 2 nodes each with 4 GPUs
+# それぞれ4つのGPUを搭載した2つのノード上でトレーニングを行う
 mpiconfig = MpiConfiguration(process_count_per_node=4, node_count=2)
 
 config = ScriptRunConfig(
-    source_directory='<path/to/code>',  # directory containing train.py
+    source_directory='<path/to/code>',  # train.pyが含まれるディレクトリ
     script='train.py',
     environment=environment,
     arguments=['--learning_rate', 0.001, '--momentum', 0.9],
-    distributed_job_config=mpiconfig,   # add the distributed configuration
+    distributed_job_config=mpiconfig,   # 分散学習のための設定を追加
 )
 
 run = Experiment(ws, 'PyTorch model training').submit(config)
 ```
 
 :::info
-- `mcr.microsoft.com/azureml/openmpi3.1.2-cuda10.1-cudnn7-ubuntu18.04` is a docker image
-    with OpenMPI. This is required for distributed training on Azure ML.
-- `MpiConfiguration` is where you specify the number of nodes and GPUs (per node) you
-    want to train on.
+- `mcr.microsoft.com/azureml/openmpi3.1.2-cuda10.1-cudnn7-ubuntu18.04`はOpenMPIのdockerイメージです。このイメージはAzure ML上で分散学習を実行する際に必要となります。
+- `MpiConfiguration`はトレーニングを行うノード数とノードあたりのGPU数を指定するために使います。
 :::
 
 For more details: [Distributed GPU Training](./distributed-training.md)
 
-## Connect to data
+## データへの接続
 
-To work with data in your training scripts using your workspace `ws` and its default datastore:
+ワークスペース`ws`のデフォルトデータストアにあるデータをトレーニングスクリプトから扱うためには:
 
 ```python
 datastore = ws.get_default_datastore()
 dataset = Dataset.File.from_files(path=(datastore, '<path/on/datastore>'))
 ```
-For more details see: [Data](./data.md)
+詳細: [Data](./data.md)
 
-Pass this to your training script as a command line argument.
+コマンドライン引数に以下を渡すことで上記の`dataset`を使用できます。
 
 ```python
 arguments=['--data', dataset.as_mount()]
