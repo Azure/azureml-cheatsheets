@@ -10,7 +10,7 @@ keywords:
   - gpu
 ---
 
-Azure ML Python SDKのインストール:
+Azure ML Python SDK のインストール:
 
 ```console
 pip install azureml-sdk
@@ -43,12 +43,12 @@ ws = Workspace.from_config()
 
 以下の例はワークスペースにコンピューティングターゲットを作成します。
 
-- VMの種類: CPU
-- VMのサイズ: STANDARD_D2_V2
-- VMクラスターの最大ノード数: 4
-- VMクラスターのノードが自動的にスケールインするまでのアイドル時間: 2400秒
+- VM の種類: CPU
+- VM のサイズ: STANDARD_D2_V2
+- VM クラスターの最大ノード数: 4
+- VM クラスターのノードが自動的にスケールインするまでのアイドル時間: 2400秒
 
-GPUを使用したりVMのサイズを変更する場合は以下のコードを変更してください。
+GPU を使用したり VM のサイズを変更する場合は以下のコードを変更してください。
 
 ```python
 from azureml.core import Workspace
