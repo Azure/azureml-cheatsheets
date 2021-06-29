@@ -21,13 +21,13 @@ pip install azureml-sdk
 ```python
 from azureml.core import Workspace
 
-ws = Workspace.create(name='<my_workspace_name>', # provide a name for your workspace
-                      subscription_id='<azure-subscription-id>', # provide your subscription ID
-                      resource_group='<myresourcegroup>', # provide a resource group name
+ws = Workspace.create(name='<my_workspace_name>', # 任意のワークスペース名
+                      subscription_id='<azure-subscription-id>', # サブスクリプションID
+                      resource_group='<myresourcegroup>', # 任意のリソースグループ名
                       create_resource_group=True,
-                      location='<NAME_OF_REGION>') # e.g. 'westeurope' or 'eastus2' or 'westus2' or 'southeastasia'.
+                      location='<NAME_OF_REGION>') # リソースを作成するリージョン e.g. 'japaneast'
 
-# write out the workspace details to a configuration file: .azureml/config.json
+# ワークスペースの情報を設定ファイルに書き出し: azureml/config.json
 ws.write_config(path='.azureml')
 ```
 
@@ -41,14 +41,12 @@ ws = Workspace.from_config()
 
 ### コンピューティングターゲットの作成
 
-The following example creates a compute target in your workspace with:
-
 以下の例はワークスペースにコンピューティングターゲットを作成します。
 
 - VMの種類: CPU
 - VMのサイズ: STANDARD_D2_V2
-- クラスターの最大ノード数: 4
-- クラスターのノードが自動的にスケールインするまでのアイドル時間: 2400秒
+- VMクラスターの最大ノード数: 4
+- VMクラスターのノードが自動的にスケールインするまでのアイドル時間: 2400秒
 
 GPUを使用したりVMのサイズを変更する場合は以下のコードを変更してください。
 
