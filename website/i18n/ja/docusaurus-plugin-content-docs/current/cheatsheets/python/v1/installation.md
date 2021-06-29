@@ -1,5 +1,5 @@
 ---
-title: Installation
+title: インストール
 description: Guide to installing Azure ML Python SDK and setting up key resources.
 keywords:
   - azureml-sdk
@@ -10,17 +10,13 @@ keywords:
   - gpu
 ---
 
-:::note
-このコンテンツはお使いの言語では利用できません。
-:::
-
-Install the Azure ML Python SDK:
+Azure ML Python SDKのインストール:
 
 ```console
 pip install azureml-sdk
 ```
 
-### Create Workspace
+### ワークスペースの作成
 
 ```python
 from azureml.core import Workspace
@@ -36,50 +32,52 @@ ws.write_config(path='.azureml')
 ```
 
 :::info
-You can easily access this later with
+次回からは以下のように簡単にワークスペースにアクセスすることができます。
 ```python
 from azureml.core import Workspace
 ws = Workspace.from_config()
 ```
 :::
 
-### Create Compute Target
+### コンピューティングターゲットの作成
 
 The following example creates a compute target in your workspace with:
 
-- VM type: CPU
-- VM size: STANDARD_D2_V2
-- Cluster size: up to 4 nodes
-- Idle time: 2400s before the node scales down automatically
+以下の例はワークスペースにコンピューティングターゲットを作成します。
 
-Modify this code to update to GPU, or to change the SKU of your VMs.
+- VMの種類: CPU
+- VMのサイズ: STANDARD_D2_V2
+- クラスターの最大ノード数: 4
+- クラスターのノードが自動的にスケールインするまでのアイドル時間: 2400秒
+
+GPUを使用したりVMのサイズを変更する場合は以下のコードを変更してください。
 
 ```python
 from azureml.core import Workspace
 from azureml.core.compute import ComputeTarget, AmlCompute
 from azureml.core.compute_target import ComputeTargetException
 
-ws = Workspace.from_config() # automatically looks for a directory .azureml/
+ws = Workspace.from_config() # 自動的に .azureml/ ディレクトリを参照
 
-# name for your cluster
+# 任意のクラスター名
 cpu_cluster_name = "cpu-cluster"
 
 try:
-    # check if cluster already exists
+    # クラスターが既に存在するかどうかのチェック
     cpu_cluster = ComputeTarget(workspace=ws, name=cpu_cluster_name)
     print('Found existing cluster, use it.')
 except ComputeTargetException:
-    # if not, create it
+    # もし無ければ作成する
     compute_config = AmlCompute.provisioning_configuration(
         vm_size='STANDARD_D2_V2',
-        max_nodes=4, 
+        max_nodes=4,
         idle_seconds_before_scaledown=2400,)
     cpu_cluster = ComputeTarget.create(ws, cpu_cluster_name, compute_config)
     cpu_cluster.wait_for_completion(show_output=True)
 ```
 
 :::info
-You can access this later with
+次回からは以下のように簡単にコンピューティングターゲットにアクセスすることができます。
 
 ```python
 from azureml.core import ComputeTarget
