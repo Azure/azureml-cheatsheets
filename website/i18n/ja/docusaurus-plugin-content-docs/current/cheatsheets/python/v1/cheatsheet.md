@@ -206,7 +206,7 @@ run = Experiment(ws, 'PyTorch model training').submit(config)
 - `MpiConfiguration`はトレーニングを行うノード数とノードあたりのGPU数を指定するために使います。
 :::
 
-For more details: [Distributed GPU Training](./distributed-training.md)
+詳細: [Distributed GPU Training](./distributed-training.md)
 
 ## データへの接続
 
