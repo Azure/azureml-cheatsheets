@@ -19,7 +19,7 @@ from azureml.core import Workspace
 ws = Workspace.from_config()
 ```
 
-このWorkspaceオブジェクトはAzure ML操作における基本的なオブジェクトで、一連のコードを通して共有されます。(`ws`という変数名で参照されることが多いです。)
+この Workspace オブジェクトは Azure ML 操作における基本的なオブジェクトで、一連のコードを通して共有されます。(`ws`という変数名で参照されることが多いです。)
 
 ワークスペースの詳細: [Workspaces](./workspace.md)
 
@@ -35,7 +35,7 @@ compute_target = ws.compute_targets['<compute-target-name>']
 compute_target = ws.compute_targets['powerful-gpu']
 
 config = ScriptRunConfig(
-    compute_target=compute_target,  # train.pyスクリプトを実行するために使用されるコンピューティングターゲット
+    compute_target=compute_target,  # train.py スクリプトを実行するために使用されるコンピューティングターゲット
     source_directory='.',
     script='train.py',
 )
@@ -43,19 +43,19 @@ config = ScriptRunConfig(
 
 コンピューティングターゲットの詳細: [Compute Target](./compute-targets.md)
 
-### Python環境の準備
+### Python 環境の準備
 
-pipの`requirements.txt`ファイルやCondaの`env.yml`ファイルを使い、コンピューティング環境のPython環境をEnvironmentオブジェクトとして定義することができます。
+pip の`requirements.txt`ファイルや Conda の`env.yml`ファイルを使い、コンピューティング環境の Python 環境を Environment オブジェクトとして定義することができます。
 
 ```python
 from azureml.core import Environment
-# Option 1. From pip
+# 選択肢 1: pip
 environment = Environment.from_pip_requirements('<env-name>', '<path/to/requirements.txt>')
-# Option 2. From Conda
+# 選択肢 2: Conda
 environment = Environment.from_conda_specification('<env-name>', '<path/to/env.yml>')
 ```
 
-dockerイメージを使って環境を準備することもできます。
+docker イメージを使って環境を準備することもできます。
 
 **使用例**
 
@@ -63,7 +63,7 @@ dockerイメージを使って環境を準備することもできます。
 environment = Environment.from_pip_requirements('<env-name>', '<path/to/requirements.txt>')
 
 config = ScriptRunConfig(
-    environment=environment,  # Python環境を設定する
+    environment=environment,  # Python 環境を設定する
     source_directory='.',
     script='train.py',
 )
@@ -74,10 +74,10 @@ config = ScriptRunConfig(
 
 ## コードをサブミットする
 
-Azure ML上でコードを実行するためには:
+Azure ML 上でコードを実行するためには:
 
-1. エントリーポイントとなるコードのパス、コードを実行するコンピューティングターゲット、そしてコードを実行するPython環境の**設定情報を作成**します。
-2. Azure MLの実験を新規作成または再利用して**サブミット**します。
+1. エントリーポイントとなるコードのパス、コードを実行するコンピューティングターゲット、そしてコードを実行する Python 環境の**設定情報を作成**します。
+2. Azure ML の実験を新規作成または再利用して**サブミット**します。
 
 ### ScriptRunConfig
 
@@ -86,17 +86,17 @@ Azure ML上でコードを実行するためには:
 ```bash
 source_directory/
     script.py    # エントリーポイントとなるコード
-    module1.py   # script.pyにより呼ばれるモジュール
+    module1.py   # script.py により呼ばれるモジュール
     ...
 ```
 
-リモートコンピューティングクラスター`target: ComputeTarget`上の、Python環境`env: Environment`で、`$ (env) python <path/to/code>/script.py [arguments]`を実行するには、 `ScriptRunConfig`クラスを使用します。
+リモートコンピューティングクラスター`target: ComputeTarget`上の、Python 環境`env: Environment`で、`$ (env) python <path/to/code>/script.py [arguments]`を実行するには、 `ScriptRunConfig`クラスを使用します。
 
 ```python
 from azureml.core import ScriptRunConfig
 
 config = ScriptRunConfig(
-    source_directory='<path/to/code>',  # 相対パスでもOK
+    source_directory='<path/to/code>',  # 相対パスでも OK
     script='script.py',
     compute_target=compute_target,
     environment=environment,
@@ -104,11 +104,11 @@ config = ScriptRunConfig(
 )
 ```
 
-ScriptRunConfigの引数の詳細: [Command line arguments](./script-run-config.md#command-line-arguments)
+ScriptRunConfig の引数の詳細: [Command line arguments](./script-run-config.md#command-line-arguments)
 
 :::info
 - `compute_target`: もし引数が与えられなかった場合は、スクリプトはローカルマシン上で実行されます。
-- `environment`: もし引数が与えられなかった場合、Azure MLのデフォルトPython環境が使用されます。環境の詳細: [Environment](./environment.md)
+- `environment`: もし引数が与えられなかった場合、Azure ML のデフォルトPython 環境が使用されます。環境の詳細: [Environment](./environment.md)
 :::
 
 #### コマンド
@@ -119,7 +119,7 @@ ScriptRunConfigの引数の詳細: [Command line arguments](./script-run-config.
 command = 'echo cool && python script.py'.split()
 
 config = ScriptRunConfig(
-    source_directory='<path/to/code>',  # 相対パスもOK
+    source_directory='<path/to/code>',  # 相対パスも OK
     command=command,
     compute_target=compute_target,
     environment=environment,
@@ -140,22 +140,22 @@ run = exp.submit(config)
 print(run.get_portal_url())
 ```
 
-上記コードで返されるAzure ML Studioへのリンクにより、実験の実行をモニタリングすることができます。
+上記コードで返される Azure ML Studio へのリンクにより、実験の実行をモニタリングすることができます。
 
 詳細: [ScriptRunConfig](./script-run-config.md)
 
 ### 使用例
 
-以下はコマンドラインからConda環境を使ってトレーニングスクリプト`train.py`をローカルマシン上で実行する典型的な例です。
+以下はコマンドラインから Conda 環境を使ってトレーニングスクリプト`train.py`をローカルマシン上で実行する典型的な例です。
 
 ```bash
-$ conda env create -f env.yml  # pythorchという名前のconda envを作成
+$ conda env create -f env.yml  # pythorch という名前の conda env を作成
 $ conda activate pytorch
 (pytorch) $ cd <path/to/code>
 (pytorch) $ python train.py --learning_rate 0.001 --momentum 0.9
 ```
 
-このスクリプトをAzure上のGPUを使って実行したいと仮定します。
+このスクリプトを Azure 上の GPU を使って実行したいと仮定します。
 
 ```python
 ws = Workspace.from_config()
@@ -172,9 +172,9 @@ config = ScriptRunConfig(
 run = Experiment(ws, 'PyTorch model training').submit(config)
 ```
 
-## 分散GPU学習
+## 分散 GPU 学習
 
-分散GPU学習を有効にするために`ScriptRunConfig`を変更します。
+分散 GPU 学習を有効にするために`ScriptRunConfig`を変更します。
 
 ```python {3,8-9,12,19}
 from azureml.core import Workspace, Experiment, ScriptRunConfig
@@ -187,11 +187,11 @@ environment = Environment.from_conda_specification('pytorch', 'env.yml')
 environment.docker.enabled = True
 environment.docker.base_image = 'mcr.microsoft.com/azureml/openmpi3.1.2-cuda10.1-cudnn7-ubuntu18.04'
 
-# それぞれ4つのGPUを搭載した2つのノード上でトレーニングを行う
+# それぞれ 4 つの GPU を搭載した 2 つのノード上でトレーニングを行う
 mpiconfig = MpiConfiguration(process_count_per_node=4, node_count=2)
 
 config = ScriptRunConfig(
-    source_directory='<path/to/code>',  # train.pyが含まれるディレクトリ
+    source_directory='<path/to/code>',  # train.py が含まれるディレクトリ
     script='train.py',
     environment=environment,
     arguments=['--learning_rate', 0.001, '--momentum', 0.9],
@@ -202,8 +202,8 @@ run = Experiment(ws, 'PyTorch model training').submit(config)
 ```
 
 :::info
-- `mcr.microsoft.com/azureml/openmpi3.1.2-cuda10.1-cudnn7-ubuntu18.04`はOpenMPIのdockerイメージです。このイメージはAzure ML上で分散学習を実行する際に必要となります。
-- `MpiConfiguration`はトレーニングを行うノード数とノードあたりのGPU数を指定するために使います。
+- `mcr.microsoft.com/azureml/openmpi3.1.2-cuda10.1-cudnn7-ubuntu18.04`は OpenMPI の docker イメージです。このイメージは Azure ML 上で分散学習を実行する際に必要となります。
+- `MpiConfiguration`はトレーニングを行うノード数とノードあたりの GPU 数を指定するために使います。
 :::
 
 詳細: [Distributed GPU Training](./distributed-training.md)
