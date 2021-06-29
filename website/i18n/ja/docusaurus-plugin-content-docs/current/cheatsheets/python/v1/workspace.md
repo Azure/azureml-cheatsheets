@@ -1,23 +1,18 @@
 ---
 title: Workspace
-description: Overview of Azure ML Workspaces.
+description: Azure ML ワークスペースの概要
 keywords:
   - workspace
 ---
 
-:::note
-このコンテンツはお使いの言語では利用できません。
-:::
+ワークスペースは、Azure ML で用いられる基本的なオブジェクトであり、他の多くのクラスのコンストラクタの中で使用されます。
+このドキュメントを通して、私たちは頻繁にワークスペース・オブジェクトのインスタンス化を省略し、単純に `ws` を参照します。
 
-Workspaces are a foundational object used throughout Azure ML and are used in the
-constructors of many other classes. Throughout this documentation we frequently
-omit the workspace object instantiation and simply refer to `ws`.
+新規ワークスペースの作成についての説明が必要でしたら、[インストール](installation)を見てください。
 
-See [Installation](installation) for instructions on creating a new workspace.
+## ワークスペースを取得する
 
-## Get workspace
-
-Instantiate `Workspace` object used to connect to your AML assets.
+AMLアセットへの接続に用いられる `Workspace` オブジェクトをインスタンス化します。
 
 ```python title="run.py"
 from azureml.core import Workspace
@@ -28,7 +23,7 @@ ws = Workspace(
 )
 ```
 
-For convenience store your workspace metadata in a `config.json`.
+利便性のために、ワークスペースのメタデータを `config.json` 内に保存します。
 
 ```json title=".azureml/config.json"
 {
@@ -38,23 +33,22 @@ For convenience store your workspace metadata in a `config.json`.
 }
 ```
 
-### Helpful methods
+### 役立つメソッド
 
-- `ws.write_config(path, file_name)` : Write the `config.json` on your behalf. The `path` defaults to '.azureml/' in the current working directory and `file_name` defaults to 'config.json'.
-- `Workspace.from_config(path, _file_name)`: Read the workspace configuration from config. The parameter defaults to starting the search in the current directory.
+- `ws.write_config(path, file_name)` : あなたの代わりに `config.json` を書き出します。 `path` はデフォルトでカレントワーキングディレクトリ内の '.azureml/' 、 `file_name` はデフォルトで 'config.json' です。
+- `Workspace.from_config(path, _file_name)`: コンフィグからワークスペースの設定を読み込みます。そのパラメーターは、カレントディレクトリで検索を開始するのがデフォルトです。
 
 :::info
-It is recommended to store these in a directory `.azureml/` as this path is searched _by default_
-in the `Workspace.from_config` method.
+これらを `.azureml/` ディレクトリに格納するのが推奨されます。 `Workspace.from_config` メソッドでは _デフォルトで_ このパスが検索されるためです。
 :::
 
-## Get Workspace Assets
+## ワークスペースのアセットを取得する
 
-The workspace provides a handle to your Azure ML assets:
+ワークスペースは、以下の Azure ML アセットへのハンドラを提供します。
 
 ### Compute Targets
 
-Get all compute targets attached to the workspace.
+ワークスペースにアタッチされた全ての Compute ターゲットを取得します。
 
 ```python
 ws.compute_targets: Dict[str, ComputeTarget]
@@ -62,13 +56,13 @@ ws.compute_targets: Dict[str, ComputeTarget]
 
 ### Datastores
 
-Get all datastores registered to the workspace.
+ワークスペースに登録された全てのデータストアを取得します。
 
 ```python
 ws.datastores: Dict[str, Datastore]
 ```
 
-Get the workspace's default datastore.
+ワークスペースのデフォルトのデータストアを取得します。
 
 ```python
 ws.get_default_datastore(): Datastore
@@ -76,7 +70,7 @@ ws.get_default_datastore(): Datastore
 
 ### Keyvault
 
-Get workspace's default Keyvault.
+ワークスペースのデフォルトの Keyvault を取得します。
 
 ```python
 ws.get_default_keyvault(): Keyvault
@@ -84,7 +78,7 @@ ws.get_default_keyvault(): Keyvault
 
 ### Environments
 
-Get environments registered to the workspace.
+ワークスペースに登録された Environments を取得します。
 
 ```python
 ws.environments: Dict[str, Environment]
@@ -92,7 +86,7 @@ ws.environments: Dict[str, Environment]
 
 ### MLFlow
 
-Get MLFlow tracking uri.
+MLFlow の tracking URI を取得します。
 
 ```python
 ws.get_mlflow_tracking_uri(): str
