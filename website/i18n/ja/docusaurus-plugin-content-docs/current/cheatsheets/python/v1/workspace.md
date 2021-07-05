@@ -35,7 +35,7 @@ ws = Workspace(
 
 ### 役立つメソッド
 
-- `ws.write_config(path, file_name)` : あなたの代わりに `config.json` を書き出します。 `path` はデフォルトでカレントワーキングディレクトリ内の '.azureml/' 、 `file_name` はデフォルトで 'config.json' です。
+- `ws.write_config(path, file_name)` : あなたの代わりに `config.json` を書き出します。 `path` はデフォルトでカレントワーキングディレクトリ内の `.azureml/` 、 `file_name` はデフォルトで `config.json` です。
 - `Workspace.from_config(path, _file_name)`: コンフィグからワークスペースの設定を読み込みます。そのパラメーターは、カレントディレクトリで検索を開始するのがデフォルトです。
 
 :::info
