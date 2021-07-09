@@ -11,7 +11,7 @@ module.exports = {
   baseUrl: '/azureml-cheatsheets/',
   onBrokenLinks: 'ignore',
   favicon: 'img/logo.svg',
-  organizationName: 'konabuta', // Usually your GitHub org/user name.
+  organizationName: 'Azure', // Usually your GitHub org/user name.
   projectName: 'azureml-cheatsheets', // Usually your repo name.
   themeConfig: {
     agolia: {
@@ -25,10 +25,6 @@ module.exports = {
       },
       items: [
         {to: '/docs/cheatsheets/python/v1/cheatsheet', label: 'Python SDK', position: 'left'},
-        {
-          type: 'localeDropdown',
-          position: 'left',
-        },
       ],
     },
     footer: {

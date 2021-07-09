@@ -2,10 +2,10 @@ name: deploy
 on:
   workflow_dispatch:
   pull_request:
-    branches: [japanese-contrib]
+    branches: [main]
     paths: [website/**]
   push:
-    branches: [japanese-contrib]
+    branches: [main]
     paths: [website/**]
 jobs:
   checks:
@@ -54,8 +54,8 @@ jobs:
           USE_SSH: true
           GIT_USER: git
         run: |
-          git config --global user.email "keonabut@microsoft.com"
-          git config --global user.name "Keita Onabuta"
+          git config --global user.email "actions@github.com"
+          git config --global user.name "gh-actions"
           cd website
           if [ -e yarn.lock ]; then
           yarn install --frozen-lockfile
