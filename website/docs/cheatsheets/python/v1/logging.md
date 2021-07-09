@@ -63,6 +63,10 @@ metrics = run.get_metrics()
 
 metrics.get('metric-name')
 # list of metrics in the order they were recorded
+
+metrics_including_child_runs = run.get_metrics(recursive=True)
+# set 'recursive' boolean parameter to True to also get
+# the metrics for child runs 
 ```
 
 To view all recorded values for a given metric `my-metric` in a

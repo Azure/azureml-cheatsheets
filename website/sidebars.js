@@ -21,7 +21,7 @@ module.exports = {
         type: 'category',
         label: 'Guides',
         collapsed: false,
-        items: ['cheatsheets/python/v1/script-run-config', 'cheatsheets/python/v1/logging', 'cheatsheets/python/v1/distributed-training', 'cheatsheets/python/v1/docker-build', 'cheatsheets/python/v1/debugging', 'cheatsheets/python/v1/ci-dev']
+        items: ['cheatsheets/python/v1/script-run-config', 'cheatsheets/python/v1/logging', 'cheatsheets/python/v1/distributed-training', 'cheatsheets/python/v1/docker-build', 'cheatsheets/python/v1/debugging', 'cheatsheets/python/v1/ci-dev','cheatsheets/python/v1/troubleshooting']
       }
     ],
   },
