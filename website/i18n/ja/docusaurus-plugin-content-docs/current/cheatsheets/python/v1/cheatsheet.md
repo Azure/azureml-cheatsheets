@@ -41,7 +41,7 @@ config = ScriptRunConfig(
 )
 ```
 
-コンピューティングターゲットの詳細: [Compute Target](./compute-targets.md)
+コンピューティングターゲットの詳細: [コンピューティングターゲット](./compute-targets.md)
 
 ### Python 環境の準備
 
@@ -69,7 +69,7 @@ config = ScriptRunConfig(
 )
 ```
 
-環境の詳細: [Environment](./environment.md)
+環境の詳細: [環境](./environment.md)
 
 
 ## コードをサブミットする
@@ -127,7 +127,7 @@ config = ScriptRunConfig(
 )
 ```
 
-コマンドの詳細: [Commands](./script-run-config.md#commands)
+コマンドの詳細: [コマンドライン引数](./script-run-config.md#コマンドライン引数)
 
 ### 実験
 
