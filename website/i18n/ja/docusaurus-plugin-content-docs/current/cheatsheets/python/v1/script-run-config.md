@@ -1,5 +1,5 @@
 ---
-title: Running Code in the Cloud
+title: クラウド上でコードを実行する
 description: Guide to running code with Azure ML
 keywords:
   - run
@@ -9,21 +9,14 @@ keywords:
   - ScriptRunConfig
 ---
 
-:::note
-このコンテンツはお使いの言語では利用できません。
-:::
+## 実験と実行
 
-## Experiments and Runs
+Azure ML は機械学習コードのクラウド上での実行を支援するサービスです。`実行`は Azure ML にサブミットされたジョブの履歴をただ保存するだけではなく、リアルタイムで監視することもできる抽象レイヤーです。
 
-Azure ML is a machine-learning service that facilitates running your code in
-the cloud. A `Run` is an abstraction layer around each such submission, and is used to
-monitor the job in real time as well as keep a history of your results.
+- 実行: 一度のコード実行を表します。詳細: [Run](#run)
+- 実験: 実験は`実行`の軽量なコンテナです。実験は実行の Azure ML へのサブミットと追跡に使われます。
 
-- Run: A run represents a single execution of your code. See [Run](#run) for more details.
-- Experiments: An experiment is a light-weight container for `Run`. Use experiments to submit
-and track runs.
-
-Create an experiment in your workspace `ws`.
+ワークスペース`ws`に実験を作成します。
 
 ```python
 from azureml.core import Experiment
@@ -32,19 +25,18 @@ exp = Experiment(ws, '<experiment-name>')
 
 ## ScriptRunConfig
 
-A common way to run code in the cloud is via the `ScriptRunConfig` which packages
-your source code (Script) and run configuration (RunConfig).
+一般的に Azure ML では`ScriptRunConfig`を使って実行するコードの情報と実行のための設定情報をパッケージ化して、クラウド上にサブミットして実行します。
 
-Consider the following layout for your code.
+実行しようとしているコードが以下のディレクトリ構成だとします。
 
 ```bash
 source_directory/
-    script.py    # entry point to your code
-    module1.py   # modules called by script.py     
+    script.py    # コードのエントリーポイント
+    module1.py   # script.py によって呼ばれるモジュール
     ...
 ```
 
-To run `script.py` in the cloud via the `ScriptRunConfig`
+`ScriptRunConfig`を使って`script.py`をクラウド上で実行するための設定:
 
 ```python
 config = ScriptRunConfig(
@@ -59,15 +51,15 @@ config = ScriptRunConfig(
 )
 ```
 
-where:
+ここで:
 
-- `source_directory='source_directory'` : Local directory with your code.
-- `script='script.py'` : Script to run. This does not need to be at the root of `source_directory`.
-- `compute_taget=target` : See [Compute Target](copute-target)
-- `environment` : See [Environment](environment)
-- `arguments` : See [Arguments](#command-line-arguments)
+- `source_directory='source_directory'` : 実行するコードが存在するローカルディレクトリ。
+- `script='script.py'` : 実行する Python スクリプト。必ずしも`source_directory`のルートにある必要はない。
+- `compute_taget=target` : 参照 [Compute Target](copute-target)
+- `environment` : 参照 [Environment](environment)
+- `arguments` : 参照 [Arguments](#command-line-arguments)
 
-Submit this code to Azure with
+このコードを Azure ML にサブミットする:
 
 ```python
 exp = Experiment(ws, '<exp-name>')
@@ -76,44 +68,42 @@ print(run)
 run.wait_for_completion(show_output=True)
 ```
 
-This will present you with a link to monitor your run on the web (https://ml.azure.com)
-as well as streaming logs to your terminal.
+このコードはターミナル上にログストリームを出力するだけではなく、サブミットされた実行を Web 上で監視するためのリンクを出力します。(https://ml.azure.com)
 
-## Command Line Arguments
+## コマンドライン引数
 
-To pass command line arguments to your script use the `arguments` parameter in `ScriptRunConfig`.
-Arguments are specified as a list:
+スクリプトにコマンドライン引数を渡すには`ScriptRunConfig`の中にある`arguments`パラメータを使います。
+引数は list 形式で指定します:
 
 ```python
 arguments = [first, second, third, ...]
 ```
 
-which are then passed to the script as command-line arguments as follows:
+このとき引数は下記のコマンドライン引数のように渡されます:
 
 ```console
 $ python script.py first second third ...
 ```
 
-This also supports using named arguments:
+名前付きの引数もサポートされます:
 
 ```python
 arguments = ['--first_arg', first_val, '--second_arg', second_val, ...]
 ```
 
-Arguments can be of type `int`, `float` `str` and can also be used to reference data.
+引数には`int`、`float`、`str`などのデータ型に加えて他の参照型のデータも使えます。
 
-For more details on referencing data via the command line: [Use dataset in a remote run](dataset#use-dataset-in-a-remote-run)
+コマンドライン引数の詳細: [Use dataset in a remote run](dataset#use-dataset-in-a-remote-run)
 
-### Example: `sys.argv`
+### 引数の例 1: `sys.argv`
 
-In this example we pass two arguments to our script. If we were running this from the
-console:
+この例では 2 つの引数をスクリプトに渡します。コンソールから実行する場合:
 
 ```console title="console"
 $ python script.py 0.001 0.9
 ```
 
-To mimic this command using `argument` in `ScriptRunConfig`:
+これを`ScriptRunConfig`の中の`arguments`を使って表現する場合:
 
 ```python title="run.py"
 arguments = [0.001, 0.9]
@@ -125,28 +115,27 @@ config = ScriptRunConfig(
 )
 ```
 
-which can be consumed as usual in our script:
+これらの引数はスクリプトの中で通常のコマンドライン引数と同じように使えます:
 
 ```python title="script.py"
 import sys
-learning_rate = sys.argv[1]     # gets 0.001
-momentum = sys.argv[2]          # gets 0.9
+learning_rate = sys.argv[1]     # 0.001 を受け取る
+momentum = sys.argv[2]          # 0.9 を受け取る
 ```
 
-### Example: `argparse`
+### 引数の例 2: `argparse`
 
-In this example we pass two named arguments to our script. If we were running this from the
-console:
+この例では 2 つの名前付きの引数をスクリプトに渡します。コンソールから実行する場合:
 
 ```console title="console"
 $ python script.py --learning_rate 0.001 --momentum 0.9
 ```
 
-To mimic this behavior in `ScriptRunConfig`:
+これを`ScriptRunConfig`の中の`arguments`を使って表現する場合:
 
 ```python title="run.py"
 arguments = [
-    '--learning_rate', 0.001, 
+    '--learning_rate', 0.001,
     '--momentum', 0.9,
     ]
 
@@ -157,7 +146,7 @@ config = ScriptRunConfig(
 )
 ```
 
-which can be consumed as usual in our script:
+これらの引数はスクリプトの中で通常のコマンドライン引数と同じように使えます:
 
 ```python title="script.py"
 import argparse
@@ -166,13 +155,13 @@ parser.add_argument('--learning_rate', type=float)
 parser.add_argument('--momentum', type=float)
 args = parser.parse_args()
 
-learning_rate = args.learning_rate      # gets 0.001
-momentum = args.momentum                # gets 0.9
+learning_rate = args.learning_rate      # 0.001 を受け取る
+momentum = args.momentum                # 0.9 を受け取る
 ```
 
-## Commands
+## コマンド
 
-It is possible to provide the explicit command to run.
+明示的に実行するコマンドを与えることもできます。
 
 ```python
 command = 'python script.py'.split()
@@ -185,13 +174,11 @@ config = ScriptRunConfig(
 )
 ```
 
-This example is equivalent to setting the argument `script='script.py'` in place of
-the `command` argument.
+この例は`command`引数の代わりに`script='script.py'`という引数をするということと同じです。
 
-This option provides a lot of flexibility. For example:
+このオプションは多くの柔軟性を与えます。例えば:
 
-
-- **Set environment variables**: Some useful examples:
+- **環境変数の設定**: よくある例:
 
     ```python
     command = 'export PYTHONPATH=$PWD && python script.py'.split()
@@ -201,20 +188,20 @@ This option provides a lot of flexibility. For example:
     command = f'export RANK={rank} && python script.py'.split()
     ```
 
-- **Run setup script**: Run a setup script e.g. to download data, set environment variables.
+- **セットアップスクリプトの実行**: データのダウンロードや環境変数の設定を行うセットアップスクリプトの実行。
 
     ```python
     command = 'python setup.py && python script.py'.split()
     ```
 
-## Using Datasets
+## データセットの使用
 
-### via Arguments
+### 引数から
 
-Pass a dataset to your ScriptRunConfig as an argument
+`ScriptRunConfig`に引数としてデータセットを渡します。
 
 ```py
-# create dataset
+# データセットを作成する
 datastore = ws.get_default_datastore()
 dataset = Dataset.File.from_files(path=(datastore, '<path/on/datastore>'))
 
@@ -227,21 +214,21 @@ config = ScriptRunConfig(
 )
 ```
 
-This mounts the dataset to the run where it can be referenced by `script.py`.
+この例では`script.py`から参照可能な実行に対してデータセットがマウントされます。
 
-## Run
+## 実行
 
-### Interactive
+### インタラクティブ
 
-In an interactive setting e.g. a Jupyter notebook
+Jupyter Notebookなどを使う場合のインタラクティブ設定
 
 ```python
 run = exp.start_logging()
 ```
 
-#### Example: Jupyter notebook
+#### 例 : Jupyter Notebook
 
-A common use case for interactive logging is to train a model in a notebook.
+よくあるユースケースはノートブック内で学習中のモデルのログをインタラクティブに表示する場合です。
 
 ```py
 from azureml.core import Workspace
@@ -249,36 +236,35 @@ from azureml.core import Experiment
 ws = Workspace.from_config()
 exp = Experiment(ws, 'example')
 
-run = exp.start_logging()                   # start interactive run
-print(run.get_portal_url())                 # get link to studio
+run = exp.start_logging()                   # インタラクティブ実行の開始
+print(run.get_portal_url())                 # Azure ML Studio へのリンクの取得
 
-# toy example in place of e.g. model
-# training or exploratory data analysis
+# モデル学習コードのダミー
+# 実際は学習やEDAなど
 import numpy as np
 for x in np.linspace(0, 10):
     y = np.sin(x)
-    run.log_row('sine', x=x, y=y)           # log metrics
+    run.log_row('sine', x=x, y=y)           # メトリックのロギング
 
-run.complete()                              # stop interactive run
+run.complete()                              # インタラクティブ実行の終了
 ```
 
-Follow the link to the run to see the metric logging in real time.
+Azure ML Studio へのリンクからリアルタイムでメトリックのログや実行を確認できます。
 
 ![](img/run-ex-sine.png)
 
-### Get Context
+### コンテキストの取得
 
-Code that is running within Azure ML is associated to a `Run`. The submitted code
-can access its own run.
+Azrue ML 上で実行されているコードは`実行`に関連付けられます。サブミットされたコードは`実行`からアクセスすることができます。
 
 ```py
 from azureml.core import Run
 run = Run.get_context()
 ```
 
-#### Example: Logging metrics to current run context
+#### 例: 実行中のコードのメトリックをログに保存する
 
-A common use-case is logging metrics in a training script.
+よくあるユースケースはトレーニングスクリプト内でのメトリックのログです。
 
 ```py title="train.py"
 from azureml.core import Run
@@ -293,6 +279,6 @@ for epoch in range(n_epochs):
     run.log('validation', val)
 ```
 
-When this code is submitted to Azure ML (e.g. via ScriptRunConfig) it will log metrics to its associated run.
+このコードが Azrue ML (例えば`ScriptRunConfig`により) にサブミットされた時、このコードは関連付けられている`実行`にメトリックのログを保存します。
 
-For more details: [Logging Metrics](logging)
+詳細: [Logging Metrics](logging)

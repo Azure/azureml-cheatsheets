@@ -1,24 +1,19 @@
 ---
-title: Metrics
+title: メトリック
 description: Guide to metric logging in Azure ML.
 keywords:
   - metric
   - logging
 ---
 
-:::note
-このコンテンツはお使いの言語では利用できません。
-:::
+## メトリックの記録
 
-## Logging metrics
-
-Logging a metric to a run causes that metric to be stored in the run record in the experiment.
-Visualize and keep a history of all logged metrics.
-
+メトリックは Azure ML の各実行に紐付けて記録され、複数の実行は一つの実験に紐付けられて記録されます。
+メトリックの履歴の保存と可視化を行います。
 
 ### `log`
 
-Log a single metric value to a run.
+あるメトリックの 1 つの値を実行に記録します。
 
 ```python
 from azureml.core import Run
@@ -26,11 +21,11 @@ run = Run.get_context()
 run.log('metric-name', metric_value)
 ```
 
-You can log the same metric multiple times within a run; the results will be displayed as a chart.
+あるメトリックを同一の実行に対して複数回記録することもできます。その場合、記録されたメトリックはチャートで表示されます。
 
 ### `log_row`
 
-Log a metric with multiple columns.
+あるメトリックを複数の列として記録します。
 
 ```python
 from azureml.core import Run
@@ -38,77 +33,75 @@ run = Run.get_context()
 run.log_row("Y over X", x=1, y=0.4)
 ```
 
-:::info More logging options
-These are probably the most common APIs used for logging metrics, but see [here](https://docs.microsoft.com/azure/machine-learning/how-to-log-view-metrics#data-types) for a complete
-list, including logging lists, tables and images.
+:::info その他の記録オプション
+メトリックの記録に使われる一般的な API は含まれていますが、完全なリストについては[こちら](https://docs.microsoft.com/azure/machine-learning/how-to-log-view-metrics#data-types)を参照してください。
 :::
 
-## Viewing metrics
+## メトリックを表示する
 
-Metrics will be automatically available in the Azure ML Studio. Locate your run, e.g., either
-by visiting [ml.azure.com](https://ml.azure.com), or using the SDK:
+メトリックは Azure ML Studio の中で自動的に表示可能になります。[こちら](https://ml.azure.com)のリンク先か、SDK から見ることができます:
 
 ```
 run.get_workspace_url()
 ```
 
-Select the "Metrics" tab and select the metric(s) to view:
+"メトリック"タブを選択し、表示したいメトリックを選択します。
+
 
 ![](/img/view-metrics.png)
 
-### Via the SDK
+### SDK からメトリックを表示する
 
-Viewing metrics in a run (for more details on runs: [Run](run))
+実行に記録されたメトリックを確認します。(詳細: [実行](run))
+
 
 ```python
 metrics = run.get_metrics()
-# metrics is of type Dict[str, List[float]] mapping mertic names
-# to a list of the values for that metric in the given run.
+# メトリックは Dict[str, List[float]] 形式になっており、
+# メトリック名と list 形式の値がマッピングされて実行に保存されています。
 
 metrics.get('metric-name')
-# list of metrics in the order they were recorded
+# 記録された順に並んだメトリックのリスト
 ```
 
-To view all recorded values for a given metric `my-metric` in a
-given experiment `my-experiment`:
+実験`my-experiment`のメトリック`my-metric`のすべてのレコードを表示する:
 
 ```python
 experiments = ws.experiments
-# of type Dict[str, Experiment] mapping experiment names the
-# corresponding Experiment
+# 実験名と実験オブジェクトのリスト
 
 exp = experiments['my-experiment']
 for run in exp.get_runs():
     metrics = run.get_metrics()
-    
+
     my_metric = metrics.get('my-metric')
     if my_metric:
         print(my_metric)
 ```
 
-## Examples
+## 例
 
-### Logging with MLFlow
+### MLFlow を使って記録する
 
-Use [MLFlow](https://mlflow.org/) to log metrics in Azure ML.
+[MLFlow](https://mlflow.org/) を使って Azure ML にメトリックを記録します。
 
 ```python
 from azureml.core import Run
 
-# connect to the workspace from within your running code
+# コードから実行中の実験や実行が含まれるワークスペースに接続する
 run = Run.get_context()
 ws = run.experiment.workspace
 
-# workspace has associated ml-flow-tracking-uri
+# ワークスペースを ml-flow-tracking-uri に関連付ける
 mlflow_url = ws.get_mlflow_tracking_uri()
 ```
 
-### Logging with PyTorch Lightning
+### PyTorch Lightning を使って記録する
 
-This examples:
-- Includes Lightning's `TensorBoardLogger`
-- Sets up Lightning's `MLFlowLogger` using AzureML `Run.get_context()`
-  - Only adds this logger when used as part of an Azure ML run
+この例は:
+- Lightning の`TensorBoardLogger`を含みます。
+- Azure ML の`Run.get_context()`を使って Lightning の`MLFlowLogger`を設定します。
+  - Azure ML の実行の一部として使うときはこのロガーを追加するだけです。
 
 ```python
 import pytorch_lightning as pl
@@ -125,7 +118,7 @@ except ImportError:
 def get_logger():
     tb_logger = pl.loggers.TensorBoardLogger('logs/')
     logger = [tb_logger]
-    
+
     if run is not None:
         mlflow_url = run.experiment.workspace.get_mlflow_tracking_uri()
         mlf_logger = pl.loggers.MLFlowLogger(
@@ -138,7 +131,7 @@ def get_logger():
     return logger
 ```
 
-Now include this logger in the lightning `Trainer` class:
+ここでこのロガーを lightning の`Trainer`クラスに含めます:
 
 ```python
 logger = get_logger()
