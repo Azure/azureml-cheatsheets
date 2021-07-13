@@ -5,37 +5,44 @@ import Link from '@docusaurus/Link';
 import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 import useBaseUrl from '@docusaurus/useBaseUrl';
 import styles from './styles.module.css';
+import Translate, {translate} from '@docusaurus/Translate';
 
 const features = [
   {
-    title: 'Cheat Sheet',
+    title: <Translate id="section0">Cheat Sheet</Translate>,
     pageUrl: 'docs/cheatsheets/python/v1/cheatsheet',
     imageUrl: 'img/undraw_docusaurus_mountain.svg',
     description: (
       <>
+      <Translate id="section0.desc">
         A cheat sheet for common use cases with AML.
         Get 80% of what you need in 20% of the documentation.
+      </Translate>
       </>
     ),
   },
   {
-    title: 'Distributed GPU Training',
+    title: <Translate id="section1">Distributed GPU Training</Translate>,
     pageUrl: 'docs/cheatsheets/python/v1/distributed-training',
     imageUrl: 'img/undraw_docusaurus_react.svg',
     description: (
       <>
+      <Translate id="section1.desc">
         Guide to getting your distributed training code running in Azure ML.
+      </Translate>
       </>
     ),
   },
   {
-    title: 'Environments',
+    title: <Translate id="section2">Environments</Translate>,
     pageUrl: 'docs/cheatsheets/python/v1/environment',
     imageUrl: 'img/undraw_docusaurus_tree.svg',
     description: (
       <>
+      <Translate id="section2.desc">
         Set up and manage your Python environments and docker images
         in Azure ML.
+      </Translate>
       </>
       ),
   },
@@ -65,8 +72,8 @@ function Home() {
       description="A user guide to Azure ML <head />">
       <header className={clsx('hero hero--primary', styles.heroBanner)}>
         <div className="container">
-          <h1 className="hero__title">{siteConfig.title}</h1>
-          <p className="hero__subtitle">{siteConfig.tagline}</p>
+          <h1 className="hero__title"><Translate id="index.title">{siteConfig.title}</Translate></h1>
+          <p className="hero__subtitle"><Translate id="index.tagline">{siteConfig.tagline}</Translate></p>
           <div className={styles.buttons}>
             <Link
               className={clsx(
