@@ -1,5 +1,5 @@
 ---
-title: Developing on Azure ML
+title: Azure ML 上での開発
 description: Guide to developing your code on Azure ML.
 keywords:
   - ssh
@@ -7,62 +7,47 @@ keywords:
   - compute
 ---
 
-:::note
-このコンテンツはお使いの言語では利用できません。
-:::
+本ガイドでは、Azure ML 上でのコード開発をするためのポイントを紹介します。典型的なシナリオとしては、分散学習のコードのテストやローカルの開発環境での再現が難しいものを対象にします。
 
-This guide gives some pointers for developing your code on Azure ML. A typical
-scenario might be testing your distributed training code, or some other aspect
-of your code that isn't well represented on your local devbox.
+これらのシナリオの共通のペインポイントは、特に VM 上での開発と比較して、Azure ML での繰り返し作業が遅く感じられる点です。
 
-A common pain-point in these scenarios is that iteration on Azure ML can feel
-slow - especially when compared to developing on a VM.
 
-**Learning objective.** To improve the development experience on Azure ML
-to match - or even exceed - that of a "bare" VM.
+**本ガイドの目的** Azure ML 上での開発体験をベアメタルの VM と同等もしくはそれ以上に改善することです。
 
-## 🚧 The hurdles
+## 🚧 ハードル
 
-Two main reasons developing on Azure ML can feel slow as compared to a VM are:
+Azure ML での開発が遅く感じられる主な理由は 2 つあります。
+- Python 環境の変更には Docker イメージの再構築が必須となり、通常 5 分以上かかる。
+- 計算リソースはイテレーションの間に _解放される_ ために、(Docker イメージの Pull などの) ウォームアップの待機時間が発生する。
 
-- Any changes to my Python environment force Docker image rebuild which can
-    take >5 minutes.
+下記にてこれらの問題に対応するためのいくつかのテクニックと、Azure ML Compute を直接利用するメリットを紹介します。またこれらのテクニックを利用したい[例](#例)もいくつか提供します。
 
-- Compute resources are _released_ between iterations, forcing me to wait for
-    new compute to warm up (e.g. pulling Docker images).
 
-Below we provide some techniques to address these issues, as well as some advantages
-to working with Azure ML compute directly. We also provide a [example](#example) applying these
-techniques.
+## 🕰️ 開発用計算環境の準備
 
-## 🕰️ Prepare compute for development
+_コンピューティングインスタンス / コンピューティングクラスター_ を作成するときに、何点か設定事項があります : 
 
-When creating your _compute instance / cluster_ there are a fews things you can
-do to prepare for development:
 
-1. **Enable SSH on compute.**
+1. **SSH の有効化**
 
-    Supported on both _compute instance_ and _compute targets_. This will allow you to
-    use your compute just like you would a VM.
+    SSH は、_コンピューティングインスタンス_ と _コンピューティングクラスター_ の両方でサポートされています。VM のように操作することが出来るようになります。
 
     :::tip VS Code Remote Extension.
-    VS Code's [remote extension](https://code.visualstudio.com/docs/remote/ssh)
-    allows you to connect to your Azure ML compute resources via SSH.
-    This way you can develop directly in the cloud.
+    VS Code の [remote extension](https://code.visualstudio.com/docs/remote/ssh)
+    は SSH 経由で Azure ML への計算リソースへの接続ができます。クラウド上で直接開発できるようになります。
     :::
 
-2. **Increase "Idle seconds before scale down".**
+2. **"スケールダウンする前のアイドル時間 (秒)" の増加**
 
-    For compute targets you can increase this parameter e.g. to 30 minutes. This means
-    the cluster won't be released between runs while you iterate.
+    コンピューティングクラスターはこのパラメータを例えば 30 分に増やすことができます。これは開発のイテレーションをしている間に計算環境がリリースされないようにするためです。
 
     :::warning
-    Don't forget to roll this back when you're done iterating.
+    開発のイテレーション終了後に元に戻すことを忘れないようにしてください。
     :::
 
-## 🏃‍♀️ Commands
+## 🏃‍♀️ コマンド
 
-Typically you will submit your code to Azure ML via a `ScriptRunConfig` a little like this:
+通常 コードは以下のような `ScriptRunConfig` を利用して Azure ML へ送信されます : 
 
 ```python
 config = ScriptRunConfig(
@@ -75,18 +60,15 @@ config = ScriptRunConfig(
 ```
 
 :::info
-For more details on using `ScriptRunConfig` to submit your code see
-[Running Code in the cloud](script-run-config).
+コードを送信するのに利用する `ScriptRunConfig` に関するより詳細な情報は [クラウド上でコードを実行する](script-run-config) を参照ください。
 :::
-
-By using the [`command`](script-run-config#commands) argument you can improve your agility.
-Commands allow you to chain together several steps in one e.g.:
+[`コマンド`](script-run-config#commands) の引数を用いることでアジリティを向上することができます。以下のように、コマンドを用いて複数のステップを連結されることができます : 
 
 ```python
 command = "pip install torch && python script.py --learning_rate 2e-5".split()
 ```
 
-Another example would be to include a setup script:
+他の例として下記のようなセットアップスクリプトを含めることもできます :
 
 ```bash title="setup.sh"
 echo "Running setup script"
@@ -95,41 +77,34 @@ pip install -r requirements.txt
 export PYTHONPATH=$PWD
 ```
 
-and then calling it in your command
+を作成し、コマンドで呼び出します。
 
 ```python
 command = "bash setup.sh && python script.py --learning_rate 2e-5".split()
 ```
 
-This way Azure ML doesn't have to rebuild the docker image with incremental changes.
+この方法であれば、Azure ML は追加分について Docker Image をリビルドする必要がありません。
 
-## Advantages
+## メリット
 
-In addition to matching the development experience on a VM, there are certain benefits to
-developing on Azure ML compute directly.
+VM 上での開発ができるだけでなく、Azure ML の計算環境を直接利用することによるメリットもあります。
 
-- **Production-ready.** By developing directly in Azure ML you avoid the additional step of porting your
-    VM-developed code to Azure ML later. This is particularly relevant if you intend to
-    run your production code on Azure ML.
-- **Data access.** If your training script makes use of data in Azure you can use the Azure ML
-    Python SDK to read it (see [Data](data) for examples). The alternative is that you might have to
-    find some way of getting your data onto the VM you are developing on.
-- **Notebooks.** Azure ML's _compute insances_ come with Jupyter notebooks which can help with quick
-    debugging. Moreover, these notebooks can easily be run against different compute infrastructure
-    and can be a great way to collaborate. 
+- **本番にすぐに展開可能.** Azure ML 上で直接開発することで、VM で開発したコードを Azure ML に移植する手間を削減できます。これは本番コードをAzure ML 上で稼働される場合に該当します。
+- **データアクセス.** 学習スクリプトが Azure 上のデータを利用する際、Azure ML Python SDK を用いていることができます (例としては[Data](data) を参照のこと)。それ以外の方法となるとユーザ自身で、開発している VM 上でデータが取得できる方法を探す必要があります。
+- **ノートブック.** Azure ML の _コンピューティングインスタンス_ は Jupyter notebook を提供しておりクイックにデバッグすることできます。加えて、ノートブックは異なる計算基盤に対して実行できますし、コラボレーションの機能も提供しています。
 
-## Example
 
-We provide a simple example demonstrating the mechanics of the above steps. Consider the following
-setup:
+## 例
+
+ここでは、簡易的なデモンストレーションで上記の仕組みを説明します。次のような設定を考えます。:
 
 ```bash
 src/
     .azureml/
-        config.json     # workspace connection config
-    train.py            # python script we are developing
-    setup.sh            # to run on compute before train.py
-    azureml_run.py      # submit job to azure
+        config.json     # workspace への接続設定
+    train.py            # 開発している Python スクリプト
+    setup.sh            # train.py の前に実行するスクリプト
+    azureml_run.py      # azure への job 実行
 ```
 
 ```bash title="setup.sh"
@@ -142,41 +117,39 @@ import numpy as np
 print(np.random.rand())
 ```
 
-Now from your local machine you can use the Azure ML Python SDK
-to execute your command in the cloud:
+Azure ML Python SDK を用いて、ローカル端末からクラウド上でコマンドを実行できます。
 
 ```python title="azureml_run.py"
 from azureml.core import Workspace, Experiment, ScriptRunConfig
 
-# get workspace
+# workspace の取得
 ws = Workspace.from_config()
 target = ws.compute_targets['cpucluster']
 exp = Experiment(ws, 'dev-example')
 
 command = "bash setup.sh && python script.py".split()
 
-# set up script run configuration
+# script run 構成設定
 config = ScriptRunConfig(
     source_directory='.',
     command=command,
     compute_target=target,
 )
 
-# submit script to AML
+# AML への script 送信
 run = exp.submit(config)
 print(run.get_portal_url()) # link to ml.azure.com
 run.wait_for_completion(show_output=True)
 ```
 
-Now if you needed to update your Python environment for example you can simply
-add commands to `setup.sh`:
+Python 環境の更新が必要な場合は、`setup.sh` にコマンドを追加するだけです。:
 
 ```bash title="setup.sh"
 echo "Running setup script"
 pip install numpy
-pip install pandas                  # add additional libraries
-export CUDA_VISIBLE_DEVICES="0,1"   # set environment variables
-nvidia-smi                          # run helpful command-line tools
+pip install pandas                  # 追加のライブラリ
+export CUDA_VISIBLE_DEVICES="0,1"   # 環境変数の設定
+nvidia-smi                          # 便利なコマンドラインツールの実行
 ```
 
-without having to rebuild any Docker images.
+Docker イメージを再構築する必要はありません。
