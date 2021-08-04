@@ -66,7 +66,7 @@ Simply ensure that you have taken care of the following:
 * Create an `MpiConfiguration` with your desired distribution.
 
 #### Example
-* [azureml-examples: TensorFlow distributed training using Horovod](https://github.com/Azure/azureml-examples/tree/main/workflows/train/tensorflow/mnist-distributed-horovod)
+* [azureml-examples: TensorFlow distributed training using Horovod](https://github.com/Azure/azureml-examples/tree/main/python-sdk/workflows/train/tensorflow/mnist-distributed-horovod)
 
 ### DeepSpeed
 
@@ -77,7 +77,7 @@ Ensure that you have taken care of the following:
 * Create an `MpiConfiguration` with your desired distribution.
 
 #### Example
-* [azureml-examples: Distributed training with DeepSpeed on CIFAR-10](https://github.com/Azure/azureml-examples/tree/main/workflows/train/deepspeed/cifar)
+* [azureml-examples: Distributed training with DeepSpeed on CIFAR-10](https://github.com/Azure/azureml-examples/tree/main/python-sdk/workflows/train/deepspeed/cifar)
 
 ### Environment variables from Open MPI
 
@@ -174,7 +174,7 @@ If your training script passes information like local rank or rank as script arg
 :::
 
 #### Example
-- [azureml-examples: Distributed training with PyTorch on CIFAR-10](https://github.com/Azure/azureml-examples/tree/main/workflows/train/pytorch/cifar-distributed)
+- [azureml-examples: Distributed training with PyTorch on CIFAR-10](https://github.com/Azure/azureml-examples/tree/main/python-sdk/workflows/train/pytorch/cifar-distributed)
 
 ### Using `torch.distributed.launch` (per-node-launch)
 
@@ -226,7 +226,7 @@ run_config = ScriptRunConfig(
 :::
 
 #### Example
-- [azureml-examples: Distributed training with PyTorch on CIFAR-10](https://github.com/Azure/azureml-examples/tree/main/workflows/train/pytorch/cifar-distributed)
+- [azureml-examples: Distributed training with PyTorch on CIFAR-10](https://github.com/Azure/azureml-examples/tree/main/python-sdk/workflows/train/pytorch/cifar-distributed)
 
 ### PyTorch Lightning
 
@@ -265,7 +265,7 @@ run = Experiment(ws, 'experiment_name').submit(run_config)
 ```
 
 #### Example
-* [azureml-examples: Multi-node training with PyTorch Lightning](https://github.com/Azure/azureml-examples/blob/main/tutorials/using-pytorch-lightning/4.train-multi-node-ddp.ipynb)
+* [azureml-examples: Multi-node training with PyTorch Lightning](https://github.com/Azure/azureml-examples/blob/main/python-sdk/experimental/using-pytorch-lightning/4.train-multi-node-ddp.ipynb)
 
 ### Hugging Face Transformers
 
@@ -336,7 +336,7 @@ TF_CONFIG='{
 ```
 
 #### Example
-- [azureml-examples: Distributed TensorFlow training with MultiWorkerMirroredStrategy](https://github.com/Azure/azureml-examples/tree/main/workflows/train/tensorflow/mnist-distributed)
+- [azureml-examples: Distributed TensorFlow training with MultiWorkerMirroredStrategy](https://github.com/Azure/azureml-examples/tree/main/python-sdk/workflows/train/tensorflow/mnist-distributed)
 
 ## Accelerating GPU training with InfiniBand
 
