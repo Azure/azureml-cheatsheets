@@ -334,16 +334,24 @@ specified an absolute path, please make sure that the job has permission to writ
 Reference this data in a remote run, for example in mount-mode:
 
 ```python title="run.py"
-arguments=[dataset.as_mount()]
-config = ScriptRunConfig(source_directory='.', script='train.py', arguments=arguments)
+arguments=["--my_data", dataset.as_mount()]
+config = ScriptRunConfig(
+    source_directory='.',
+    script='train.py',
+    compute_target=ws.compute_targets["<target-name>"],
+    arguments=arguments,
+    )
 experiment.submit(config)
 ```
 
 and consumed in `train.py`:
 
 ```python title="train.py"
-import sys
-data_dir = sys.argv[1]
+import argparse
+parser = argparse.ArgumentParser()
+parser.add_argument("--my_data", type=str)
+args = parser.parse_args()
+data_dir = args.my_data
 
 print("===== DATA =====")
 print("DATA PATH: " + data_dir)
