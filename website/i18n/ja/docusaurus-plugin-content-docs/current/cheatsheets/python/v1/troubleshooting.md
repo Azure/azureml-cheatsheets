@@ -1,5 +1,5 @@
 ---
-title: Troubleshooting
+title: トラブルシューティング
 id: troubleshooting
 description: A cheat sheet for Azure ML.
 keywords:
@@ -8,22 +8,19 @@ keywords:
   - troubleshooting
 ---
 
-:::note
-このコンテンツはお使いの言語では利用できません。
-:::
-
-### Error: az acr login- APIVersion 2020-11-01-preview is not available. 
-**Description**
-NotImplementedError occurred when building image using az acr.
+### エラー: az acr login- APIVersion 2020-11-01-preview is not available.
+**説明**:
+az acr を使ってイメージをビルドすると NotImplementedError が発生する。
 ```bash
 az acr build --image $image_name --subscription $ws.subscription_id --registry $cr --file docker/Dockerfile docker/
 ```
-The error: 
+エラー表示:
 ```text
-NotImplementedError: APIVersion 2020-11-01-preview is not available. 
+NotImplementedError: APIVersion 2020-11-01-preview is not available.
 ```
 
-**Solution** This is a problem related with the version of az cli. Please update az cli by running
+**解決策**:
+az cli のバージョンに依存する問題です。下記コマンドを実行して az cli の更新を行ってください。
 ```bash
 az upgrade --yes
 ```
