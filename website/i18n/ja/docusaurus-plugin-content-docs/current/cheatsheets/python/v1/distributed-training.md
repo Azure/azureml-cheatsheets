@@ -96,7 +96,7 @@ MPI ジョブを Open MPI イメージで実行する時、実行されたそれ
 
 Azure ML は PyTorch の分散トレーニング機能 (`torch.distributed`) を使った分散ジョブ実行もサポートしています。
 
-:::tip torch.nn.parallel.DistributedDataParallel vs torch.nn.DataParallel and torch.multiprocessing
+:::tip torch.nn.parallel.DistributedDataParallel 対 torch.nn.DataParallel / torch.multiprocessing の比較
 シングルノード、マルチノード分散トレーニングどちらの場合も、並列処理については [PyTorch の公式ガイド](https://pytorch.org/tutorials/intermediate/ddp_tutorial.html#comparison-between-dataparallel-and-distributeddataparallel)では DistributedDataParallel (DDP) を DataParallel よりも優先して使っています。さらに、PyTorch は [multiprocessing パッケージよりも DistributedDataParallel を推奨しています](https://pytorch.org/docs/stable/notes/cuda.html#use-nn-parallel-distributeddataparallel-instead-of-multiprocessing-or-nn-dataparallel)。よって、Azure ML のドキュメントとサンプルも DistributedDataParallel に注目します。
 :::
 
@@ -266,9 +266,9 @@ run = Experiment(ws, 'experiment_name').submit(run_config)
 #### 例
 * [azureml-examples: Multi-node training with PyTorch Lightning](https://github.com/Azure/azureml-examples/blob/main/tutorials/using-pytorch-lightning/4.train-multi-node-ddp.ipynb)
 
-### Hugging Face トランスフォーマー
+### Hugging Face Transformers
 
-Hugging Face は、`torch.distributed.launch`を使って分散トレーニングを実行するトランスフォーマーを使う際の多くの [サンプル](https://github.com/huggingface/transformers/tree/master/examples) を提供しています。Hugging Face トランスフォーマートレーナーAPIを使ってこれらのサンプルや任意のカスタムトレーニングスクリプトを実行するためには、[torch.distributed.launch の使用](#torchdistributedlaunch-per-node-launch-の使用) のセクションを参考にしてください。
+Hugging Face は、`torch.distributed.launch`を使って分散トレーニングを実行する Transformers を使う際の多くの [サンプル](https://github.com/huggingface/transformers/tree/master/examples) を提供しています。Hugging Face Transformers Trainer API を使ってこれらのサンプルや任意のカスタムトレーニングスクリプトを実行するためには、[torch.distributed.launch の使用](#torchdistributedlaunch-per-node-launch-の使用) のセクションを参考にしてください。
 
 8 つの GPU を搭載したノード上で`run_glue.py`というスクリプトによりテキスト分類 MNLI タスクを解く BERT の巨大モデルのファインチューニングジョブを構成するコードの例:
 
@@ -288,7 +288,7 @@ run_config = ScriptRunConfig(
 )
 ```
 
-`torch.distributed.launch`を使わずに、[per-process-launch](#distributeddataparallel-per-process-launch) オプションを使用して分散トレーニングを実行することもできます。このメソッドを使う際に気をつけることは、トランスフォーマー [TrainingArguments](https://huggingface.co/transformers/main_classes/trainer.html?highlight=launch#trainingarguments) は引数中のローカルランク (`--local_rank`) を除外することです。`torch.distributed.launch`は`--use_env=False`が設定されているときこれを管理しますが、Azure ML は LOCAL_RANK 環境変数のみを設定するため、per-process-launch を使うときは明示的に`--local_rank=$LOCAL_RANK`引数をトレーニングスクリプトに渡す必要があります。
+`torch.distributed.launch`を使わずに、[per-process-launch](#distributeddataparallel-per-process-launch) オプションを使用して分散トレーニングを実行することもできます。このメソッドを使う際に気をつけることは、Transformers [TrainingArguments](https://huggingface.co/transformers/main_classes/trainer.html?highlight=launch#trainingarguments) は引数中のローカルランク (`--local_rank`) を除外することです。`torch.distributed.launch`は`--use_env=False`が設定されているときこれを管理しますが、Azure ML は LOCAL_RANK 環境変数のみを設定するため、per-process-launch を使うときは明示的に`--local_rank=$LOCAL_RANK`引数をトレーニングスクリプトに渡す必要があります。
 
 ## TensorFlow
 
