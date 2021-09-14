@@ -175,7 +175,7 @@ Azure Storage Explorer は GUI のファイルエクスプローラです。そ�
 
 ## データストアからの読み込み
 
-コードの中から`Datastore`のデータを参照します。例えば remote setting を使用する場合です。
+コードの中から`Datastore`のデータを参照します。例えばリモート設定を使用する場合です。
 
 ### DataReference
 
@@ -270,8 +270,8 @@ dataset = Dataset.File.from_files(path=(datastore, '<path/on/datastore>'))
 
 データセットを ScriptRunConfig から参照してマウントしたりダウンロードしたい時、下記のようにして行えます:
 
-- `dataset.as_mount(path_on_compute)` : remote run にデータセットをマウントする
-- `dataset.as_download(path_on_compute)` : remote run にデータセットをダウンロードする
+- `dataset.as_mount(path_on_compute)` : リモート実行時にデータセットをマウントする
+- `dataset.as_download(path_on_compute)` : リモート実行時にデータセットをダウンロードする
 
 **Path on compute**: `as_mount`と`as_download`の両方がオプションパラメータの`path_on_compute`を受け取ります。このパラメータはコンピューティングターゲット上で利用できるデータセットのパスを定義します。
 
@@ -279,7 +279,7 @@ dataset = Dataset.File.from_files(path=(datastore, '<path/on/datastore>'))
 - `path_on_compute`が`/`始まる場合は**絶対パス**として扱われます。(もしも絶対パスを指定した場合は実行するジョブがそのディレクトリに対する書き込み権限を持っている必要があります)
 - それ以外は、ワーキングディレクトリからの相対パスとして扱われます。
 
-マウントモードで remote run からデータを参照する例:
+マウントモードでリモート実行時にデータを参照する例:
 
 ```python title="run.py"
 arguments=[dataset.as_mount()]
