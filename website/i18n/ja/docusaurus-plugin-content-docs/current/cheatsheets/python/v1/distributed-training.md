@@ -1,5 +1,5 @@
 ---
-title: Distributed GPU Training
+title: 分散 GPU トレーニング
 id: distributed-training
 description: Guide to distributed training in Azure ML.
 keywords:
@@ -11,34 +11,30 @@ keywords:
   - tensorflow
 ---
 
-:::note
-このコンテンツはお使いの言語では利用できません。
+## 基本的なコンセプト
+
+このガイドの読者は _data parallelism、distributed data parallelism、model parallelism_ などの分散 GPU トレーニングに対する基本的なコンセプトを理解していると想定しています。
+
+:::info
+どの parallelism を使うべきか判断できない場合: 90% 以上の場合で __Distributed Data Parallelism__ が使われます。
 :::
 
-## Basic Concepts
+## MPI (Message Passing Interface)
 
-We assume readers already understand the basic concept of distributed GPU training such as _data parallelism, distributed data parallelism, and model parallelism_. This guide aims at helping readers running existing distributed training code on Azure ML. 
-
-:::info 
-If you don't know which type of parallelism to use, for >90% of the time you should use __Distributed Data Parallelism__.
-:::
-
-## MPI
-
-Azure ML offers an MPI job to launch a given number of processes in each node. Users can adopt this approach to run distributed training using either per-process-launcher or per-node-launcher, depending on whether `process_count_per_node` is set to 1 (the default) for per-node-launcher, or equal to the number of devices/GPUs for per-process-launcher. Azure ML handles constructing the full MPI launch command (`mpirun`) behind the scenes.
+Azure ML は各ノードで与えられたプロセッサー数の MPI ジョブを提供します。利用者は、`process_count_per_node`が 1 に設定されている場合 (デフォルト) は per-node-launcher、デバイス/ GPU の数に等しい場合は per-process-launcher を使って分散トレーニングを実行することができます。Azure ML は裏側で完全な MPI 実行コマンド (`mpirun`) を構築して処理します。
 
 :::note
-Azure ML currently does not allow users to provide the full head-node-launcher command like `mpirun` or the DeepSpeed launcher. This functionality may be added in a future release.
+Azure ML は今のところユーザーからの完全な`mpirun`のような head-node-launcher コマンドや DeepSpeed ランチャーを受け取ることができません。この機能は将来のリリースで追加される可能性があります。
 :::
 
 :::caution
-To use the Azure ML MPI job, the base Docker image used by the job needs to have an MPI library installed. [Open MPI](https://www.open-mpi.org/) is included in all the [AzureML GPU base images](https://github.com/Azure/AzureML-Containers). If you are using a custom Docker image, you are responsible for making sure the image includes an MPI library. Open MPI is recommended, but you can also use a different MPI implementation such as Intel MPI. Azure ML also provides [curated environments](https://docs.microsoft.com/en-us/azure/machine-learning/resource-curated-environments) for popular frameworks. 
+Azure ML の MPI ジョブを使うために、ベースとなる Docker イメージには MPI ライブラリがインストールされている必要があります。[Open MPI](https://www.open-mpi.org/) はすべての [AzureML GPU ベースイメージ](https://github.com/Azure/AzureML-Containers)に含まれています。もしもカスタム Docker イメージを使う場合にはユーザーが責任を持って MPI ライブラリをインストールする必要があります。Open MPI が推奨ですが、Intel MPI などの他の MPI 実装を使うこともできます。Azure ML はこの他にも[人気のあるフレームワークのキュレーションされた環境](https://docs.microsoft.com/en-us/azure/machine-learning/resource-curated-environments)も提供します。
 :::
 
-To run distributed training using MPI, follow these steps:
-1. Use an Azure ML environment with the preferred deep learning framework and MPI. AzureML provides [curated environment](https://docs.microsoft.com/en-us/azure/machine-learning/resource-curated-environments) for popular frameworks.
-2. Define `MpiConfiguration` with the desired `process_count_per_node` and `node_count`. `process_count_per_node` should be equal to the number of GPUs per node for per-process-launch, or set to 1 (the default) for per-node-launch if the user script will be responsible for launching the processes per node.
-3. Pass the `MpiConfiguration` object to the `distributed_job_config` parameter of `ScriptRunConfig`.
+MPIを使って分散トレーニングを実行するには下記のステップに従います:
+1. Azure ML 環境、好みのディープラーニングフレームワーク、MPI を使います。AzureML は人気のあるフレームワーク環境を提供します。[キュレーションされた環境](https://docs.microsoft.com/en-us/azure/machine-learning/resource-curated-environments)
+2. `MpiConfiguration`を定義して望ましい`process_count_per_node`と`node_count`を設定します。per-process-launch の場合は`process_count_per_node`はノードあたりのGPU数と同じにする必要があります。もしもユーザースクリプトがノードあたりの実行プロセス数に責任を持つ場合、per-node-launch は 1 (デフォルト値)に設定します。
+3. `MpiConfiguration`オブジェクトを`ScriptRunConfig`のパラメータである`distributed_job_config`に渡します。
 
 ```python
 from azureml.core import Workspace, ScriptRunConfig, Environment, Experiment
@@ -56,100 +52,100 @@ run_config = ScriptRunConfig(
   distributed_job_config=distr_config,
 )
 
-# submit the run configuration to start the job
+# ジョブを開始するために構成情報をサブミットする
 run = Experiment(ws, "experiment_name").submit(run_config)
 ```
 
 ### Horovod
 
-If you are using [Horovod](https://horovod.readthedocs.io/en/stable/index.html) for distributed training with the deep learning framework of your choice, you can run distributed training on Azure ML using the MPI job configuration.
+もしもユーザーが選択したディープラーニングフレームワークと共に [Horovod](https://horovod.readthedocs.io/en/stable/index.html) を分散トレーニングに使う場合、MPI ジョブ構成を使うことで Azure ML 上で分散トレーニングを実行することができます。
 
-Simply ensure that you have taken care of the following:
-* The training code is instrumented correctly with Horovod.
-* Your Azure ML environment contains Horovod and MPI. The PyTorch and TensorFlow curated GPU environments come pre-configured with Horovod and its dependencies.
-* Create an `MpiConfiguration` with your desired distribution.
+下記が行われていることを確認してください:
+* トレーニングコードが正しく Horovod で実装されていること。
+* コードを実行する Azure ML 環境に Horovod と MPI を含んでいること。PyTorch と TensorFlow のキュレーションされた GPU 環境には Horovod とその設定情報が付属しています。
+* 任意の分散を指定した`MpiConfiguration`が作成されていること。
 
-#### Example
+#### 例
 * [azureml-examples: TensorFlow distributed training using Horovod](https://github.com/Azure/azureml-examples/tree/main/workflows/train/tensorflow/mnist-distributed-horovod)
 
 ### DeepSpeed
 
-To run distributed training with the [DeepSpeed](https://www.deepspeed.ai/) library on Azure ML, do not use DeepSpeed's custom launcher. Instead, configure an MPI job to launch the training job [with MPI](https://www.deepspeed.ai/getting-started/#mpi-and-azureml-compatibility).
+Azure ML 上で [DeepSpeed](https://www.deepspeed.ai/) を使って分散トレーニングを行うには、DeepSpeed のカスタムランチャーを使わないでください。代わりに、[MPI](https://www.deepspeed.ai/getting-started/#mpi-and-azureml-compatibility) を使ってトレーニングジョブを実行してください。
 
-Ensure that you have taken care of the following:
-* Your Azure ML environment contains DeepSpeed and its dependencies, Open MPI, and mpi4py.
-* Create an `MpiConfiguration` with your desired distribution.
+下記が行われていることを確認してください:
+* ジョブを実行する Azure ML 環境が DeepSpeed とその依存関係、Open MPI、mpi4py を含んでいること。
+* 任意の分散を指定した`MpiConfiguration`が作成されていること。
 
-#### Example
+#### 例
 * [azureml-examples: Distributed training with DeepSpeed on CIFAR-10](https://github.com/Azure/azureml-examples/tree/main/workflows/train/deepspeed/cifar)
 
-### Environment variables from Open MPI
+### Open MPI の環境変数
 
-When running MPI jobs with Open MPI images, the following environment variables for each process launched:
-1. OMPI_COMM_WORLD_RANK - the rank of the process
-2. OMPI_COMM_WORLD_SIZE - the world size
-3. AZ_BATCH_MASTER_NODE - master address with port, MASTER_ADDR:MASTER_PORT
-4. OMPI_COMM_WORLD_LOCAL_RANK - the local rank of the process on the node
-5. OMPI_COMM_WORLD_LOCAL_SIZE - number of processes on the node
+MPI ジョブを Open MPI イメージで実行する時、実行されたそれぞれのプロセスに対して下記の環境変数が作成されます。
+1. OMPI_COMM_WORLD_RANK - プロセスのランク
+2. OMPI_COMM_WORLD_SIZE - ワールドのサイズ (プロセスが含まれるMPI_COMM_WORLD内に存在するプロセス数)
+3. AZ_BATCH_MASTER_NODE - マスターアドレスとポート、MASTER_ADDR:MASTER_PORT
+4. OMPI_COMM_WORLD_LOCAL_RANK - ノード上でのプロセスのローカルランク
+5. OMPI_COMM_WORLD_LOCAL_SIZE - ノード上のプロセス数
 
 :::caution
-Despite the name, environment variable OMPI_COMM_WORLD_NODE_RANK does not corresponds to the NODE_RANK. To use per-node-launcher, simply set `process_count_per_node=1` and use OMPI_COMM_WORLD_RANK as the NODE_RANK. 
+名前にもかかわらず、OMPI_COMM_WORLD_NODE_RANK は NODE_RANK と対応していません。per-node-launcher を使うには、単に`process_count_per_node=1`を設定して、OMPI_COMM_WORLD_RANK を NODE_RANKとして使います。
 :::
 
 ## PyTorch
 
-Azure ML also supports running distributed jobs using PyTorch's native distributed training capabilities (`torch.distributed`).
+Azure ML は PyTorch の分散トレーニング機能 (`torch.distributed`) を使った分散ジョブ実行もサポートしています。
 
-:::tip torch.nn.parallel.DistributedDataParallel vs torch.nn.DataParallel and torch.multiprocessing
-For data parallelism, the [official PyTorch guidance](https://pytorch.org/tutorials/intermediate/ddp_tutorial.html#comparison-between-dataparallel-and-distributeddataparallel) is to use DistributedDataParallel (DDP) over DataParallel for both single-node and multi-node distributed training. PyTorch also [recommends using DistributedDataParallel over the multiprocessing package](https://pytorch.org/docs/stable/notes/cuda.html#use-nn-parallel-distributeddataparallel-instead-of-multiprocessing-or-nn-dataparallel). Azure ML documentation and examples will therefore focus on DistributedDataParallel training.
+:::tip torch.nn.parallel.DistributedDataParallel 対 torch.nn.DataParallel / torch.multiprocessing の比較
+シングルノード、マルチノード分散トレーニングどちらの場合も、並列処理については [PyTorch の公式ガイド](https://pytorch.org/tutorials/intermediate/ddp_tutorial.html#comparison-between-dataparallel-and-distributeddataparallel)では DistributedDataParallel (DDP) を DataParallel よりも優先して使っています。さらに、PyTorch は [multiprocessing パッケージよりも DistributedDataParallel を推奨しています](https://pytorch.org/docs/stable/notes/cuda.html#use-nn-parallel-distributeddataparallel-instead-of-multiprocessing-or-nn-dataparallel)。よって、Azure ML のドキュメントとサンプルも DistributedDataParallel に注目します。
 :::
 
-### Process group initialization
+### プロセスグループ初期化
 
-The backbone of any distributed training is based on a group of processes that know each other and can communicate with each other using a backend. For PyTorch, the process group is created by calling [torch.distributed.init_process_group](https://pytorch.org/docs/stable/distributed.html#torch.distributed.init_process_group) in __all distributed processes__ to collectively form a process group.
+分散トレーニングのバックボーンは、互いの存在を知っていてコミュニケーションを取り合うプロセスのグループによって成り立っています。PyTorch の場合、そのプロセスのグループは __すべての分散プロセス__ の中で [torch.distributed.init_process_group](https://pytorch.org/docs/stable/distributed.html#torch.distributed.init_process_group) を呼ぶことで作成されます。
 
 ```
 torch.distributed.init_process_group(backend='nccl', init_method='env://', ...)
 ```
 
-The most common communication backends used are __mpi__, __nccl__ and __gloo__. For GPU-based training __nccl__ is strongly recommended for best performance and should be used whenever possible. 
+最も一般的に使われるコミュニケーションバックエンドは __mpi__、__nccl__、__gloo__ です。GPU ベースのトレーニングでは、パフォーマンスの観点から __nccl__ が強く推奨されており、可能な場合はこれを使用すべきです。
 
-`init_method` specifies how each process can discover each other and initialize as well as verify the process group using the communication backend. By default if `init_method` is not specified PyTorch will use the environment variable initialization method (`env://`). This is also the recommended the initialization method to use in your training code to run distributed PyTorch on Azure ML. For environment variable initialization, PyTorch will look for the following environment variables:
+`init_method`は、コミュニケーションバックエンドを使ってプロセスグループを確認するだけではなく、各プロセスが互いを見つける方法を指定したり、初期化を行います。デフォルトでは、`init_method`が指定されていない場合、PyTorchは環境変数の初期化メソッド (`env://`) を使います。Azure ML 上で分散 PyTorch を実行するためのトレーニングコードでも、この初期化メソッドを使うことが推奨されています。環境変数の初期化のために PyTorch は下記の環境変数を探します:
 
-- **MASTER_ADDR** - IP address of the machine that will host the process with rank 0.
-- **MASTER_PORT** - A free port on the machine that will host the process with rank 0.
-- **WORLD_SIZE** - The total number of processes. This should be equal to the total number of devices (GPU) used for distributed training.
-- **RANK** - The (global) rank of the current process. The possible values are 0 to (world size - 1).
+- **MASTER_ADDR** - ランク 0 のプロセスをホストするマシンの IP アドレス。
+- **MASTER_PORT** - ランク 0 のプロセスをホストするマシンのフリーポート。
+- **WORLD_SIZE** - プロセスの合計数。この数は分散トレーニングで使用されるデバイス (GPU) の数と同じにすべきです。
+- **RANK** - 現在のプロセスのグローバルランク。考えられる値は 0 からワールドサイズ -1 までです。
 
-For more information on process group initialization, see the [PyTorch documentation](https://pytorch.org/docs/stable/distributed.html#torch.distributed.init_process_group).
+プロセスグループの初期化に関するより詳細な情報は次のリンク先を参照してください。 [PyTorch documentation](https://pytorch.org/docs/stable/distributed.html#torch.distributed.init_process_group)
 
-Beyond these, many applications will also need the following environment variables:
-- **LOCAL_RANK** - The local (relative) rank of the process within the node. The possible values are 0 to (# of processes on the node - 1). This information is useful because many operations such as data preparation only should be performed once per node --- usually on local_rank = 0.
-- **NODE_RANK** - The rank of the node for multi-node training. The possible values are 0 to (total # of nodes - 1).
+これより先に記載する多くのアプリケーションが同じく下記の環境変数を必要とします:
+- **LOCAL_RANK** - ノード上のプロセスのローカル (相対) ランク。考えられる値は 0 からノード上のプロセス数 -1 までです。データ準備のような様々なオペレーションがノードごとに 1 回ずつ実行されるため、この情報は有用です。 --- 通常 local_rank = 0 を使用します。
+- **NODE_RANK** - マルチノードトレーニングで使われるノードのランクです。考えられる値は 0 からノード数の合計 -1 までです。
 
-### Launch options
+### 実行オプション
 
-The Azure ML PyTorch job supports two types of options for launching distributed training:
+Azure ML の PyTorch ジョブは分散トレーニングを実行する 2 種類のオプションをサポートしています。
 
-1. __Per-process-launcher__: The system will launch all distributed processes for the user, with all the relevant information (e.g. environment variables) to set up the process group.
-2. __Per-node-launcher__: The user provides Azure ML with the utility launcher that will get run on each node. The utility launcher will handle launching each of the processes on a given node. Locally within each node, RANK and LOCAL_RANK is set up by the launcher. The **torch.distributed.launch** utility and PyTorch Lightning both belong in this category.
+1. __Per-process-launcher__: システムはユーザーのために、プロセスグループをセットアップする関連情報 (e.g. 環境変数) と共に、すべての分散プロセスを実行します。
+2. __Per-node-launcher__: ユーザーは Azure ML に対して、各ノードでの実行を受け取るユーティリティランチャーを与えます。このユーティリティランチャーは与えられたノード上での各プロセスの実行を管理します。各ローカルノードでは、ユーティリティランチャーによって RANK と LOCAL_RANK が設定されます。**torch.distributed.launch** ユーティリティと PyTorch Lightning の両方がこちらに該当します。
 
-There are no fundamental differences between these launch options; it is largely up to the user's preference or the conventions of the frameworks/libraries built on top of vanilla PyTorch (such as Lightning or Hugging Face).
+これらの実行オプションの間に根本的な差はありません。ほとんどユーザーの好み、もしくは Lightning や Hugging Face などのよく見る PyTorch フレームワーク・ライブラリのしきたりによるものです。
 
-The following sections go into more detail on how to configure Azure ML PyTorch jobs for each of the launch options.
+以下のシナリオは、それぞれの実行オプションにおける Azure ML PyTorch ジョブの構成方法のより詳細な情報に踏み込みます。
 
 ### DistributedDataParallel (per-process-launch)
 
-Azure ML supports launching each process for the user without the user needing to use a launcher utility like `torch.distributed.launch`.
+Azure ML は`torch.distributed.launch`のようなランチャーユーティリティを使うことなくプロセスを実行することをサポートしています。
 
-To run a distributed PyTorch job, you will just need to do the following:
-1. Specify the training script and arguments
-2. Create a `PyTorchConfiguration` and specify the `process_count` as well as the `node_count`. The `process_count` corresponds to the total number of processes you want to run for your job. This should typically equal `# GPUs per node x # nodes`. If `process_count` is not specified, Azure ML will by default launch one process per node.
+分散 PyTorch ジョブを実行するためには、下記のことをするだけです:
+1. トレーニングスクリプトと引数を指定します。
+2. `PyTorchConfiguration`を作成し、`node_count`と`process_count`を指定します。`process_count`は実行したいジョブにおける合計プロセス数と一致します。この値は一般的に`ノードあたりの GPU 数 x ノード数`と同じです。`process_count`が指定されない場合、Azure ML はデフォルトで各ノードにつき 1 プロセスずつ実行します。
 
-Azure ML will set the MASTER_ADDR, MASTER_PORT, WORLD_SIZE, and NODE_RANK environment variables on each node, in addition to setting the process-level RANK and LOCAL_RANK environment variables.
+Azure ML はプロセスレベルで RANK と LOCAL_RANK の環境変数を設定した上で、各ノードで MASTER_ADDR、MASTER_PORT、WORLD_SIZE、NODE_RANK の環境変数を設定します。
 
 :::caution
-In order to use this option for multi-process-per-node training, you will need to use Azure ML Python SDK `>= 1.22.0`, as process_count was introduced in 1.22.0.
+各ノード上でマルチプロセスのトレーニングを実行するためにこのオプションを使用するためには、Azure ML Python SDK `>= 1.22.0`を使用する必要があります。これは、process_count がバージョン 1.22.0 で導入されたためです。
 :::
 
 ```python
@@ -173,26 +169,25 @@ run = Experiment(ws, 'experiment_name').submit(run_config)
 ```
 
 :::tip
-If your training script passes information like local rank or rank as script arguments, you can reference the environment variable(s) in the arguments:
-`arguments=['--epochs', 50, '--local_rank', $LOCAL_RANK]`. 
+もしもトレーニングスクリプトがローカルランクランクやランクをスクリプト引数として受け取る場合、引数の中でこのように環境変数を参照することができます: `arguments=['--epochs', 50, '--local_rank', $LOCAL_RANK]`
 :::
 
-#### Example
+#### 例
 - [azureml-examples: Distributed training with PyTorch on CIFAR-10](https://github.com/Azure/azureml-examples/tree/main/workflows/train/pytorch/cifar-distributed)
 
-### Using `torch.distributed.launch` (per-node-launch)
+### `torch.distributed.launch` (per-node-launch) の使用
 
-PyTorch provides a launch utility in [torch.distributed.launch](https://pytorch.org/docs/stable/distributed.html#launch-utility) that users can use to launch multiple processes per node. The `torch.distributed.launch` module will spawn multiple training processes on each of the nodes.
+PyTorch は各ノード上でマルチプロセスを実行するためのするためのユーティリティとして [torch.distributed.launch](https://pytorch.org/docs/stable/distributed.html#launch-utility) を提供します。この`torch.distributed.launch`モジュールは各ノード上で複数のトレーニングプロセスを生成します。
 
-The following steps will demonstrate how to configure a PyTorch job with a per-node-launcher on Azure ML that will achieve the equivalent of running the following command:
+以下のステップはどのように Azure ML 上で per-node-launcher により PyTorch ジョブを構成するかというデモンストレーションです。これは以下のコマンドを実行することと同等のことです。
 
     python -m torch.distributed.launch --nproc_per_node <num processes per node> \
       --nnodes <num nodes> --node_rank $NODE_RANK --master_addr $MASTER_ADDR \
       --master_port $MASTER_PORT --use_env \
       <your training script> <your script arguments>
-    
-1. Provide the `torch.distributed.launch` command to the `command` parameter of the `ScriptRunConfig` constructor. Azure ML will run this command on each node of your training cluster. `--nproc_per_node` should be less than or equal to the number of GPUs available on each node. MASTER_ADDR, MASTER_PORT, and NODE_RANK are all set by Azure ML, so you can just reference the environment variables in the command. Azure ML sets MASTER_PORT to `6105`, but you can pass a different value to the `--master_port` argument of torch.distributed.launch command if you wish. (The launch utility will reset the environment variables.)
-2. Create a `PyTorchConfiguration` and specify the `node_count`.
+
+1. `torch.distributed.launch`コマンドを`ScriptRunConfig`コンストラクタの`command` パラメータに与えます。Azure ML はユーザーが指定したクラスター上の各ノード上でこのコマンドを実行します。`--nproc_per_node`は各ノードで利用可能な GPU 数と同じかそれ以下に設定します。MASTER_ADDR、MASTER_POR、NODE_RANK のすべては Azure ML によって設定されるため、ユーザーはコマンド中でこれらの環境変数を参照するだけで済みます。Azure ML は MASTER_PORT を`6105` に設定しますが、ユーザーは必要に応じて異なる値を torch.distributed.launch コマンドの`--master_port`引数に渡すこともできます。(その時、実行ユーティリティは環境変数を再設定します。)
+2. `PyTorchConfiguration`を作成し、`node_count`を指定します。
 
 ```python
 from azureml.core import ScriptRunConfig, Environment, Experiment
@@ -214,8 +209,8 @@ run_config = ScriptRunConfig(
 run = Experiment(ws, 'experiment_name').submit(run_config)
 ```
 
-:::tip Single-node multi-GPU training
-If you are using the launch utility to run single-node multi-GPU PyTorch training, you do not need to specify the `distributed_job_config` parameter of ScriptRunConfig.
+:::tip: シングルノードマルチ GPU トレーニング
+もしもシングルノードマルチ GPU の PyTorch トレーニングを実行するためにこの実行ユーティリティを使用する場合は、ScriptRunConfig の`distributed_job_config`を指定する必要はありません。
 
 ```python
 launch_cmd = "python -m torch.distributed.launch --nproc_per_node 4 --use_env train.py --epochs 50".split()
@@ -229,24 +224,24 @@ run_config = ScriptRunConfig(
 ```
 :::
 
-#### Example
+#### 例
 - [azureml-examples: Distributed training with PyTorch on CIFAR-10](https://github.com/Azure/azureml-examples/tree/main/workflows/train/pytorch/cifar-distributed)
 
 ### PyTorch Lightning
 
-[PyTorch Lightning](https://pytorch-lightning.readthedocs.io/en/stable/) is a lightweight open-source library that provides a high-level interface for PyTorch. Lightning abstracts away much of the lower-level distributed training configurations required for vanilla PyTorch from the user, and allows users to run their training scripts in single GPU, single-node multi-GPU, and multi-node multi-GPU settings. Behind the scene it launches multiple processes for user similar to `torch.distributed.launch`.
+[PyTorch Lightning](https://pytorch-lightning.readthedocs.io/en/stable/) は軽量のオープンソースライブラリで、PyTorch のハイレベルなインターフェースを提供します。Lightning を使うことで、素の PyTorch により必要とされる低レベルの分散トレーニング構成の大部分を抽象化して、シングル GPU、シングルノードマルチ GPU、マルチノードマルチ GPU 設定のトレーニングスクリプトを実行することができます。この裏側では`torch.distributed.launch`のようにマルチプロセスが実行されます。
 
-For single-node training (including single-node multi-GPU), you can run your code on Azure ML without needing to specify a `distributed_job_config`. For multi-node training, Lightning requires the following environment variables to be set on each node of your training cluster:
+シングルノードトレーニング (シングルノードマルチ GPU トレーニングを含む) では、`distributed_job_config`を指定することなく Azure ML 上でコードを実行することができます。Lightning でマルチノードトレーニングを行う場合は、ユーザーが指定したトレーニングクラスター上の各ノードで下記の環境変数が設定されている必要があります。
 
 - MASTER_ADDR
 - MASTER_PORT
 - NODE_RANK
 
-To run multi-node Lightning training on Azure ML, you can largely follow the [per-node-launch guide](#using-distributedddataparallel-per-node-launch):
+マルチノード Lightning トレーニングを Azure ML 上で実行する場合は [per-node-launch guide](#using-distributedddataparallel-per-node-launch) を参考にしてください:
 
-- Define the `PyTorchConfiguration` and specify the desired `node_count`. Do not specify `process_count` as Lightning internally handles launching the worker processes for each node.
-- For PyTorch jobs, Azure ML handles setting the MASTER_ADDR, MASTER_PORT, and NODE_RANK envirnment variables required by Lightning.
-- Lightning will handle computing the world size from the Trainer flags `--gpus` and `--num_nodes` and manage rank and local rank internally.
+- `PyTorchConfiguration`を定義して望ましい`node_count`を指定します。Lightning は内部的に各ノードのワーカープロセス実行を管理するため、`process_count`を指定してはいけません。
+- PyTorch ジョブのために、Azure ML は Lightning が必要とする MASTER_ADDR、MASTER_PORT、and NODE_RANK 環境変数の制御を行います。
+- Lightning は`--gpus`や`--num_nodes`などのトレーナーフラグからコンピューティングのワールドサイズを制御し、内部的にランクやローカルランクを管理します。
 
 ```python
 from azureml.core import ScriptRunConfig, Experiment
@@ -268,19 +263,20 @@ run_config = ScriptRunConfig(
 run = Experiment(ws, 'experiment_name').submit(run_config)
 ```
 
-#### Example
+#### 例
 * [azureml-examples: Multi-node training with PyTorch Lightning](https://github.com/Azure/azureml-examples/blob/main/tutorials/using-pytorch-lightning/4.train-multi-node-ddp.ipynb)
 
 ### Hugging Face Transformers
 
-Hugging Face provides many [examples](https://github.com/huggingface/transformers/tree/master/examples) for using its Transformers library with `torch.distributed.launch` to run distributed training. To run these examples and your own custom training scripts using the Transformers Trainer API, follow the [Using `torch.distributed.launch`](#using-torchdistributedlaunch-per-node-launch) section.
+Hugging Face は、`torch.distributed.launch`を使って分散トレーニングを実行する Transformers を使う際の多くの [サンプル](https://github.com/huggingface/transformers/tree/master/examples) を提供しています。Hugging Face Transformers Trainer API を使ってこれらのサンプルや任意のカスタムトレーニングスクリプトを実行するためには、[torch.distributed.launch の使用](#torchdistributedlaunch-per-node-launch-の使用) のセクションを参考にしてください。
 
-Sample job configuration code to fine-tune the BERT large model on the text classification MNLI task using the `run_glue.py` script on one node with 8 GPUs:
+8 つの GPU を搭載したノード上で`run_glue.py`というスクリプトによりテキスト分類 MNLI タスクを解く BERT の巨大モデルのファインチューニングジョブを構成するコードの例:
+
 ```python
 from azureml.core import ScriptRunConfig
 from azureml.core.runconfig import PyTorchConfiguration
 
-distr_config = PyTorchConfiguration() # node_count defaults to 1
+distr_config = PyTorchConfiguration() # デフォルト node_count は 1
 launch_cmd = "python -m torch.distributed.launch --nproc_per_node 8 text-classification/run_glue.py --model_name_or_path bert-large-uncased-whole-word-masking --task_name mnli --do_train --do_eval --max_seq_length 128 --per_device_train_batch_size 8 --learning_rate 2e-5 --num_train_epochs 3.0 --output_dir /tmp/mnli_output".split()
 
 run_config = ScriptRunConfig(
@@ -292,13 +288,13 @@ run_config = ScriptRunConfig(
 )
 ```
 
-You can also use the [per-process-launch](#distributeddataparallel-per-process-launch) option to run distributed training without using `torch.distributed.launch`. One thing to keep in mind if using this method is that the transformers [TrainingArguments](https://huggingface.co/transformers/main_classes/trainer.html?highlight=launch#trainingarguments) expects the local rank to be passed in as an argument (`--local_rank`). `torch.distributed.launch` takes care of this when `--use_env=False`, but if you are using per-process-launch you will need to explicitly pass this in as an argument to the training script `--local_rank=$LOCAL_RANK` as Azure ML only sets the LOCAL_RANK environment variable.
+`torch.distributed.launch`を使わずに、[per-process-launch](#distributeddataparallel-per-process-launch) オプションを使用して分散トレーニングを実行することもできます。このメソッドを使う際に気をつけることは、Transformers [TrainingArguments](https://huggingface.co/transformers/main_classes/trainer.html?highlight=launch#trainingarguments) は引数中のローカルランク (`--local_rank`) を除外することです。`torch.distributed.launch`は`--use_env=False`が設定されているときこれを管理しますが、Azure ML は LOCAL_RANK 環境変数のみを設定するため、per-process-launch を使うときは明示的に`--local_rank=$LOCAL_RANK`引数をトレーニングスクリプトに渡す必要があります。
 
 ## TensorFlow
 
-If you are using [native distributed TensorFlow](https://www.tensorflow.org/guide/distributed_training) in your training code, such as TensorFlow 2.x's `tf.distribute.Strategy` API, you can launch the distributed job via Azure ML using the `TensorflowConfiguration`.
+もしもトレーニングコードで TensorFlow 2.x の `tf.distribute.Strategy` API のような [native distributed TensorFlow](https://www.tensorflow.org/guide/distributed_training) を使っている場合は Azure ML の`TensorflowConfiguration`を介して分散ジョブを実行することができます。
 
-To do so, specify a `TensorflowConfiguration` object to the `distributed_job_config` parameter of the `ScriptRunConfig` constructor. If you are using `tf.distribute.experimental.MultiWorkerMirroredStrategy`, specify the `worker_count` in the `TensorflowConfiguration` corresponding to the number of nodes for your training job.
+そのためには、`ScriptRunConfig`コンストラクタの`distributed_job_config`パラメータに`TensorflowConfiguration`オブジェクトを指定する必要があります。もしも`tf.distribute.experimental.MultiWorkerMirroredStrategy`を使っている場合は、トレーニングジョブで使用するノード数を`TensorflowConfiguration`の`worker_count`で指定します。
 
 ```python
 from azureml.core import ScriptRunConfig, Environment, Experiment
@@ -316,19 +312,19 @@ run_config = ScriptRunConfig(
   distributed_job_config=distr_config,
 )
 
-# submit the run configuration to start the job
+# ジョブを開始するために構成情報をサブミットします。
 run = Experiment(ws, "experiment_name").submit(run_config)
 ```
 
-If your training script uses the parameter server strategy for distributed training, i.e. for legacy TensorFlow 1.x, you will also need to specify the number of parameter servers to use in the job, e.g. `tf_config = TensorflowConfiguration(worker_count=2, parameter_server_count=1)`.
+分散トレーニングのスクリプトが parameter server strategy を使用する場合 (i.e. レガシーな TensorFlow 1.x を使う場合) は、合わせてジョブの中で使用する parameter server の数を指定する必要があります。 (e.g. `tf_config = TensorflowConfiguration(worker_count=2, parameter_server_count=1)`)
 
 ### TF_CONFIG
 
-In TensorFlow, the **TF_CONFIG** environment variable is required for training on multiple machines. For TensorFlow jobs, Azure ML will configure and set the TF_CONFIG variable appropriately for each worker before executing your training script.
+TensofFlow を使って複数のマシン上でのトレーニングを実行するには **TF_CONFIG** 環境変数が必要になります。TensorFlow ジョブを実行するために、Azure ML はトレーニングスクリプトを実行する前に各ワーカーに対して適切な TF_CONFIG 変数を設定します。
 
-You can access TF_CONFIG from your training script if you need to: `os.environ['TF_CONFIG']`.
+もし必要な場合は、トレーニングスクリプトから`os.environ['TF_CONFIG']`によって TF_CONFIG にアクセスすることができます。
 
-Example TF_CONFIG set on a chief worker node:
+チーフワーカーノードで TF_CONFIG を設定する例:
 ```json
 TF_CONFIG='{
     "cluster": {
@@ -339,11 +335,11 @@ TF_CONFIG='{
 }'
 ```
 
-#### Example
+#### 例
 - [azureml-examples: Distributed TensorFlow training with MultiWorkerMirroredStrategy](https://github.com/Azure/azureml-examples/tree/main/workflows/train/tensorflow/mnist-distributed)
 
-## Accelerating GPU training with InfiniBand
+## InfiniBand による GPU トレーニングのアクセラレーション
 
-Certain Azure VM series, specifically the NC, ND, and H-series, now have RDMA-capable VMs with SR-IOV and Infiniband support. These VMs communicate over the low latency and high bandwidth InfiniBand network, which is much more performant than Ethernet-based connectivity. SR-IOV for InfiniBand enables near bare-metal performance for any MPI library (MPI is leveraged by many distributed training frameworks and tooling, including NVIDIA's NCCL software.) These SKUs are intended to meet the needs of computationally-intensive, GPU-acclerated machine learning workloads. For more information, see [Accelerating Distributed Training in Azure Machine Learning with SR-IOV](https://techcommunity.microsoft.com/t5/azure-ai/accelerating-distributed-training-in-azure-machine-learning/ba-p/1059050).
+Azureには、SR-IOV と InfiniBand をサポートする RDMA 対応の VM シリーズがあります (NC、ND、H-シリーズ)。これらの VM は、Ethernet ベースの接続性よりもはるかに高性能の、低遅延で高帯域幅の InfiniBand ネットワークを介してコミュニケーションを行います。SR-IOV for InfiniBand は、MPI ライブラリ (MPI は NVIDIA の NCCL ソフトウェアを含む分散トレーニングフレームワークやツールによって利用されます) に対してニアベアメタルパフォーマンスを提供します。これらの SKU は 高計算負荷ワークロードや、GPU によりアクセラレートされる機械学習ワークロードのニーズを満たすことを目的としています。より詳細な情報は [Accelerating Distributed Training in Azure Machine Learning with SR-IOV](https://techcommunity.microsoft.com/t5/azure-ai/accelerating-distributed-training-in-azure-machine-learning/ba-p/1059050) を参照してください。
 
-If you create an `AmlCompute` cluster of one of these RDMA-capable, InfiniBand-enabled sizes, such as `Standard_ND40rs_v2`, the OS image will come with the Mellanox OFED driver required to enable InfiniBand preinstalled and preconfigured.
+もしも`AmlCompute`クラスターを`Standard_ND40rs_v2`などの RDMA 対応で InfiniBand が有効化された VM サイズで作成している場合は、OS イメージには InfiniBand を有効にするために必要な Mellanox OFED ドライバー のインストールと構築が事前に行われています。
