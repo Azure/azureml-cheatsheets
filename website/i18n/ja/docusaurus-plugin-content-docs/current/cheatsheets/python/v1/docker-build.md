@@ -8,26 +8,21 @@ keywords:
   - environment
 ---
 
-:::note
-このコンテンツはお使いの言語では利用できません。
-:::
+本ガイドでは Azure ML でコードを実行するのに利用されるコンテナをビルドする方法を説明します。
 
-In this post we explain how Azure ML builds the containers used to run your code.
 
 ## Dockerfile
 
-Each job in Azure ML runs with an associated `Environment`. In practice, each environment
-corresponds to a Docker image.
+Azure ML の各ジョブは `環境` に紐づいて実行されます。実質、各環境は Docker Image に該当します。
 
-There are numerous ways to define an environment - from specifying a set of required Python packages
-through to directly providing a custom Docker image. In each case the contents of the associated
-dockerfile are available directly from the environment object.
+環境を設定する方法はさまざまで、Python パッケージのセットを指定する方法から、カスタム Docker イメージを直接提供する方法などがあります。いずれの場合も、関連する Dockerfile の内容は環境のオブジェクトから直接利用できます。
 
-For more background: [Environment](environment)
+詳細はこちら : [環境](environment)
 
-#### Example
 
-Suppose you create an environment - in this example we will work with Conda:
+#### 例
+
+環境を作成します。この例では Conda を使っていきます。:
 
 ```yml title="env.yml"
 name: pytorch
@@ -40,7 +35,7 @@ dependencies:
     - torchvision
 ```
 
-We can create and register this as an `Environment` in our workspace `ws` as follows:
+次のようにワークスペース `ws` に `環境` を作成し登録することができます。
 
 ```python
 from azureml.core import Environment
@@ -48,17 +43,16 @@ env = Environment.from_conda_specification('pytorch', 'env.yml')
 env.register(ws)
 ```
 
-In order to consume this environment in a remote run, Azure ML builds a docker image
-that creates the corresponding python environment.
+この環境をリモート実行時に利用するためには、Azure ML は対応する python 環境の docker image をビルドします。
 
-The dockerfile used to build this image is available directly from the environment object.
+ビルドで利用された Dockerfile は環境のオブジェクトから直接利用できます。
 
 ```python
 details = env.get_image_details(ws)
 print(details['ingredients']['dockerfile'])
 ```
 
-Let's take a look:
+Dockerfile の中身を見てみます。 :
 
 ```docker title="Dockerfile" {1,7-12}
 FROM mcr.microsoft.com/azureml/intelmpi2018.3-ubuntu16.04:20200821.v1@sha256:8cee6f674276dddb23068d2710da7f7f95b119412cc482675ac79ba45a4acf99
@@ -82,19 +76,18 @@ ENV AZUREML_ENVIRONMENT_IMAGE True
 CMD ["bash"]
 ```
 
-Notice:
+注意:
 
-- The base image here is a standard image maintained by Azure ML. Dockerfiles for all base images are available on
-github: https://github.com/Azure/AzureML-Containers
-- The dockerfile references `mutated_conda_dependencies.yml` to build the Python environment via Conda.
+- ベースイメージは Azure ML で管理されている標準的なイメージです。全ベースイメージの Dockerfile は github (https://github.com/Azure/AzureML-Containers) で利用可能です。
+- Dockerfile は `mutated_conda_dependencies.yml` を参照し Conda 経由で Python 環境を構築します。
 
-Get the contents of `mutated_conda_dependencies.yml` from the environment:
+`mutated_conda_dependencies.yml` の内容は環境から取得できます。:
 
 ```python
 print(env.python.conda_dependencies.serialize_to_string())
 ```
 
-Which looks like
+以下のようになっています。
 
 ```bash title="mutated_conda_dependencies.yml"
 channels:
