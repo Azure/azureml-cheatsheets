@@ -66,7 +66,7 @@ run = Experiment(ws, "experiment_name").submit(run_config)
 * 任意の分散を指定した`MpiConfiguration`が作成されていること。
 
 #### 例
-* [azureml-examples: TensorFlow distributed training using Horovod](https://github.com/Azure/azureml-examples/tree/main/workflows/train/tensorflow/mnist-distributed-horovod)
+* [azureml-examples: TensorFlow distributed training using Horovod](https://github.com/Azure/azureml-examples/tree/main/python-sdk/workflows/train/tensorflow/mnist-distributed-horovod)
 
 ### DeepSpeed
 
@@ -77,7 +77,7 @@ Azure ML 上で [DeepSpeed](https://www.deepspeed.ai/) を使って分散トレ�
 * 任意の分散を指定した`MpiConfiguration`が作成されていること。
 
 #### 例
-* [azureml-examples: Distributed training with DeepSpeed on CIFAR-10](https://github.com/Azure/azureml-examples/tree/main/workflows/train/deepspeed/cifar)
+* [azureml-examples: Distributed training with DeepSpeed on CIFAR-10](https://github.com/Azure/azureml-examples/tree/main/python-sdk/workflows/train/deepspeed/cifar)
 
 ### Open MPI の環境変数
 
@@ -173,7 +173,7 @@ run = Experiment(ws, 'experiment_name').submit(run_config)
 :::
 
 #### 例
-- [azureml-examples: Distributed training with PyTorch on CIFAR-10](https://github.com/Azure/azureml-examples/tree/main/workflows/train/pytorch/cifar-distributed)
+- [azureml-examples: Distributed training with PyTorch on CIFAR-10](https://github.com/Azure/azureml-examples/tree/main/python-sdk/workflows/train/pytorch/cifar-distributed)
 
 ### `torch.distributed.launch` (per-node-launch) の使用
 
@@ -225,7 +225,7 @@ run_config = ScriptRunConfig(
 :::
 
 #### 例
-- [azureml-examples: Distributed training with PyTorch on CIFAR-10](https://github.com/Azure/azureml-examples/tree/main/workflows/train/pytorch/cifar-distributed)
+- [azureml-examples: Distributed training with PyTorch on CIFAR-10](https://github.com/Azure/azureml-examples/tree/main/python-sdk/workflows/train/pytorch/cifar-distributed)
 
 ### PyTorch Lightning
 
@@ -263,8 +263,8 @@ run_config = ScriptRunConfig(
 run = Experiment(ws, 'experiment_name').submit(run_config)
 ```
 
-#### 例
-* [azureml-examples: Multi-node training with PyTorch Lightning](https://github.com/Azure/azureml-examples/blob/main/tutorials/using-pytorch-lightning/4.train-multi-node-ddp.ipynb)
+<!-- #### 例
+* [azureml-examples: Multi-node training with PyTorch Lightning](https://github.com/Azure/azureml-examples/blob/main/python-sdk/experimental/using-pytorch-lightning/4.train-multi-node-ddp.ipynb) -->
 
 ### Hugging Face Transformers
 
@@ -336,7 +336,7 @@ TF_CONFIG='{
 ```
 
 #### 例
-- [azureml-examples: Distributed TensorFlow training with MultiWorkerMirroredStrategy](https://github.com/Azure/azureml-examples/tree/main/workflows/train/tensorflow/mnist-distributed)
+- [azureml-examples: Distributed TensorFlow training with MultiWorkerMirroredStrategy](https://github.com/Azure/azureml-examples/tree/main/python-sdk/workflows/train/tensorflow/mnist-distributed)
 
 ## InfiniBand による GPU トレーニングのアクセラレーション
 
