@@ -300,4 +300,4 @@ print(os.listdir(data_dir))
 print("================")
 ```
 
-より詳細は [ScriptRunConfig](script-run-config) を参照してください。
+より詳細は [クラウド上でコードを実行する](script-run-config) を参照してください。

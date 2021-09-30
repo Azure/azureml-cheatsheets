@@ -59,6 +59,7 @@ config = ScriptRunConfig(
 - `environment` : 参照 [環境](environment)
 - `arguments` : 参照 [コマンドライン引数](#コマンドライン引数)
 
+
 このコードを Azure ML にサブミットする:
 
 ```python
@@ -93,7 +94,7 @@ arguments = ['--first_arg', first_val, '--second_arg', second_val, ...]
 
 引数には`int`、`float`、`str`などのデータ型に加えて他の参照型のデータも使えます。
 
-コマンドライン引数の詳細: [Use dataset in a remote run](dataset#use-dataset-in-a-remote-run)
+コマンドライン引数の詳細: [データセットの使用](data#データセットの使用)
 
 ### 引数の例 1: `sys.argv`
 
