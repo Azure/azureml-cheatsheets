@@ -21,7 +21,7 @@ ws = Workspace.from_config()
 
 この Workspace オブジェクトは Azure ML 操作における基本的なオブジェクトで、一連のコードを通して共有されます。(`ws`という変数名で参照されることが多いです。)
 
-ワークスペースの詳細: [Workspaces](./workspace.md)
+ワークスペースの詳細: [ワークスペース](./workspace.md)
 
 ### コンピューティングターゲットへの接続
 
@@ -41,7 +41,7 @@ config = ScriptRunConfig(
 )
 ```
 
-コンピューティングターゲットの詳細: [Compute Target](./compute-targets.md)
+コンピューティングターゲットの詳細: [コンピューティングターゲット](./compute-targets.md)
 
 ### Python 環境の準備
 
@@ -69,7 +69,7 @@ config = ScriptRunConfig(
 )
 ```
 
-環境の詳細: [Environment](./environment.md)
+環境の詳細: [環境](./environment.md)
 
 
 ## コードをサブミットする
@@ -104,7 +104,7 @@ config = ScriptRunConfig(
 )
 ```
 
-ScriptRunConfig の引数の詳細: [Command line arguments](./script-run-config.md#command-line-arguments)
+ScriptRunConfig の引数の詳細: [コマンドライン引数](./script-run-config.md#コマンドライン引数)
 
 :::info
 - `compute_target`: もし引数が与えられなかった場合は、スクリプトはローカルマシン上で実行されます。
@@ -127,7 +127,7 @@ config = ScriptRunConfig(
 )
 ```
 
-コマンドの詳細: [Commands](./script-run-config.md#commands)
+コマンドの詳細: [コマンド](./script-run-config.md#コマンド)
 
 ### 実験
 
@@ -142,7 +142,7 @@ print(run.get_portal_url())
 
 上記コードで返される Azure ML Studio へのリンクにより、実験の実行をモニタリングすることができます。
 
-詳細: [ScriptRunConfig](./script-run-config.md)
+詳細: [クラウド上でコードを実行する](./script-run-config.md)
 
 ### 使用例
 
@@ -206,7 +206,7 @@ run = Experiment(ws, 'PyTorch model training').submit(config)
 - `MpiConfiguration`はトレーニングを行うノード数とノードあたりの GPU 数を指定するために使います。
 :::
 
-詳細: [Distributed GPU Training](./distributed-training.md)
+詳細: [分散 GPU トレーニング](./distributed-training.md)
 
 ## データへの接続
 
@@ -216,7 +216,7 @@ run = Experiment(ws, 'PyTorch model training').submit(config)
 datastore = ws.get_default_datastore()
 dataset = Dataset.File.from_files(path=(datastore, '<path/on/datastore>'))
 ```
-詳細: [Data](./data.md)
+詳細: [データ](./data.md)
 
 コマンドライン引数に以下を渡すことで上記の`dataset`を使用できます。
 

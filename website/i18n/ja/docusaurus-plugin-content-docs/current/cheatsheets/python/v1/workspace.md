@@ -1,5 +1,5 @@
 ---
-title: Workspace
+title: ワークスペース
 description: Azure ML ワークスペースの概要
 keywords:
   - workspace
