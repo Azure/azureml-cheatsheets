@@ -13,7 +13,7 @@ keywords:
 
 Azure ML は機械学習コードのクラウド上での実行を支援するサービスです。`実行`は Azure ML にサブミットされたジョブの履歴をただ保存するだけではなく、リアルタイムで監視することもできる抽象レイヤーです。
 
-- 実行: 一度のコード実行を表します。詳細: [Run](#run)
+- 実行: 一度のコード実行を表します。詳細: [実行](#実行)
 - 実験: 実験は`実行`の軽量なコンテナです。実験は実行の Azure ML へのサブミットと追跡に使われます。
 
 ワークスペース`ws`に実験を作成します。
@@ -55,9 +55,9 @@ config = ScriptRunConfig(
 
 - `source_directory='source_directory'` : 実行するコードが存在するローカルディレクトリ。
 - `script='script.py'` : 実行する Python スクリプト。必ずしも`source_directory`のルートにある必要はない。
-- `compute_taget=target` : 参照 [Compute Target](copute-target)
-- `environment` : 参照 [Environment](environment)
-- `arguments` : 参照 [Arguments](#command-line-arguments)
+- `compute_taget=target` : 参照 [コンピューティングターゲット](copute-target)
+- `environment` : 参照 [環境](environment)
+- `arguments` : 参照 [コマンドライン引数](#command-line-arguments)
 
 このコードを Azure ML にサブミットする:
 
@@ -93,7 +93,7 @@ arguments = ['--first_arg', first_val, '--second_arg', second_val, ...]
 
 引数には`int`、`float`、`str`などのデータ型に加えて他の参照型のデータも使えます。
 
-コマンドライン引数の詳細: [Use dataset in a remote run](dataset#use-dataset-in-a-remote-run)
+コマンドライン引数の詳細: [データセットの使用](data#データセットの使用)
 
 ### 引数の例 1: `sys.argv`
 
@@ -281,4 +281,4 @@ for epoch in range(n_epochs):
 
 このコードが Azrue ML (例えば`ScriptRunConfig`により) にサブミットされた時、このコードは関連付けられている`実行`にメトリックのログを保存します。
 
-詳細: [Logging Metrics](logging)
+詳細: [メトリック](logging)
