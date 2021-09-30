@@ -1,5 +1,5 @@
 ---
-title: Environment
+title: 環境
 description: Guide to working with Python environments in Azure ML.
 keywords:
   - environment
@@ -10,9 +10,9 @@ keywords:
   - environment variables
 ---
 
-Azure ML Environments は、コードを実行するコンテナを定義するために用いられます。最もシンプルなケースとしては、pip、Conda、または Azure ML Python SDK 経由で直接、カスタムの Python ライブラリを追加することができます。もっとカスタムが必要であれば、カスタムの Docker イメージを使うことができます。
+Azure ML 環境 (Environments) は、コードを実行するコンテナを定義するために用いられます。最もシンプルなケースとしては、pip、Conda、または Azure ML Python SDK 経由で直接、カスタムの Python ライブラリを追加することができます。もっとカスタムが必要であれば、カスタムの Docker イメージを使うことができます。
 
-このページでは、Environment の作成について例示します:
+このページでは、環境の作成について例示します:
 
 - pip の `requirements.txt` ファイルから作成
 - Conda の `env.yml` ファイルから作成
@@ -20,11 +20,11 @@ Azure ML Environments は、コードを実行するコンテナを定義する�
 - カスタム Docker イメージから作成
 
 
-## Azure ML Managed Python Environments
+## Azure ML が管理する Python 環境
 
 ### pip から作成
 
-pip の `requirements.txt` ファイルから Environment を作成します。
+pip の `requirements.txt` ファイルから環境を作成します。
 
 ```python
 from azureml.core import Environment
@@ -33,7 +33,7 @@ env = Environment.from_pip_requirements('<env-name>', '<path/to/requirements.txt
 
 ### Conda から作成
 
-Conda の `env.yml` ファイルから　Environment を作成します。
+Conda の `env.yml` ファイルから環境を作成します。
 
 ```python
 from azureml.core import Environment
@@ -42,7 +42,7 @@ env = Environment.from_conda_specification('<env-name>', '<path/to/env.yml>')
 
 ### Azure ML SDK で作成
 
-Azure ML Python SDK を使って直接 Python Environment を作成するために、 `CondaDependencies` クラスを使います:
+Azure ML Python SDK を使って直接 Python 環境を作成するために、 `CondaDependencies` クラスを使います:
 
 ```python
 from azureml.core import Environment
@@ -70,7 +70,7 @@ env.python.conda_dependencies = conda
 
 ## カスタム Docker イメージ または Dockerfile で作成
 
-カスタム Docker イメージから `Environment` を作成するには、以下のように定義します:
+カスタム Docker イメージから `環境` を作成するには、以下のように定義します:
 
 ```python
 env = Environment('<env-name>')
@@ -87,7 +87,7 @@ env.python.interpreter_path = '/opt/miniconda/envs/example/bin/python'
 
 **パスワードは絶対に入力しないでください。** この例では、環境変数を経由してパスワードを渡しています。
 
-Dockerfile から `Environment` を作成するには、以下のように定義します:
+Dockerfile から `環境` を作成するには、以下のように定義します:
 
 ```python
 env = Environment('<env-name>')
@@ -145,23 +145,23 @@ env.docker.base_image_registry.username = ws.get_default_keyvault().get_secret("
 env.docker.base_image_registry.password = ws.get_default_keyvault().get_secret("password")
 ```
 
-## Environment の管理
+## 環境の管理
 
-### 登録された Environment
+### 登録された環境
 
-チームで再利用したり共有したりするために、 Environment `env: Environment` をワークスペース `ws` に登録します。
+チームで再利用したり共有したりするために、 環境 `env: Environment` をワークスペース `ws` に登録します。
 
 ```python
 env.register(ws)
 ```
 
-登録された Environemnt は、ワークスペースのハンドラ `ws` から直接取得することができます:
+登録された環境は、ワークスペースのハンドラ `ws` から直接取得することができます:
 
 ```python
 envs: Dict[str, Environment] = ws.environments
 ```
 
-このディクショナリには、ワークスペースに登録されているカスタムの Environment が含まれています。これは、 Azure ML によって管理される _curated environments_ のコレクションと同様です。
+このディクショナリには、ワークスペースに登録されているカスタムの環境が含まれています。これは、 Azure ML によって管理される _curated environments_ のコレクションと同様です。
 
 #### 例
 
@@ -177,9 +177,9 @@ env = ws.environments['my-env']
 env = Environment.get(ws, 'my-env', version=6)
 ```
 
-### Environment の保存と読み出し
+### 環境の保存と読み出し
 
-ローカルのディレクトリに Environment を保存します:
+ローカルのディレクトリに環境を保存します:
 
 ```python
 env.save_to_directory('<path/to/local/directory>', overwrite=True)
@@ -190,7 +190,7 @@ env.save_to_directory('<path/to/local/directory>', overwrite=True)
 - `azureml_environment.json` : 名前、バージョン、環境変数、 Python と Docker の設定を含むメタデータです。
 - `conda_dependencies.yml` : Conda で標準の、依存関係を表す YAML です。 (詳細は以下をご覧ください。 [Conda docs](https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html#creating-an-environment-from-an-environment-yml-file))
 
-この Environment を後で以下の要領で読み出します。
+この環境を後で以下の要領で読み出します。
 
 ```python
 env = Environment.load_from_directory('<path/to/local/directory>')
@@ -207,20 +207,20 @@ env.environment_variables['EXAMPLE_ENV_VAR'] = 'EXAMPLE_VALUE'
 
 ## ヒントと Tips
 
-Azure ML が Conda の依存関係を管理する場合 (デフォルトでは `user_managed_dependencies=False`)、Azure ML ワークスペースと関連付けられた Azure Container Registry にある Docker イメージにて同じ Environment が実現されているかどうかを、 Azure ML がチェックします。新規 Environment の場合、Azure ML には、新しい Environment 用の新しい Docker イメージを構築するためのジョブ準備段階があります。 logs にあるイメージ・ビルドのログファイルをみて、その進捗を監視しましょう。このジョブは、イメージがビルドされ、コンテナ・レジストリに push されるまで開始しません。
+Azure ML が Conda の依存関係を管理する場合 (デフォルトでは `user_managed_dependencies=False`)、Azure ML ワークスペースと関連付けられた Azure Container Registry にある Docker イメージにて同じ環境が構成されているかどうかを、 Azure ML がチェックします。新規の環境の場合、Azure ML には、新しい環境用の新しい Docker イメージを構築するためのジョブ準備段階があります。 logs にあるイメージ・ビルドのログファイルをみて、その進捗を監視しましょう。このジョブは、イメージがビルドされ、コンテナ・レジストリに push されるまで開始しません。
 
 イメージをビルドするプロセスには少し時間がかかり、ジョブの開始が遅れます。不必要なビルドを避けるために、以下を検討してください:
 
-1. 必要となる多くのパッケージを含む Environment を登録し、可能であれば再利用してください。
-2. 既存の Environment に対して少しの追加パッケージを上乗せする必要があるというだけであれば、
-    1. 既存の Environment が Docker イメージである場合、この Docker イメージの Dockerfile を使ってください。追加パッケージをインストールするためのレイヤーを1つ追加するだけで済みます。
-    2. ユーザースクリプトにて追加の Python パッケージをインストールするようにしてください。スクリプト内で発生するパッケージのインストールは、あなたのコードの一部として実行されます。これは新規の Environment の一部として Azure ML に取り扱いを依頼することの代わりとなります。[setup script](#advanced-shell-initialization-script) を使うことを検討してください。
+1. 必要となる多くのパッケージを含む環境を登録し、可能であれば再利用してください。
+2. 既存の環境に対して少しの追加パッケージを上乗せする必要があるというだけであれば、
+    1. 既存の環境が Docker イメージである場合、この Docker イメージの Dockerfile を使ってください。追加パッケージをインストールするためのレイヤーを1つ追加するだけで済みます。
+    2. ユーザースクリプトにて追加の Python パッケージをインストールするようにしてください。スクリプト内で発生するパッケージのインストールは、あなたのコードの一部として実行されます。これは新規の環境の一部として Azure ML に取り扱いを依頼することの代わりとなります。[setup script](#advanced-shell-initialization-script) を使うことを検討してください。
 
-Python パッケージの依存関係が複雑で、バージョンが競合する可能性があるため、カスタムの Docker イメージと Dockerfile (Azure ML のベースイメージをベースにしたもの) を使用することをお勧めします。この方法により、 Environment の透明性が完全なものとなるだけでなく、アジャイル開発段階でイメージをビルドする時間を節約することができます。
+Python パッケージの依存関係が複雑で、バージョンが競合する可能性があるため、カスタムの Docker イメージと Dockerfile (Azure ML のベースイメージをベースにしたもの) を使用することをお勧めします。この方法により、環境の透明性が完全なものとなるだけでなく、アジャイル開発段階でイメージをビルドする時間を節約することができます。
 
 ### Docker イメージをローカルでビルドし、 Azure Container Registry にプッシュする
 
-Docker をローカルにインストールしている場合、 Workspace の ACR に直接イメージをプッシュするオプションを利用して、 Azure ML の Environment からの Docker イメージをローカルでビルドすることができます。ローカル・ビルドではキャッシュされたレイヤーを利用できるため、 Dockerfile を反復処理する場合にお勧めです。
+Docker をローカルにインストールしている場合、 Workspace の ACR に直接イメージをプッシュするオプションを利用して、 Azure ML の環境からの Docker イメージをローカルでビルドすることができます。ローカル・ビルドではキャッシュされたレイヤーを利用できるため、 Dockerfile を反復処理する場合にお勧めです。
 
 ```python
 from azureml.core import Environment
@@ -324,7 +324,7 @@ credential = DefaultAzureCredential()
 client = SecretClient(vault_url=kv_url, credential=credential)
 my_secret = client.get_secret(secret_name).value
 
-env = Environment('example')
+env = 環境('example')
 env.environment_variables['POWERFUL_SECRET'] = my_secret
 ```
 
