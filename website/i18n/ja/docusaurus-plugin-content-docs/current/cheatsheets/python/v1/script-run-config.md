@@ -55,9 +55,10 @@ config = ScriptRunConfig(
 
 - `source_directory='source_directory'` : 実行するコードが存在するローカルディレクトリ。
 - `script='script.py'` : 実行する Python スクリプト。必ずしも`source_directory`のルートにある必要はない。
-- `compute_taget=target` : 参照 [コンピューティングターゲット](copute-target)
+- `compute_taget=target` : 参照 [コンピューティングターゲット](compute-targets)
 - `environment` : 参照 [環境](environment)
-- `arguments` : 参照 [コマンドライン引数](#command-line-arguments)
+- `arguments` : 参照 [コマンドライン引数](#コマンドライン引数)
+
 
 このコードを Azure ML にサブミットする:
 
