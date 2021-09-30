@@ -254,7 +254,7 @@ config = ScriptRunConfig(
 )
 ```
 
-`ScriptRunConfig` についてより詳しく知りたい場合は、[Running Code in the Cloud](script-run-config) をご覧ください。
+`ScriptRunConfig` についてより詳しく知りたい場合は、[クラウド上でコードを実行する](script-run-config) をご覧ください。
 
 ### 分散ブートストラッピング
 
