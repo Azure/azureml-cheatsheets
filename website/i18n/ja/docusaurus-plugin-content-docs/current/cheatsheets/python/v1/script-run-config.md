@@ -59,7 +59,6 @@ config = ScriptRunConfig(
 - `environment` : 参照 [環境](environment)
 - `arguments` : 参照 [コマンドライン引数](#コマンドライン引数)
 
-
 このコードを Azure ML にサブミットする:
 
 ```python
