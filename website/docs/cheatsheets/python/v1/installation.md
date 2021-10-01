@@ -18,6 +18,9 @@ pip install azureml-sdk
 
 ### Create Workspace
 
+Please prepare your Azure subscription, resource group, and decide your Workspace name in order to create `Workspace`.
+If you don't have subscription, please [generate it for free](https://azure.microsoft.com/en-us/free/).
+
 ```python
 from azureml.core import Workspace
 
