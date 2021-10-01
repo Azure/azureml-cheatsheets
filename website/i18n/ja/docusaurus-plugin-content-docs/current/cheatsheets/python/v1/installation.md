@@ -18,6 +18,9 @@ pip install azureml-sdk
 
 ### ワークスペースの作成
 
+Azure MLの`Workspace`作成のため、Azureサブスクリプション、リソースグループをご用意頂き、`Workspace`の名前を予め決めておいて下さい。
+もしAzureサブスクリプションをお持ちでない場合は[当サイトから無料でご利用頂けます](https://azure.microsoft.com/ja-jp/free/)。
+
 ```python
 from azureml.core import Workspace
 
