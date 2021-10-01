@@ -8,15 +8,15 @@
     "description": "The label for category Python in sidebar pythonSidebar"
   },
   "sidebar.pythonSidebar.category.Getting Started": {
-    "message": "Getting Started",
+    "message": "作業の開始",
     "description": "The label for category Getting Started in sidebar pythonSidebar"
   },
   "sidebar.pythonSidebar.category.Azure ML Resources": {
-    "message": "Azure ML Resources",
+    "message": "Azure ML リソース",
     "description": "The label for category Azure ML Resources in sidebar pythonSidebar"
   },
   "sidebar.pythonSidebar.category.Guides": {
-    "message": "Guides",
+    "message": "ガイド",
     "description": "The label for category Guides in sidebar pythonSidebar"
   },
   "sidebar.cliSidebar.category.CLI (preview)": {

@@ -1,5 +1,5 @@
 ---
-title: Data
+title: データ
 description: Guide to working with data in Azure ML.
 keywords:
   - data
@@ -7,22 +7,18 @@ keywords:
   - datastore
 ---
 
-:::note
-このコンテンツはお使いの言語では利用できません。
-:::
+## 基本的な概念
 
-## Concepts
+Azure ML にはデータを扱うための 2 つの概念が存在します:
 
-AzureML provides two basic assets for working with data:
+- データストア
+- データセット
 
-- Datastore
-- Dataset
+### データストア
 
-### Datastore
+Azure ML から多数のストレージアカウントへのインターフェースを提供します。
 
-Provides an interface for numerous Azure Machine Learning storage accounts.
-
-Each Azure ML workspace comes with a default datastore:
+各 Azure ML ワークスペースには 1 つのデフォルトデータストアが付属しています:
 
 ```python
 from azureml.core import Workspace
@@ -30,34 +26,32 @@ ws = Workspace.from_config()
 datastore = ws.get_default_datastore()
 ```
 
-which can also be accessed directly from the [Azure Portal](https://portal.azure.com) (under the same 
-resource group as your Azure ML Workspace).
+このデータストアには [Azure Portal](https://portal.azure.com) からもアクセスすることができます。 (Azure ML ワークスペースと同じリソースグループに存在します)
 
-Datastores are attached to workspaces and are used to store connection information to Azure storage services so you can refer to them by name and don't need to remember the connection information and secret used to connect to the storage services.
+データストアはワークスペースに追加され、Azure ストレージサービスとの接続情報を保持するために使用されます。そのため、ユーザーはストレージサービスの接続情報やシークレットを覚えることなく、データストアの名前で参照をすることができます。
 
-Use this class to perform management operations, including register, list, get, and remove datastores.
-
-### Dataset
-
-A dataset is a reference to data - either in a datastore or behind a public URL.
-
-Datasets provide enhaced capabilities including data lineage (with the notion of versioned datasets).
+上記コードで取得した Datastore クラスからは、データストアの登録、リスト、取得、削除などの管理を行うことができます。
 
 
-## Get Datastore
+### データセット
 
-### Default datastore
+データセットはデータへの参照です。これはデータストア、パブリックURL上の両方のデータを含みます。
 
-Each workspace comes with a default datastore.
+データセットはデータ管理を強化する機能を提供します (データセットのバージョン管理)。
+
+## データストアの取得
+
+### デフォルトデータストア
+
+各ワークスペースにはデフォルトデータストアが付属しています。
 
 ```python
 datastore = ws.get_default_datastore()
 ```
 
-### Register datastore
+### データストアの登録
 
-Connect to, or create, a datastore backed by one of the multiple data-storage options
-that Azure provides. For example:
+Azure が提供する様々なデータストアに対して、データストアの作成と接続が行えます。例として:
 
 - Azure Blob Container
 - Azure Data Lake (Gen1 or Gen2)
@@ -67,12 +61,11 @@ that Azure provides. For example:
 - Azure SQL
 - Azure Databricks File System
 
-See the SDK for a comprehensive list of datastore types and authentication options:
-[Datastores (SDK)](https://docs.microsoft.com/python/api/azureml-core/azureml.core.datastore(class)?view=azure-ml-py).
+データストアの種類のリストと認証オプションの包括的な情報は [Datastores (SDK)](https://docs.microsoft.com/python/api/azureml-core/azureml.core.datastore(class)?view=azure-ml-py) を参照してください。
 
-#### Register a new datastore
+#### 新たなデータストアを登録する
 
-- To register a store via an **account key**:
+- **アカウントキー** でデータストアを登録する:
 
     ```python
     datastores = Datastore.register_azure_blob_container(
@@ -84,7 +77,7 @@ See the SDK for a comprehensive list of datastore types and authentication optio
     )
     ```
 
-- To register a store via a **SAS token**:
+- **SAS トークン**でデータストアを登録する:
 
     ```python
     datastores = Datastore.register_azure_blob_container(
@@ -96,25 +89,23 @@ See the SDK for a comprehensive list of datastore types and authentication optio
     )
     ```
 
-### Connect to datastore
+### データストアへの接続
 
-The workspace object `ws` has  access to its datastores via
+ワークスペースオブジェクト`ws`からは下記のようにデータストアのリストを取得することができます:
 
 ```python
 ws.datastores: Dict[str, Datastore]
 ```
 
-Any datastore that is registered to workspace can thus be accessed by name.
+ワークスペースに登録済みのデータストアに対しては名前でアクセスすることができます:
 
 ```python
 datastore = ws.datastores['<name-of-registered-datastore>']
 ```
 
-### Link datastore to Azure Storage Explorer
+### Azure Storage Explorer とデータストアを接続する
 
-The workspace object `ws` is a very powerful handle when it comes to managing assets the
-workspace has access to. For example, we can use the workspace to connect to a datastore
-in Azure Storage Explorer.
+ワークスペースオブジェクト`ws`はワークスペースがアクセス可能なデータアセットを管理する際の強力なハンドルです。例えば、Azure Storage Explorer を使ってデータストアに接続する際にもワークスペースを使うことができます。
 
 ```python
 from azureml.core import Workspace
@@ -122,28 +113,27 @@ ws = Workspace.from_config()
 datastore = ws.datastores['<name-of-datastore>']
 ```
 
-- For a datastore that was created using an **account key** we can use:
+- **アカウントキー**を使って作成したデータストアの場合:
 
     ```python
     account_name, account_key = datastore.account_name, datastore.account_key
     ```
 
-- For a datastore that was created using a **SAS token** we can use:
+- **SAS トークン**を使って作成したデータストアの場合:
 
     ```python
     sas_token = datastore.sas_token
     ```
 
-The account_name and account_key can then be used directly in Azure Storage Explorer to
-connect to the Datastore.
+この account_name と account_key は Azure Storage Explorer を使ってデータストアに接続する際に使用できます。
 
-## Blob Datastore
+## Blob データストア
 
-Move data to and from your [AzureBlobDatastore](https://docs.microsoft.com/python/api/azureml-core/azureml.data.azure_storage_datastore.azureblobdatastore?view=azure-ml-py) object `datastore`.
+[AzureBlobDatastore](https://docs.microsoft.com/python/api/azureml-core/azureml.data.azure_storage_datastore.azureblobdatastore?view=azure-ml-py) データストアを使ったデータのダウンロードとアップロード。
 
-### Upload to Blob Datastore
+### Blob データストアへのアップロード
 
-The AzureBlobDatastore provides APIs for data upload:
+AzureBlobDatastore はデータをアップロードするためのAPIを提供します:
 
 ```python
 datastore.upload(
@@ -153,46 +143,43 @@ datastore.upload(
     )
 ```
 
-Alternatively, if you are working with multiple files in different locations you can use
+別々の場所に存在する複数のファイルをアップロードする場合:
 
 ```python
 datastore.upload_files(
-    files, # List[str] of absolute paths of files to upload
+    files, # アップロードするファイルの絶対パスのリスト (List[str] 形式)
     target_path='<path/on/datastore>',
     overwrite=False,
     )
 ```
 
-### Download from Blob Datastore
+### Blob データストアからのダウンロード
 
-Download the data from the blob container to the local file system.
+Blob コンテナからローカルファイルシステムへデータをダウンロードする:
 
 ```python
 datastore.download(
-    target_path, # str: local directory to download to
+    target_path, # str: ダウンロードするローカルディレクトリ
     prefix='<path/on/datastore>',
     overwrite=False,
     )
 ```
 
-### Via Storage Explorer
+### Storage Explorer 経由
 
-Azure Storage Explorer is free tool to easily manage your Azure cloud storage
-resources from Windows, macOS, or Linux. Download it from [here](https://azure.microsoft.com/features/storage-explorer/).
+Azure Storage Explorer は Azure クラウドストレージ上のデータを簡単に扱うことができる Windows、macOS、Linux 向けのツールです。[こちら](https://azure.microsoft.com/features/storage-explorer/)からダウンロードすることができます。
 
-Azure Storage Explorer gives you a (graphical) file exporer, so you can literally drag-and-drop
-files into and out of your datastores.
+Azure Storage Explorer は GUI のファイルエクスプローラです。そのため、ファイルをドラッグアンドドロップすることでダウンロードやアップロードを行うことができます。
 
-See ["Link datastore to Azure Storage Explorer"](#link-datastore-to-azure-storage-explorer)
-above for more details.
+詳細は [Azure Storage Explorer とデータストアを接続する](#azure-storage-explorer-とデータストアを接続する) のセクションを参照してください。
 
-## Read from Datastore
+## データストアからの読み込み
 
-Reference data in a `Datastore` in your code, for example to use in a remote setting.
+コードの中から`Datastore`のデータを参照します。例えばリモート設定を使用する場合です。
 
 ### DataReference
 
-First, connect to your basic assets: `Workspace`, `ComputeTarget` and `Datastore`.
+最初に、基本的なオブジェクトである`Workspace`、`ComputeTarget`、`Datastore`に接続します。
 
 ```python
 from azureml.core import Workspace
@@ -201,43 +188,43 @@ compute_target: ComputeTarget = ws.compute_targets['<compute-target-name>']
 ds: Datastore = ws.get_default_datastore()
 ```
 
-Create a `DataReference`, either as mount:
+`DataReference`を作成してマウントする場合:
 
 ```python
 data_ref = ds.path('<path/on/datastore>').as_mount()
 ```
 
-or as download:
+ダウンロードする場合:
 
 ```python
 data_ref = ds.path('<path/on/datastore>').as_download()
 ```
 :::info
-To mount a datastore the workspace need to have read and write access to the underlying storage. For readonly datastore `as_download` is the only option. 
+データストアを`as_mount`するためには、ワークスペースは対象のストレージに対する read と write アクセスが必要になります。readonly のデータストアの場合は`as_download`が唯一のオプションです。
 :::
 
-#### Consume DataReference in ScriptRunConfig
+#### ScriptRunConfig から DataReference を使用する
 
-Add this DataReference to a ScriptRunConfig as follows.
+以下のようにして ScriptRunConfig に DataReference を追加します。
 
 ```python
 config = ScriptRunConfig(
     source_directory='.',
     script='script.py',
-    arguments=[str(data_ref)],               # returns environment variable $AZUREML_DATAREFERENCE_example_data
+    arguments=[str(data_ref)],  # 環境変数 $AZUREML_DATAREFERENCE_example_data を返します
     compute_target=compute_target,
 )
 
 config.run_config.data_references[data_ref.data_reference_name] = data_ref.to_config()
 ```
 
-The command-line argument `str(data_ref)` returns the environment variable `$AZUREML_DATAREFERENCE_example_data`.
-Finally, `data_ref.to_config()` instructs the run to mount the data to the compute target and to assign the
-above environment variable appropriately.
+コマンドライン引数`str(data_ref)`は、環境変数`$AZUREML_DATAREFERENCE_example_data`を返します。
+最終的に`data_ref.to_config()`は、Azure ML の実行に対してデータをコンピューティングターゲットにマウントすることと、上記の環境変数を適切に設定することの指示を出します。
 
-#### Without specifying argument
 
-Specify a `path_on_compute` to reference your data without the need for command-line arguments.
+#### 引数を指定しないとき
+
+コマンドライン引数を指定せずに、`path_on_compute`を指定してデータを参照する場合:
 
 ```python
 data_ref = ds.path('<path/on/datastore>').as_mount()
@@ -252,50 +239,47 @@ config = ScriptRunConfig(
 config.run_config.data_references[data_ref.data_reference_name] = data_ref.to_config()
 ```
 
-## Create Dataset
+## データセットの作成
 
-### From local data
+### ローカルデータから
 
-#### Upload to datastore
+#### データストアへのアップロード
 
-To upload a local directory `./data/`:
+ローカルディレクトリ`./data/`をアップロードする場合:
 
 ```python
 datastore = ws.get_default_datastore()
 datastore.upload(src_dir='./data', target_path='<path/on/datastore>', overwrite=True)
 ```
 
-This will upload the entire directory `./data` from local to the default datastore associated
-to your workspace `ws`.
+このコードはローカルディレクトリ`./data`をまるごとワークスペース`ws`に関連付けられたデフォルトデータストアにアップロードします。
 
-#### Create dataset from files in datastore
+#### データストア内のファイルからデータセットを作成する
 
-To create a dataset from a directory on a datastore at `<path/on/datastore>`:
+データストアの`<path/on/datastore>`ディレクトリに存在するデータからデータセットを作成する場合:
 
 ```python
 datastore = ws.get_default_datastore()
 dataset = Dataset.File.from_files(path=(datastore, '<path/on/datastore>'))
 ```
 
-## Use Dataset
+## データセットの使用
 
 ### ScriptRunConfig
 
-To reference data from a dataset in a ScriptRunConfig you can either mount or download the
-dataset using:
 
-- `dataset.as_mount(path_on_compute)` : mount dataset to a remote run
-- `dataset.as_download(path_on_compute)` : download the dataset to a remote run
+データセットを ScriptRunConfig から参照してマウントしたりダウンロードしたい時、下記のようにして行えます:
 
-**Path on compute** Both `as_mount` and `as_download` accept an (optional) parameter `path_on_compute`.
-This defines the path on the compute target where the data is made available.
+- `dataset.as_mount(path_on_compute)` : リモート実行時にデータセットをマウントする
+- `dataset.as_download(path_on_compute)` : リモート実行時にデータセットをダウンロードする
 
-- If `None`, the data will be downloaded into a temporary directory.
-- If `path_on_compute` starts with a `/` it will be treated as an **absolute path**. (If you have 
-specified an absolute path, please make sure that the job has permission to write to that directory.)
-- Otherwise it will be treated as relative to the working directory
+**Path on compute**: `as_mount`と`as_download`の両方がオプションパラメータの`path_on_compute`を受け取ります。このパラメータはコンピューティングターゲット上で利用できるデータセットのパスを定義します。
 
-Reference this data in a remote run, for example in mount-mode:
+- `指定しない`場合、データは一時ディレクトリにダウンロードされます。
+- `path_on_compute`が`/`始まる場合は**絶対パス**として扱われます。(もしも絶対パスを指定した場合は実行するジョブがそのディレクトリに対する書き込み権限を持っている必要があります)
+- それ以外は、ワーキングディレクトリからの相対パスとして扱われます。
+
+マウントモードでリモート実行時にデータを参照する例:
 
 ```python title="run.py"
 arguments=[dataset.as_mount()]
@@ -303,7 +287,7 @@ config = ScriptRunConfig(source_directory='.', script='train.py', arguments=argu
 experiment.submit(config)
 ```
 
-and consumed in `train.py`:
+`train.py`から参照する例:
 
 ```python title="train.py"
 import sys
@@ -316,4 +300,4 @@ print(os.listdir(data_dir))
 print("================")
 ```
 
-For more details: [ScriptRunConfig](script-run-config)
+より詳細は [クラウド上でコードを実行する](script-run-config) を参照してください。

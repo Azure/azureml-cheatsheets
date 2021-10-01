@@ -1,42 +1,36 @@
 ---
-title: Debugging
+title: デバッグ
 description: Guide to debugging in Azure ML.
 keywords:
   - debug
   - log files
 ---
 
-:::note
-このコンテンツはお使いの言語では利用できません。
-:::
+## Azure ML ログファイル
 
-## Azure ML Log Files
+Azure ML のログファイルは Azure ML ワークロード のデバッグを行う上で必須の情報です。
 
-Azure ML's log files are an essential resource for debugging your Azure ML workloads.
-
-| Log file | Description |
+| ログファイル | 説明 |
 | - | - |
-| `20_image_build_log*.txt` | Docker build logs. Only applicable when updating your Environment. Otherwise Azure ML will reuse cached image. <br/><br/> If successful, contains image registry details for the corresponding image.|
-| `55_azureml-execution*.txt` | Pulls image to compute target. Note, this log only appears once you have secured compute resources.|
-| `65_job_prep*.txt` | Job preparation: Download your code to compute target and datastores (if requested). |
-| **`70_driver_log.txt`** | **The standard output from your script. This is where your code's logs (e.g. print statements) show up.** <br/><br/> In the majority of cases you will monitor the logs here. |
-| `75_job_post*.txt` | Job release: Send logs, release the compute resources back to Azure. |
+| `20_image_build_log*.txt` | Docker ビルドログ。環境を更新した時のみ該当。それ以外の場合 Azure ML はキャッシュされたイメージを再利用する。 <br/><br/> もしも成功した場合、関連するイメージのレジストリ詳細情報を含む。 |
+| `55_azureml-execution*.txt` | コンピューティングターゲットに対するイメージのプル。このログはコンピューティングリソースが確保された時点で一度だけ作成される。 |
+| `65_job_prep*.txt` | ジョブ準備: コンピューティングターゲットやデータストアへのコードのダウンロード。(もしも操作が行われた場合) |
+| **`70_driver_log.txt`** | **スクリプトの標準出力。(e.g. コード中の print ステートメント)** <br/><br/> 多くの場合、ユーザーはこのログを確認する。 |
+| `75_job_post*.txt` | ジョブのリリース: コンピューティングリソースが Azure へ返された際のログ。 |
 
 :::info
-You will not necessarily see every file for every run. For example, the `20_image_build_log*.txt` only appears when a new image is built (e.g. when you change you environment).
+実行のたびにすべてのログファイルを確認する必要はありません。例えば、`20_image_build_log*.txt`は新しいイメージがビルドされた時のみ作成されます。(e.g. 環境変更時)
 :::
 
-### Find logs in the Studio
+### Studio からログを確認する
 
-These log files are available via the Studio UI at https://ml.azure.com under Workspace > Experiment >
-Run > "Outputs and logs".
+これらのログファイルは Studio UI (https://ml.azure.com) の ワークスペース > 実験 > 実行 > 出力とログ から確認できます。
 
 ![](img/log-files.png)
 
-### Streaming logs
+### ストリーミングログ
 
-It is also possible to stream these logs directly to your local terminal using a `Run` object,
-for example:
+`Run`オブジェクトを使うことで、ストリームログをローカルターミナルに直接流し込むことができます。以下がその例です:
 
 ```python
 from azureml.core import Workspace, Experiment, ScriptRunConfig
@@ -48,28 +42,28 @@ run.wait_for_completion(show_output=True)
 
 ## SSH
 
-It can be useful to SSH into your compute for a variety of reasons - including to assist in debugging.
+デバッグの一環として、使用中のコンピューティングに対して SSH 接続することも有用な場合があります。
 
-:::warning Enable SSH at compute creation
-SSH needs to be enabled when you create the compute instance / target - see [Compute Targets](compute-targets#with-ssh) for details.
+:::warning コンピューティング作成時の SSH 有効化
+SSH はコンピューティングインスタンス / コンピューティングターゲット 作成時に有効にする必要があります。詳細は [Compute Targets](compute-targets#with-ssh) を参照してください。
 :::
 
-1. Get **public ip** and **port number** for your compute.
+1. コンピューティングの**パブリック IP アドレス**と**ポート番号**を取得します。
 
-  Visit [ml.azure.com](https://ml.azure.com/) > select "Compute" tab > Locate the desired compute instance / target.
+  Studio [ml.azure.com](https://ml.azure.com/) の コンピューティングタブから、コンピューティングインスタンスもしくはコンピューティングターゲットを選択します。
 
-  **Note.** The compute needs to be running in order to connect.
-    - In the case of compute instance this just requires turning it on.
-    - For compute targets there should be something running on the cluster. In this case you can select the "Nodes" tab of the cluster ([ml.azure.com](https://ml.azure.com/) > Compute > _your compute target_ > Nodes) to get Public IP & port number for each node.
+  **Note** 接続時にコンピューティングは実行中である必要があります。
+    - コンピューティングインスタンスの場合は単に実行中であれば良いです。
+    - コンピューティングターゲットの場合は何かのジョブがクラスター上で実行中されている必要があります。このとき、クラスターのノードタブから、各ノードのパブリック IP アドレスとポート番号を確認することができます。([ml.azure.com](https://ml.azure.com/) > コンピューティング > _対象のコンピューティングターゲット_ > ノード)
 
-2. Open your favorite shell and run:
+2. 任意のシェルで下記を実行します:
 
   ```bash
   ssh azureuser@<public-ip> -p <port-number>
   ```
 
 
-:::info SSH key pair using RSA
-We recommend setting up SSH public-private key pair: see [here](https://docs.microsoft.com/en-us/azure/virtual-machines/linux/mac-create-ssh-keys) for more details.
+:::info RSA を使った SSH キーペア
+SSH パブリック-プライベートキーペアが推奨されています。詳細は[こちら](https://docs.microsoft.com/en-us/azure/virtual-machines/linux/mac-create-ssh-keys)を参照してください。
 :::
 
