@@ -52,6 +52,15 @@ Select the "Metrics" tab and select the metric(s) to view:
 
 ![](/img/view-metrics.png)
 
+It is also possible to compare metrics between runs in a _summary_ view from the experiments page itself. Select the "Experiments" tab, add custom charts and select the runs you want to compare!
+
+![](/img/custom-view.png)
+
+:::info Custom views
+Curate your view by adding charts, selecting key runs, updating the columns in the table.
+You can then save this view, create more, and even share them with others!
+:::
+
 ### Via the SDK
 
 Viewing metrics in a run (for more details on runs: [Run](run))
