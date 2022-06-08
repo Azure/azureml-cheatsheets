@@ -141,7 +141,7 @@ Azure ML can use a custom image from a private registry as long as login informa
 
 ```python
 env = Environment('<env-name>')
-env.docker.base_image = "/my/private/img:tag",  # image repository path
+env.docker.base_image = "/my/private/img:tag"  # image repository path
 env.docker.base_image_registry.address = "myprivateacr.azurecr.io"  # private registry
 
 # Retrieve username and password from the workspace key vault
