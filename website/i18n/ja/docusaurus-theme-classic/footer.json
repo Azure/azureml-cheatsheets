@@ -40,7 +40,7 @@
     "description": "The label of footer link with label=Contribution linking to /docs/misc/contributing"
   },
   "copyright": {
-    "message": "Copyright © 2021 Microsoft Corporation",
+    "message": "Copyright © 2022 Microsoft Corporation",
     "description": "The footer copyright"
   }
 }
