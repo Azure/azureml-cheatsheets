@@ -25,10 +25,12 @@ module.exports = {
       },
       items: [
         {to: '/docs/cheatsheets/python/v1/cheatsheet', label: 'Python SDK', position: 'left'},
+        {to: '/docs/cheatsheets/cli/v2/cheatsheet', label: 'CLI', position: 'left'},
         {
           type: 'localeDropdown',
           position: 'left',
         },
+
       ],
     },
     footer: {

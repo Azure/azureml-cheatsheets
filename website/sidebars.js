@@ -1,6 +1,6 @@
 module.exports = {
   pythonSidebar: {
-    'Python': [
+    'Python v1': [
       {
         type: 'doc',
         id: 'cheatsheets/python/v1/cheatsheet'
@@ -26,8 +26,16 @@ module.exports = {
     ],
   },
   cliSidebar: {
-    'CLI (preview)': [
+    'CLI v2': [
       {
+        type: 'doc',
+        id: 'cheatsheets/cli/v2/cheatsheet'
+      },
+      {
+        type: 'category',
+        label: 'Getting Started',
+        collapsed: false,
+        items: ['cheatsheets/cli/v2/installation'],
       },
     ],
   }
