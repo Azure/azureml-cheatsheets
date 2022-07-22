@@ -1,4 +1,4 @@
-# devcontainer json from docusaurus github repo
+//devcontainer json from docusaurus github repo
 {
 	"name": "Docusaurus Dev Container",
 	"image": "mcr.microsoft.com/vscode/devcontainers/typescript-node:14-buster",
